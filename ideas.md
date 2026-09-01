@@ -78,3 +78,8 @@
 - بخش موقعیت: Vistamare Hotel، İskele با مسیر و اطلاعات تماس.
 
 این فلسفه باید در تمام کامپوننت‌ها رعایت شود. هر انتخاب بصری باید پاسخ دهد: «آیا این تصمیم حس ورود به آرِنای شبانه‌ی بازینو را تقویت می‌کند یا آن را به یک قالب عمومی تبدیل می‌کند؟»
+
+
+## Mona identity contract
+
+“Mona” is the permanent project shorthand for Bazino’s recurring virtual influencer. Preserve her Mediterranean/Cypriot appearance, dark ponytail, black gaming jacket with gold piping and blue accents, confident half-smile, cinematic night lighting, and welcoming premium energy. Keep her original and brand-owned: no recognizable game characters, logos, weapons, or copyrighted game-world designs. In the Hero she anchors a 360-degree orbit of original genre signals, with pointer-driven camera movement and mobile/reduced-motion fallbacks.

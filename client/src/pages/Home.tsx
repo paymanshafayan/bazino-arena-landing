@@ -190,7 +190,7 @@ export default function Home() {
     setActiveChapter(0);
   }, [lang]);
 
-  const handlePointerMove = (event: React.MouseEvent<HTMLElement>) => {
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
     pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
@@ -205,7 +205,7 @@ export default function Home() {
   const previousChapter = () => setActiveChapter((value) => (value - 1 + chapters.length) % chapters.length);
 
   return (
-    <div className="site-shell" onMouseMove={handlePointerMove} onMouseLeave={handlePointerLeave}>
+    <div className="site-shell" onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
       <header className={`site-header ${scrolled ? "site-header--scrolled" : ""}`}>
         <a className="brand-lockup" href="#top" aria-label="Bazino home">
           <span className="brand-mark-css" aria-hidden="true">B</span>
@@ -236,60 +236,50 @@ export default function Home() {
       </header>
 
       <main>
-        <section id="top" className="hero" style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}>
+        <section id="top" className="hero mona-hero" style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}>
           <div className="hero-noise" />
           <motion.div className="hero-grid" style={{ x: stageX, y: stageY }} />
-          <motion.div className="hero-image-wrap" style={{ x: heroX, y: heroY, scale: heroScale, rotate: heroRotate }}>
-            <AnimatePresence mode="wait">
-              <motion.img key={chapters[activeChapter].id} className="hero-image" src={chapters[activeChapter].image} alt="Bazino cinematic gaming lounge" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.015 }} transition={{ duration: 0.55, ease: [0.23, 1, 0.32, 1] }} />
-            </AnimatePresence>
-          </motion.div>
+          <motion.div className="mona-backdrop" style={{ x: heroX, y: heroY, scale: heroScale }} />
           <div className="hero-vignette" />
           <motion.div className="hero-light-orb hero-light-orb--blue" style={{ x: stageX, y: stageY }} />
           <motion.div className="hero-light-orb hero-light-orb--gold" style={{ x: heroX, y: heroY }} />
 
+          <motion.div className="mona-orbit-scene" style={{ x: stageX, y: stageY }} aria-hidden="true">
+            <div className="mona-orbit-ring mona-orbit-ring--outer" />
+            <div className="mona-orbit-ring mona-orbit-ring--inner" />
+            <motion.div className="mona-orbit-carousel" animate={{ rotate: 360 }} transition={{ duration: 28, repeat: Infinity, ease: "linear" }}>
+              <span className="mona-orbit-card mona-orbit-card--racing"><b>01</b><strong>RACING</strong><small>FAST / HYPE</small></span>
+              <span className="mona-orbit-card mona-orbit-card--fantasy"><b>02</b><strong>FANTASY</strong><small>MYTH / QUEST</small></span>
+              <span className="mona-orbit-card mona-orbit-card--tactical"><b>03</b><strong>TACTICAL</strong><small>FOCUS / TEAM</small></span>
+              <span className="mona-orbit-card mona-orbit-card--sport"><b>04</b><strong>SPORT</strong><small>PLAY / LIVE</small></span>
+            </motion.div>
+          </motion.div>
+
+
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
               <div className="eyebrow"><span className="eyebrow-line" />{t.hero.eyebrow}</div>
-              <AnimatePresence mode="wait">
-                <motion.div key={`${lang}-${activeChapter}`} className="hero-copy-transition" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.34 }}>
-                  <h1>{activeChapter === 0 ? <>{t.hero.lineOne}<br /><em>{t.hero.lineTwo}</em></> : <>{chapters[activeChapter].title}<br /><em>{t.hero.chapter} {chapters[activeChapter].index}</em></>}</h1>
-                  <p>{activeChapter === 0 ? t.hero.body : chapters[activeChapter].body}</p>
-                </motion.div>
-              </AnimatePresence>
+              <h1>{t.hero.lineOne}<br /><em>{t.hero.lineTwo}</em></h1>
+              <p>{t.hero.body}</p>
               <div className="hero-actions">
                 <a className="button button--gold" href="https://bazino.pro" target="_blank" rel="noreferrer">{t.hero.primary}<ArrowUpRight size={17} /></a>
                 <button className="text-button" type="button" onClick={() => scrollToId("experiences")}>{t.hero.secondary}<ArrowDownRight size={17} /></button>
               </div>
-              <div className="hero-footnote"><Sparkles size={14} /> {t.hero.cursor}</div>
+              <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "حرکت موس، مسیر هولوگرام را باز می‌کند" : lang === "ru" ? "Двигайте мышью, чтобы открыть орбиту" : lang === "en" ? "Move the pointer to open the orbit" : "Mona’nın yörüngesini keşfetmek için hareket et"}</div>
             </motion.div>
 
             <motion.div className="hero-stage-meta" style={{ x: stageX, y: stageY }}>
               <div className="stage-coordinates">35°20' N / 33°59' E</div>
-              <div className="stage-chapter-card">
-                <div className="stage-card-top"><span>{t.hero.chapter} {chapters[activeChapter].index}</span><span>0{activeChapter + 1} / 03</span></div>
-                <strong>{chapters[activeChapter].title}</strong>
-                <span className="stage-card-caption">{t.chapterLabels[chapters[activeChapter].id as keyof typeof t.chapterLabels]}</span>
-                <div className="stage-card-line"><span style={{ width: `${((activeChapter + 1) / chapters.length) * 100}%` }} /></div>
+              <div className="stage-chapter-card mona-status-card">
+                <div className="stage-card-top"><span>MONA / LIVE</span><span>360° ORBIT</span></div>
+                <strong>HALL OF<br />LEGENDS</strong>
+                <span className="stage-card-caption">{lang === "fa" ? "تصویرها را در هوا ترسیم می‌کند" : lang === "ru" ? "Рисует игровые миры в воздухе" : lang === "en" ? "Tracing game worlds in the air" : "Oyun dünyalarını havada çiziyor"}</span>
+                <div className="stage-card-line"><span /></div>
               </div>
             </motion.div>
           </div>
 
-          <div className="hero-chapter-nav layout-frame" aria-label="Choose a chapter">
-            <div className="chapter-arrows">
-              <button type="button" aria-label="Previous chapter" onClick={previousChapter}><ChevronLeft size={18} /></button>
-              <button type="button" aria-label="Next chapter" onClick={nextChapter}><ChevronRight size={18} /></button>
-            </div>
-            <div className="chapter-tabs">
-              {chapters.map((chapter, index) => (
-                <button key={chapter.id} type="button" className={`chapter-tab ${activeChapter === index ? "chapter-tab--active" : ""}`} onClick={() => setActiveChapter(index)}>
-                  <span className="chapter-tab-index">{chapter.index}</span>
-                  <span><small>{chapter.kicker}</small><b>{chapter.title}</b></span>
-                </button>
-              ))}
-            </div>
-            <div className="scroll-cue"><span className="scroll-cue-line" />SCROLL TO ENTER</div>
-          </div>
+          <div className="mona-hero-control layout-frame"><span className="mona-control-dot" /> <span>{lang === "fa" ? "برای چرخش حرکت دهید" : lang === "ru" ? "Двигайте мышью для вращения" : lang === "en" ? "Move to rotate the scene" : "Sahneyi döndürmek için hareket et"}</span><span className="mona-control-line" /></div>
         </section>
 
         <div className="gold-marquee" aria-hidden="true"><div>PLAY HARD / STAY LATE / MAKE THE NEXT ROUND COUNT / PLAY HARD / STAY LATE / MAKE THE NEXT ROUND COUNT /</div></div>
