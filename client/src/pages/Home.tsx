@@ -4,9 +4,10 @@
  * electric blue, console-only messaging, and a recurring virtual host.
  */
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
-import {
-  ArrowDownRight,
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Link } from "wouter";
+import { portalNav } from "@/data/portalData";
+import { ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
   ChevronLeft,
@@ -35,7 +36,7 @@ type Chapter = {
 
 const images = {
   hero: "/manus-storage/bazino-hero-reference_074c7394.png",
-  vip: "/manus-storage/bazino-vip-chapter_227abff7.png",
+  vip: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1800&q=88",
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
@@ -164,6 +165,12 @@ export default function Home() {
   const pointerY = useMotionValue(0);
   const smoothX = useSpring(pointerX, { stiffness: 80, damping: 18, mass: 0.6 });
   const smoothY = useSpring(pointerY, { stiffness: 80, damping: 18, mass: 0.6 });
+  const heroX = useTransform(smoothX, [-0.5, 0.5], [-28, 28]);
+  const heroY = useTransform(smoothY, [-0.5, 0.5], [-12, 12]);
+  const heroScale = useTransform(smoothY, [-0.5, 0.5], [1.055, 1.075]);
+  const heroRotate = useTransform(smoothX, [-0.5, 0.5], [-0.45, 0.45]);
+  const stageX = useTransform(smoothX, [-0.5, 0.5], [15, -15]);
+  const stageY = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
   const t = copy[lang];
   const chapters = useMemo(() => chapterData[lang], [lang]);
 
@@ -201,15 +208,13 @@ export default function Home() {
     <div className="site-shell" onMouseMove={handlePointerMove} onMouseLeave={handlePointerLeave}>
       <header className={`site-header ${scrolled ? "site-header--scrolled" : ""}`}>
         <a className="brand-lockup" href="#top" aria-label="Bazino home">
-          <img src={images.mark} alt="" className="brand-mark" />
+          <span className="brand-mark-css" aria-hidden="true">B</span>
           <span className="brand-wordmark">BAZINO</span>
           <span className="brand-submark">GAMING LOUNGE</span>
         </a>
         <nav className={`desktop-nav ${menuOpen ? "desktop-nav--open" : ""}`} aria-label="Primary navigation">
-          <a href="#arena" onClick={() => setMenuOpen(false)}>{t.nav.arena}</a>
-          <a href="#experiences" onClick={() => setMenuOpen(false)}>{t.nav.experiences}</a>
-          <a href="#tournaments" onClick={() => setMenuOpen(false)}>{t.nav.tournament}</a>
-          <a href="#visit" onClick={() => setMenuOpen(false)}>{t.nav.visit}</a>
+          <a href="#top" onClick={() => setMenuOpen(false)}>{t.nav.arena}</a>
+          {portalNav.map((item) => <Link key={item.id} href={`/${item.id}`} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
           <label className="language-switcher">
@@ -231,17 +236,17 @@ export default function Home() {
       </header>
 
       <main>
-        <section id="top" className="hero" style={{ "--hero-x": `${smoothX.get() * -18}px`, "--hero-y": `${smoothY.get() * -10}px` } as CSSProperties}>
+        <section id="top" className="hero" style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}>
           <div className="hero-noise" />
-          <div className="hero-grid" />
-          <motion.div className="hero-image-wrap" style={{ x: smoothX, y: smoothY }}>
+          <motion.div className="hero-grid" style={{ x: stageX, y: stageY }} />
+          <motion.div className="hero-image-wrap" style={{ x: heroX, y: heroY, scale: heroScale, rotate: heroRotate }}>
             <AnimatePresence mode="wait">
               <motion.img key={chapters[activeChapter].id} className="hero-image" src={chapters[activeChapter].image} alt="Bazino cinematic gaming lounge" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.015 }} transition={{ duration: 0.55, ease: [0.23, 1, 0.32, 1] }} />
             </AnimatePresence>
           </motion.div>
           <div className="hero-vignette" />
-          <div className="hero-light-orb hero-light-orb--blue" />
-          <div className="hero-light-orb hero-light-orb--gold" />
+          <motion.div className="hero-light-orb hero-light-orb--blue" style={{ x: stageX, y: stageY }} />
+          <motion.div className="hero-light-orb hero-light-orb--gold" style={{ x: heroX, y: heroY }} />
 
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
@@ -259,7 +264,7 @@ export default function Home() {
               <div className="hero-footnote"><Sparkles size={14} /> {t.hero.cursor}</div>
             </motion.div>
 
-            <div className="hero-stage-meta">
+            <motion.div className="hero-stage-meta" style={{ x: stageX, y: stageY }}>
               <div className="stage-coordinates">35°20' N / 33°59' E</div>
               <div className="stage-chapter-card">
                 <div className="stage-card-top"><span>{t.hero.chapter} {chapters[activeChapter].index}</span><span>0{activeChapter + 1} / 03</span></div>
@@ -267,7 +272,7 @@ export default function Home() {
                 <span className="stage-card-caption">{t.chapterLabels[chapters[activeChapter].id as keyof typeof t.chapterLabels]}</span>
                 <div className="stage-card-line"><span style={{ width: `${((activeChapter + 1) / chapters.length) * 100}%` }} /></div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="hero-chapter-nav layout-frame" aria-label="Choose a chapter">
@@ -342,7 +347,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="site-footer"><div className="layout-frame footer-main"><a className="brand-lockup" href="#top"><img src={images.mark} alt="" className="brand-mark" /><span className="brand-wordmark">BAZINO</span><span className="brand-submark">GAMING LOUNGE</span></a><p className="footer-line">{t.footer.line}</p><div className="footer-location"><MapPin size={14} />{t.footer.location}</div></div><div className="layout-frame footer-bottom"><span>© {new Date().getFullYear()} BAZINO GAMING LOUNGE</span><a href="https://bazino.pro" target="_blank" rel="noreferrer">{t.footer.official} <ArrowUpRight size={14} /></a><span>{t.footer.privacy}</span></div></footer>
+      <footer className="site-footer"><div className="layout-frame footer-main"><a className="brand-lockup" href="#top"><span className="brand-mark-css" aria-hidden="true">B</span><span className="brand-wordmark">BAZINO</span><span className="brand-submark">GAMING LOUNGE</span></a><p className="footer-line">{t.footer.line}</p><div className="footer-location"><MapPin size={14} />{t.footer.location}</div></div><div className="layout-frame footer-bottom"><span>© {new Date().getFullYear()} BAZINO GAMING LOUNGE</span><a href="https://bazino.pro" target="_blank" rel="noreferrer">{t.footer.official} <ArrowUpRight size={14} /></a><span>{t.footer.privacy}</span></div></footer>
     </div>
   );
 }

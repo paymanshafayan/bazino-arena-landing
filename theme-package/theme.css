@@ -1,0 +1,124 @@
+/*
+ * Bazino Arena of Legends theme package.
+ * Contract: scoped to body[data-theme='bazino-arena'] and .theme-bazino-arena.
+ * Shared selectors intentionally cover home, reservations, cafe, shop, tournaments,
+ * blog, loyalty, chat, modals, and admin surfaces without overriding the parent logo.
+ */
+body[data-theme='bazino-arena'] {
+  --primary-color: #FFC400;
+  --accent-color: #35A9FF;
+  --dark-bg-color: #06080E;
+  --dark-card-color: #0D1728;
+  --theme-text-color: #F6F4ED;
+  --theme-muted-color: #98A0AD;
+  --theme-radius: 0.35rem;
+  --theme-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  background: var(--dark-bg-color);
+  color: var(--theme-text-color);
+}
+
+.theme-bazino-arena,
+.theme-bazino-arena .app-shell,
+.theme-bazino-arena .page-shell,
+.theme-bazino-arena .tab-content,
+.theme-bazino-arena .modal-content,
+.theme-bazino-arena .admin-panel {
+  --primary-color: #FFC400;
+  --accent-color: #35A9FF;
+  --dark-bg-color: #06080E;
+  --dark-card-color: #0D1728;
+  --theme-text-color: #F6F4ED;
+  --theme-muted-color: #98A0AD;
+  background-color: var(--dark-bg-color);
+  color: var(--theme-text-color);
+}
+
+.theme-bazino-arena .site-header,
+.theme-bazino-arena .portal-header,
+.theme-bazino-arena .app-header {
+  background: rgba(5, 8, 14, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(18px);
+}
+
+.theme-bazino-arena .brand-logo-guard,
+.theme-bazino-arena .site-logo,
+.theme-bazino-arena .portal-brand-logo {
+  max-height: 42px;
+  object-fit: contain;
+}
+
+.theme-bazino-arena .bg-dark-card,
+.theme-bazino-arena .card,
+.theme-bazino-arena .surface-card,
+.theme-bazino-arena .modal,
+.theme-bazino-arena .dropdown-menu,
+.theme-bazino-arena .table-container {
+  background: linear-gradient(145deg, #0E1828, #080C14);
+  border: 1px solid rgba(53, 169, 255, 0.18);
+  border-radius: var(--theme-radius);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.theme-bazino-arena .btn,
+.theme-bazino-arena button.primary,
+.theme-bazino-arena .button-primary,
+.theme-bazino-arena .cta-primary {
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 0;
+  color: #06080E;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform 180ms var(--theme-ease), background 180ms var(--theme-ease), box-shadow 180ms var(--theme-ease);
+}
+
+.theme-bazino-arena .btn:hover,
+.theme-bazino-arena button.primary:hover,
+.theme-bazino-arena .button-primary:hover,
+.theme-bazino-arena .cta-primary:hover {
+  background: #FFE07A;
+  box-shadow: 0 12px 32px rgba(255, 196, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.theme-bazino-arena .btn:active,
+.theme-bazino-arena button:active { transform: scale(0.97); }
+.theme-bazino-arena .btn-outline,
+.theme-bazino-arena .button-secondary { background: transparent; border: 1px solid rgba(255, 196, 0, 0.62); color: var(--primary-color); }
+.theme-bazino-arena a { color: inherit; }
+.theme-bazino-arena a:hover { color: var(--primary-color); }
+.theme-bazino-arena input,
+.theme-bazino-arena select,
+.theme-bazino-arena textarea { background: #080C14; border: 1px solid rgba(53, 169, 255, 0.24); border-radius: 0; color: var(--theme-text-color); }
+.theme-bazino-arena .text-muted,
+.theme-bazino-arena .muted,
+.theme-bazino-arena .description { color: var(--theme-muted-color); }
+.theme-bazino-arena .status-live { color: var(--accent-color); }
+.theme-bazino-arena .status-live::before { background: var(--accent-color); border-radius: 50%; box-shadow: 0 0 12px var(--accent-color); content: ''; display: inline-block; height: 6px; margin-right: 7px; width: 6px; }
+.theme-bazino-arena .theme-frame,
+.theme-bazino-arena .arena-frame { border: 1px solid rgba(53, 169, 255, 0.24); clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); position: relative; }
+.theme-bazino-arena .theme-frame::after,
+.theme-bazino-arena .arena-frame::after { border: 1px solid rgba(255, 196, 0, 0.2); content: ''; inset: 8px; pointer-events: none; position: absolute; }
+.theme-bazino-arena .theme-chapter-label { color: var(--primary-color); font-size: 0.7rem; font-weight: 900; letter-spacing: 0.18em; text-transform: uppercase; }
+.theme-bazino-arena .theme-blue-rule { background: var(--accent-color); height: 2px; width: 42px; }
+.theme-bazino-arena .theme-marquee { background: var(--primary-color); color: #06080E; font-family: 'Barlow Condensed', sans-serif; font-style: italic; letter-spacing: 0.16em; overflow: hidden; white-space: nowrap; }
+
+/* Home-specific interaction hooks used by theme.js. */
+.theme-bazino-arena .bazino-home .hero-scene,
+.theme-bazino-arena .bazino-home .hero-scene-layer,
+.theme-bazino-arena .bazino-home .hero-scene-glow { will-change: transform, opacity; }
+.theme-bazino-arena .bazino-home .hero-scene { min-height: 78vh; overflow: hidden; position: relative; }
+.theme-bazino-arena .bazino-home .hero-scene-layer { inset: -4%; position: absolute; transition: transform 100ms linear; }
+.theme-bazino-arena .bazino-home .hero-scene-overlay { background: linear-gradient(90deg, #06080E 0%, rgba(6, 8, 14, 0.84) 32%, rgba(6, 8, 14, 0.18) 100%), linear-gradient(0deg, #06080E 0%, transparent 38%); inset: 0; position: absolute; }
+.theme-bazino-arena .bazino-home .hero-copy { position: relative; z-index: 2; }
+.theme-bazino-arena .bazino-home .hero-title { font-family: 'Barlow Condensed', sans-serif; font-style: italic; letter-spacing: -0.03em; line-height: 0.82; text-transform: uppercase; }
+.theme-bazino-arena .bazino-home .hero-title-outline { color: transparent; -webkit-text-stroke: 1px rgba(246, 244, 237, 0.75); }
+.theme-bazino-arena .bazino-home .chapter-switch { border-top: 1px solid rgba(255, 255, 255, 0.2); color: rgba(246, 244, 237, 0.55); transition: color 180ms var(--theme-ease), border-color 180ms var(--theme-ease); }
+.theme-bazino-arena .bazino-home .chapter-switch.is-active,
+.theme-bazino-arena .bazino-home .chapter-switch:hover { border-color: var(--primary-color); color: var(--theme-text-color); }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-bazino-arena *, .theme-bazino-arena *::before, .theme-bazino-arena *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

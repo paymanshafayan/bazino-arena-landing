@@ -1,6 +1,6 @@
 /*
- * Bazino visual direction: dark, cinematic Hall of Legends with a gold championship
- * signal and electric-blue stage light. The shell intentionally starts in dark mode.
+ * Bazino visual direction: the application shell separates the cinematic home scene
+ * from shared portal routes, so every page can inherit the Hall of Legends theme.
  */
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,11 +9,16 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import PortalPage from "./pages/PortalPage";
+import type { PortalPageId } from "./data/portalData";
+
+const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
