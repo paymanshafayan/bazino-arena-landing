@@ -504,73 +504,23 @@ body[data-locale="fa"] .app-side-note { border-left: 0; border-right: 1px solid 
 .brand-mark-css { align-items: center; background: var(--gold); color: var(--ink); display: inline-flex; font-family: "Barlow Condensed", sans-serif; font-size: 23px; font-style: italic; font-weight: 800; height: 31px; justify-content: center; line-height: 1; transform: skew(-9deg); transition: box-shadow 180ms var(--ease-out), transform 180ms var(--ease-out); width: 28px; }
 .brand-lockup:hover .brand-mark-css { box-shadow: 0 0 22px rgba(255,196,0,.36); transform: skew(-9deg) translateY(-1px); }
 
-/* Mona Hero: cinematic orbit composition replacing the chapter slider. */
+/* Mona Hero: corrected cinematic scene replacing the failed static orbit draft. */
 .mona-hero { isolation: isolate; min-height: 760px; }
-.mona-backdrop { background: center / cover no-repeat url('/manus-storage/bazino-hero-reference_074c7394.png'); inset: -3%; opacity: .94; position: absolute; z-index: 0; }
+.mona-cinematic-scene { background: center / cover no-repeat url('/manus-storage/mona-cinematic-hero-scene_63deca72.png'); inset: -3%; opacity: .96; position: absolute; z-index: 0; }
 .mona-hero .hero-content { z-index: 8; }
 .mona-hero .hero-copy { max-width: 550px; }
-.mona-orbit-scene { height: min(720px, 90vw); max-height: 720px; max-width: 720px; pointer-events: none; position: absolute; right: clamp(2%, 7vw, 11%); top: 50%; transform: translateY(-45%); width: min(58vw, 720px); z-index: 4; }
-.mona-orbit-ring { border: 1px solid rgba(53,169,255,.46); border-radius: 50%; inset: 12%; position: absolute; transform: rotateX(64deg) rotateZ(-15deg); }
-.mona-orbit-ring::before, .mona-orbit-ring::after { background: var(--blue); border-radius: 50%; box-shadow: 0 0 18px rgba(53,169,255,.9); content: ""; height: 7px; position: absolute; width: 7px; }
-.mona-orbit-ring::before { left: 11%; top: 13%; }
-.mona-orbit-ring::after { bottom: 13%; right: 11%; }
-.mona-orbit-ring--inner { border-color: rgba(255,196,0,.42); inset: 23%; transform: rotateX(68deg) rotateZ(18deg); }
-.mona-orbit-ring--inner::before, .mona-orbit-ring--inner::after { background: var(--gold); box-shadow: 0 0 17px rgba(255,196,0,.8); }
-.mona-orbit-art { filter: drop-shadow(0 0 24px rgba(53,169,255,.42)); height: 100%; object-fit: contain; position: absolute; width: 100%; }
-.mona-orbit-label { background: rgba(4,7,12,.58); border-left: 2px solid var(--gold); color: rgba(246,244,237,.72); font-size: 8px; font-weight: 900; letter-spacing: .16em; padding: 7px 9px; position: absolute; }
-.mona-orbit-label--racing { right: 4%; top: 16%; }
-.mona-orbit-label--fantasy { left: 4%; top: 29%; }
-.mona-orbit-label--tactical { bottom: 27%; right: 2%; }
-.mona-orbit-label--sport { bottom: 12%; left: 16%; }
-.mona-character { bottom: -5%; height: 92%; pointer-events: none; position: absolute; right: 10%; transform-origin: 50% 86%; width: 58%; z-index: 6; }
-.mona-character img { filter: drop-shadow(0 24px 35px rgba(0,0,0,.55)); height: 100%; object-fit: contain; object-position: bottom center; position: relative; width: 100%; z-index: 2; }
-.mona-character-glow { background: radial-gradient(ellipse, rgba(53,169,255,.3), transparent 63%); filter: blur(22px); inset: 10% 0 0; position: absolute; }
 .mona-hero-control { align-items: center; bottom: 42px; color: rgba(246,244,237,.5); display: flex; font-size: 8px; font-weight: 900; gap: 9px; letter-spacing: .16em; position: absolute; text-transform: uppercase; z-index: 10; }
 .mona-control-dot { background: var(--gold); border-radius: 50%; box-shadow: 0 0 14px rgba(255,196,0,.7); height: 5px; width: 5px; }
 .mona-control-line { background: linear-gradient(90deg, var(--gold), transparent); height: 1px; margin-left: 7px; width: 108px; }
 .mona-status-card strong { letter-spacing: .01em; }
-@keyframes mona-orbit-pulse { 0%,100% { opacity: .55; transform: rotateX(64deg) rotateZ(-15deg) scale(.98); } 50% { opacity: .95; transform: rotateX(64deg) rotateZ(-15deg) scale(1.015); } }
-@media (prefers-reduced-motion: no-preference) {
-  .mona-orbit-ring--outer { animation: mona-orbit-pulse 6s ease-in-out infinite; }
-  .mona-orbit-ring--inner { animation: mona-orbit-pulse 7s ease-in-out -2s infinite reverse; }
-}
 @media (max-width: 900px) {
   .mona-hero { min-height: 820px; }
-  .mona-orbit-scene { height: 570px; opacity: .84; right: -5%; top: 53%; width: 690px; }
-  .mona-character { right: 4%; width: 53%; }
   .mona-hero .hero-copy { max-width: 480px; }
   .mona-hero .hero-stage-meta { margin-top: 80px; }
 }
 @media (max-width: 620px) {
   .mona-hero { min-height: 795px; }
-  .mona-backdrop { background-position: 64% center; }
-  .mona-orbit-scene { height: 460px; opacity: .72; right: -37%; top: 52%; width: 560px; }
-  .mona-character { bottom: -2%; right: 2%; width: 62%; }
-  .mona-orbit-label { font-size: 7px; padding: 5px 6px; }
-  .mona-orbit-label--racing { right: 4%; top: 8%; }
-  .mona-orbit-label--fantasy { left: 8%; top: 28%; }
-  .mona-orbit-label--tactical { bottom: 23%; right: 2%; }
-  .mona-orbit-label--sport { bottom: 9%; left: 19%; }
+  .mona-cinematic-scene { background-position: 64% center; }
   .mona-hero-control { bottom: 24px; font-size: 7px; }
   .mona-control-line { width: 48px; }
-}
-
-.mona-orbit-card { background: linear-gradient(135deg, rgba(7,13,23,.88), rgba(13,24,40,.53)); border-left: 2px solid var(--gold); box-shadow: 0 0 24px rgba(53,169,255,.12); display: flex; flex-direction: column; gap: 2px; min-width: 96px; padding: 8px 10px; position: absolute; z-index: 3; }
-.mona-orbit-card b { color: var(--gold); font-family: "Barlow Condensed", sans-serif; font-size: 14px; font-style: italic; }
-.mona-orbit-card strong { color: var(--white); font-family: "Barlow Condensed", sans-serif; font-size: 18px; font-style: italic; letter-spacing: .04em; line-height: .9; }
-.mona-orbit-card small { color: var(--blue); font-size: 6px; font-weight: 900; letter-spacing: .16em; }
-.mona-orbit-card--racing { right: 6%; top: 13%; }
-.mona-orbit-card--fantasy { left: 2%; top: 26%; }
-.mona-orbit-card--tactical { bottom: 24%; right: 3%; }
-.mona-orbit-card--sport { bottom: 8%; left: 19%; }
-@media (max-width: 620px) {
-  .mona-orbit-card { min-width: 74px; padding: 6px 7px; }
-  .mona-orbit-card b { font-size: 11px; }
-  .mona-orbit-card strong { font-size: 13px; }
-  .mona-orbit-card small { font-size: 5px; }
-}
-
-.mona-orbit-carousel { inset: 0; position: absolute; transform-origin: 50% 50%; }
-@media (prefers-reduced-motion: reduce) {
-  .mona-orbit-carousel { transform: none !important; }
 }

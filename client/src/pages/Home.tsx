@@ -239,22 +239,10 @@ export default function Home() {
         <section id="top" className="hero mona-hero" style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}>
           <div className="hero-noise" />
           <motion.div className="hero-grid" style={{ x: stageX, y: stageY }} />
-          <motion.div className="mona-backdrop" style={{ x: heroX, y: heroY, scale: heroScale }} />
+          <motion.div className="mona-cinematic-scene" style={{ x: heroX, y: heroY, scale: heroScale }} />
           <div className="hero-vignette" />
           <motion.div className="hero-light-orb hero-light-orb--blue" style={{ x: stageX, y: stageY }} />
           <motion.div className="hero-light-orb hero-light-orb--gold" style={{ x: heroX, y: heroY }} />
-
-          <motion.div className="mona-orbit-scene" style={{ x: stageX, y: stageY }} aria-hidden="true">
-            <div className="mona-orbit-ring mona-orbit-ring--outer" />
-            <div className="mona-orbit-ring mona-orbit-ring--inner" />
-            <motion.div className="mona-orbit-carousel" animate={{ rotate: 360 }} transition={{ duration: 28, repeat: Infinity, ease: "linear" }}>
-              <span className="mona-orbit-card mona-orbit-card--racing"><b>01</b><strong>RACING</strong><small>FAST / HYPE</small></span>
-              <span className="mona-orbit-card mona-orbit-card--fantasy"><b>02</b><strong>FANTASY</strong><small>MYTH / QUEST</small></span>
-              <span className="mona-orbit-card mona-orbit-card--tactical"><b>03</b><strong>TACTICAL</strong><small>FOCUS / TEAM</small></span>
-              <span className="mona-orbit-card mona-orbit-card--sport"><b>04</b><strong>SPORT</strong><small>PLAY / LIVE</small></span>
-            </motion.div>
-          </motion.div>
-
 
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
