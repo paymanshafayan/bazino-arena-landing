@@ -284,4 +284,13 @@
 - [x] Add tournament search and sort by date or prize amount.
 - [x] Add a cinematic Bazino-logo loader before Home becomes visible.
 - [x] Validate keyboard, mobile, reduced-motion, loading, and production build behavior.
+- [x] Save a new checkpoint.
+
+## QR download and THE PLAYGROUND imagery
+
+- [ ] Inspect current Android/iOS download controls, THE PLAYGROUND panels, and available official destinations.
+- [ ] Generate distinct console-focused images for the THE PLAYGROUND panels.
+- [ ] Upload generated images to durable WebDev storage and wire them into the panels.
+- [ ] Add QR previews on Android/iOS button Hover and keyboard Focus, with accessible labels and mobile fallback.
+- [ ] Validate QR destinations, image loading, responsive behavior, and production build.
 - [ ] Save a new checkpoint.

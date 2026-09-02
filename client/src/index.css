@@ -845,3 +845,23 @@ body[data-locale="fa"] h1, body[data-locale="fa"] h2, body[data-locale="fa"] h3,
 .lounge-slider-media:hover::after, .lounge-slider-media:focus-visible::after { transform: scaleX(1); }
 @media (max-width: 760px) { .tournament-tools { flex-direction: column; } .tournament-sort { flex-basis: auto; } .bazino-loader::before { height: 72vw; width: 72vw; } .lounge-slider-media:focus-visible { box-shadow: 0 0 0 2px #ffc400, 0 0 0 5px rgba(53,169,255,.28), 9px 12px 0 rgba(53,169,255,.08); } }
 @media (prefers-reduced-motion: reduce) { .bazino-loader::before, .bazino-loader-track span { animation: none; } .bazino-loader-track span { transform: scaleX(1); } .site-shell { transition-duration: 160ms; } }
+
+/* Bazino Hall of Legends — QR download reveal and THE PLAYGROUND image panels. Keep the blue signal layer, gold action hierarchy, console-only atmosphere, and reduced-motion safeguards. */
+.experience-card { overflow: hidden; }
+.experience-card-image { inset: 0; height: 100%; object-fit: cover; opacity: .56; position: absolute; transform: scale(1.04); transition: opacity 420ms var(--ease-out), transform 700ms var(--ease-out), filter 420ms var(--ease-out); width: 100%; z-index: 0; }
+.experience-card-image-shade { background: linear-gradient(180deg, rgba(4,8,16,.18), rgba(4,8,16,.92) 78%); inset: 0; pointer-events: none; position: absolute; z-index: 1; }
+.experience-card:hover .experience-card-image, .experience-card:focus-within .experience-card-image { filter: saturate(1.18) contrast(1.05); opacity: .82; transform: scale(1.1); }
+.experience-card > *:not(.experience-card-image):not(.experience-card-image-shade):not(.experience-card-glow) { position: relative; z-index: 2; }
+.app-download { isolation: isolate; }
+.app-qr-popover { align-items: center; background: rgba(246,244,237,.98); border: 1px solid var(--gold); box-shadow: 0 16px 34px rgba(0,0,0,.46), 0 0 26px rgba(53,169,255,.32); color: #08111f; display: flex !important; flex: none !important; gap: 6px !important; opacity: 0; padding: 9px 9px 7px; pointer-events: none; position: absolute !important; right: 8px; top: 50%; transform: translateY(-42%) translateX(8px) scale(.94); transition: opacity 190ms var(--ease-out), transform 220ms var(--ease-out); z-index: 5 !important; }
+.app-qr-popover svg { display: block; height: 86px; width: 86px; }
+.app-qr-popover small { color: #08111f !important; font-family: "Barlow Condensed", sans-serif; font-size: 8px !important; letter-spacing: .08em; white-space: nowrap; }
+.app-download:hover .app-qr-popover, .app-download:focus-visible .app-qr-popover, .app-download:focus-within .app-qr-popover { opacity: 1; pointer-events: auto; transform: translateY(-50%) translateX(0) scale(1); }
+@media (max-width: 760px) {
+  .app-qr-popover { right: 6px; }
+  .app-qr-popover svg { height: 72px; width: 72px; }
+  .app-qr-popover small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience-card-image, .app-qr-popover { transition: none; }
+}

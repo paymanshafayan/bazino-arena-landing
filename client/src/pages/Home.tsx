@@ -6,6 +6,7 @@
  */
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
+import { QRCodeSVG } from "qrcode.react";
 import { Link } from "wouter";
 import { portalNav } from "@/data/portalData";
 import {
@@ -49,8 +50,15 @@ const gameCardImages: GameCardImage[] = [
   { key: "rpg", url: "/manus-storage/bazino-card-rpg-quest-v2_b6110c90.jpg", alt: "Original fantasy console quest visual" },
 ];
 
+const playgroundPanelImages = [
+  { url: "/manus-storage/bazino-playground-console-arena_961d5363.jpg", alt: "Bazino console arena with PS5 and Xbox Series X stations" },
+  { url: "/manus-storage/bazino-playground-tournament-stage_0af97a7c.jpg", alt: "Bazino console tournament stage with large screens" },
+  { url: "/manus-storage/bazino-playground-vip-lounge_0e449c52.jpg", alt: "Bazino VIP console lounge with premium seating" },
+  { url: "/manus-storage/bazino-playground-cafe-social_37bff693.jpg", alt: "Bazino gaming café social zone at night" },
+];
+
 const loungeGallery = [
-  { url: "/manus-storage/bazino-vip-cafe-slider_7381d50d.jpg", label: "VIP / CAFÉ", alt: "Bazino VIP café lounge" },
+  { url: "/manus-storage/bazino-playground-cafe-social_37bff693.jpg", label: "VIP / CAFÉ", alt: "Bazino VIP café lounge" },
   { url: "/manus-storage/bazino-vip-lounge-seating_0a4f6547.jpg", label: "VIP / PRIVATE", alt: "Bazino private VIP console lounge" },
   { url: "/manus-storage/bazino-cafe-counter-night_2cda0f6c.jpg", label: "CAFÉ / SERVICE", alt: "Bazino café counter at night" },
   { url: "/manus-storage/bazino-screen-wall-arena_5b93281a.jpg", label: "SCREEN / 85 INCH", alt: "Bazino 85-inch screen wall" },
@@ -346,6 +354,8 @@ export default function Home() {
                 const icons = [<Gamepad2 key="gamepad" />, <Gamepad2 key="xbox" />, <Sparkles key="screen" />, <Crown key="vip" />];
                 return <motion.article key={experience.title} className={`experience-card experience-card--${index + 1}`} onPointerMove={handleDepthMove} onPointerLeave={resetDepth} initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5, delay: index * 0.08 }}>
                   <div className="experience-card-glow" />
+                  <img className="experience-card-image" src={playgroundPanelImages[index].url} alt={playgroundPanelImages[index].alt} />
+                  <div className="experience-card-image-shade" />
                   <div className="experience-card-icon">{icons[index]}</div>
                   <span className="card-label">{experience.label}</span>
                   <h3>{experience.title}</h3>
@@ -395,7 +405,8 @@ export default function Home() {
 
         <section id="lounge" className="lounge-section section-dark" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
           <div className="layout-frame lounge-layout">
-                          <Reveal className="lounge-visual"><div className="lounge-slider-media" tabIndex={0} aria-label={galleryPaused ? ui.galleryPaused : ui.galleryAuto} onMouseEnter={() => setGalleryPaused(true)} onMouseLeave={() => setGalleryPaused(false)} onFocus={() => setGalleryPaused(true)} onBlur={() => setGalleryPaused(false)}><img src={activeGallery.url} alt={activeGallery.alt} /><div className="lounge-visual-frame" /><div className="lounge-slider-shade" /><div className="lounge-slider-controls"><button type="button" aria-label={ui.previous} onClick={() => setGalleryIndex((index) => (index - 1 + loungeGallery.length) % loungeGallery.length)}><ChevronLeft size={18} /></button><span>{String(galleryIndex + 1).padStart(2, "0")} / {String(loungeGallery.length).padStart(2, "0")}</span><button type="button" aria-label={ui.next} onClick={() => setGalleryIndex((index) => (index + 1) % loungeGallery.length)}><ChevronRight size={18} /></button></div><div className="lounge-stamp"><span>BAZINO</span><b>{activeGallery.label}</b><small>{galleryPaused ? ui.galleryPaused : ui.galleryAuto}</small></div></div></Reveal>
+                          <Reveal className="lounge-visual"><div className="lounge-slider-media" tabIndex={0} aria-label={galleryPaused ? ui.galleryPaused : ui.galleryAuto} onMouseEnter={() => setGalleryPaused(true)} onMouseLeave={() => setGalleryPaused(false)} onFocus={() => setGalleryPaused(true)} onBlur={() => setGalleryPaused(false)}><img src={activeGallery.url} alt={activeGallery.alt} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = loungeGallery[1].url; }} />
+<div className="lounge-visual-frame" /><div className="lounge-slider-shade" /><div className="lounge-slider-controls"><button type="button" aria-label={ui.previous} onClick={() => setGalleryIndex((index) => (index - 1 + loungeGallery.length) % loungeGallery.length)}><ChevronLeft size={18} /></button><span>{String(galleryIndex + 1).padStart(2, "0")} / {String(loungeGallery.length).padStart(2, "0")}</span><button type="button" aria-label={ui.next} onClick={() => setGalleryIndex((index) => (index + 1) % loungeGallery.length)}><ChevronRight size={18} /></button></div><div className="lounge-stamp"><span>BAZINO</span><b>{activeGallery.label}</b><small>{galleryPaused ? ui.galleryPaused : ui.galleryAuto}</small></div></div></Reveal>
 
             <Reveal className="lounge-copy" delay={0.1}><div className="section-index">05<span>/</span>07</div><div className="eyebrow"><span className="eyebrow-line" />{t.lounge.eyebrow}</div><h2>{splitLines(t.lounge.title)}</h2><p>{t.lounge.body}</p><Link className="button button--gold" href="/cafe">{t.lounge.button}<ArrowUpRight size={17} /></Link></Reveal>
             <div className="service-stack">{t.lounge.services.map((service, index) => <Reveal className="service-row" key={service.label} delay={0.12 + index * 0.06}><span className="service-label">{service.label}</span><div><h3>{service.title}</h3><p>{service.body}</p></div><span className="service-index">0{index + 1}</span></Reveal>)}</div>
@@ -412,7 +423,8 @@ export default function Home() {
         <section id="visit" className="visit-signal-section section-dark" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
           <div className="layout-frame visit-signal-layout">
             <Reveal className="visit-signal-copy"><div className="section-index">07<span>/</span>07</div><div className="eyebrow"><span className="eyebrow-line" />{t.visit.eyebrow}</div><h2>{splitLines(t.visit.title)}</h2><p>{t.visit.body}</p><div className="visit-actions"><a className="button button--outline" href="https://www.google.com/maps/search/?api=1&query=Vistamare+Hotel+Iskele+Cyprus" target="_blank" rel="noreferrer"><MapPin size={17} />{t.visit.button}</a><span className="visit-directions"><MapPin size={14} />{t.visit.directions}</span></div></Reveal>
-            <Reveal className="visit-signal-card" delay={0.12}><div className="visit-card-top"><span>BAZINO MOBILE SIGNAL</span><Smartphone size={20} /></div><h3>{t.visit.appTitle}</h3><p>{t.visit.appBody}</p><div className="app-downloads"><a className="app-download app-download--ios" href="https://bazino.pro" target="_blank" rel="noreferrer"><Smartphone size={18} /><span><small>DOWNLOAD ON</small><b>iOS APP</b></span><ArrowUpRight size={16} /></a><a className="app-download app-download--android" href="https://bazino.pro" target="_blank" rel="noreferrer"><Download size={18} /><span><small>GET IT ON</small><b>ANDROID</b></span><ArrowUpRight size={16} /></a></div><div className="visit-card-meta"><span>VISTAMARE HOTEL</span><span>ISKELE / CYPRUS</span></div></Reveal>
+            <Reveal className="visit-signal-card" delay={0.12}><div className="visit-card-top"><span>BAZINO MOBILE SIGNAL</span><Smartphone size={20} /></div><h3>{t.visit.appTitle}</h3><p>{t.visit.appBody}</p><div className="app-downloads"><a className="app-download app-download--ios" href="https://bazino.pro" target="_blank" rel="noreferrer" aria-label="Download the Bazino iOS app"><Smartphone size={18} /><span><small>DOWNLOAD ON</small><b>iOS APP</b></span><ArrowUpRight size={16} /><span className="app-qr-popover"><QRCodeSVG value="https://bazino.pro" size={112} bgColor="#ffffff" fgColor="#08111f" includeMargin level="M" /><small>SCAN TO DOWNLOAD</small></span></a><a className="app-download app-download--android" href="https://bazino.pro" target="_blank" rel="noreferrer" aria-label="Download the Bazino Android app"><Download size={18} /><span><small>GET IT ON</small><b>ANDROID</b></span><ArrowUpRight size={16} /><span className="app-qr-popover"><QRCodeSVG value="https://bazino.pro" size={112} bgColor="#ffffff" fgColor="#08111f" includeMargin level="M" /><small>SCAN TO DOWNLOAD</small></span></a>
+</div><div className="visit-card-meta"><span>VISTAMARE HOTEL</span><span>ISKELE / CYPRUS</span></div></Reveal>
           </div>
         </section>
       </main>
