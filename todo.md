@@ -165,3 +165,12 @@
 - [x] Apply the smallest compatible Vite HMR configuration fix without changing page behavior.
 - [x] Restart the dev server and validate Preview connectivity, TypeScript, and production build.
 - [x] Save and deliver a corrected checkpoint.
+
+## Hero Frame Motion performance optimization
+
+- [x] Measure the current video file size, dimensions, codec, keyframe interval, and scrub implementation.
+- [x] Compare two optimized approaches: lightweight Mona foreground over static background, or a compressed full-frame seekable master.
+- [x] Preserve the approved Mona identity and the current 16:9 Hero composition.
+- [x] Present the recommended performance plan and wait for explicit approval before editing code or media.
+- [x] After approval, implement smoother requestAnimationFrame scrubbing and optimized media loading.
+- [x] Validate pointer/drag responsiveness, first-frame load, mobile behavior, and production build.

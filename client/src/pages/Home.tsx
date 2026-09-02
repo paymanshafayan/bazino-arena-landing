@@ -28,7 +28,7 @@ const images = {
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
-  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-continuous-ending_3efd7343.mp4",
+  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-scrub_46ee763d.mp4",
   motionPoster: "/manus-storage/mona-fashion-show-hero-first-frame_394df0be.jpg",
 };
 
@@ -131,6 +131,9 @@ export default function Home() {
   const [motionReady, setMotionReady] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const motionPointerX = useRef<number | null>(null);
+  const motionTargetTime = useRef(0);
+  const motionRaf = useRef<number | null>(null);
+  const motionProgressRef = useRef(0);
   const t = copy[lang];
 
   useEffect(() => {
@@ -145,6 +148,44 @@ export default function Home() {
     document.body.dataset.locale = lang;
   }, [lang]);
 
+  useEffect(() => () => {
+    if (motionRaf.current !== null) window.cancelAnimationFrame(motionRaf.current);
+  }, []);
+
+  const animateMotionSeek = () => {
+    const video = heroVideoRef.current;
+    if (!video || !Number.isFinite(video.duration) || video.duration <= 0) {
+      motionRaf.current = null;
+      return;
+    }
+
+    const distance = motionTargetTime.current - video.currentTime;
+    if (Math.abs(distance) > 0.001) {
+      const nextTime = video.currentTime + distance * 0.28;
+      video.currentTime = Math.min(video.duration, Math.max(0, nextTime));
+      const nextProgress = video.currentTime / video.duration;
+      if (Math.abs(nextProgress - motionProgressRef.current) > 0.008) {
+        motionProgressRef.current = nextProgress;
+        setMotionProgress(nextProgress);
+      }
+      motionRaf.current = window.requestAnimationFrame(animateMotionSeek);
+      return;
+    }
+
+    video.currentTime = motionTargetTime.current;
+    const settledProgress = video.duration ? motionTargetTime.current / video.duration : 0;
+    motionProgressRef.current = settledProgress;
+    setMotionProgress(settledProgress);
+    motionRaf.current = null;
+  };
+
+  const queueMotionSeek = (targetTime: number, duration: number) => {
+    motionTargetTime.current = Math.min(duration, Math.max(0, targetTime));
+    if (motionRaf.current === null) {
+      motionRaf.current = window.requestAnimationFrame(animateMotionSeek);
+    }
+  };
+
   const scrubHeroVideo = (clientX: number, rect: DOMRect) => {
     const video = heroVideoRef.current;
     if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
@@ -152,9 +193,7 @@ export default function Home() {
     motionPointerX.current = clientX;
     if (previousX === null) return;
     const delta = clientX - previousX;
-    const nextTime = Math.min(video.duration, Math.max(0, video.currentTime + (delta / rect.width) * video.duration * 1.25));
-    if (Math.abs(video.currentTime - nextTime) > 0.005) video.currentTime = nextTime;
-    setMotionProgress(video.duration ? nextTime / video.duration : 0);
+    queueMotionSeek(motionTargetTime.current + (delta / rect.width) * video.duration * 1.25, video.duration);
   };
 
   const isInteractiveTarget = (target: EventTarget | null) =>
@@ -183,6 +222,8 @@ export default function Home() {
     const video = event.currentTarget;
     video.pause();
     video.currentTime = 0;
+    motionTargetTime.current = 0;
+    motionProgressRef.current = 0;
     setMotionProgress(0);
     setMotionReady(Number.isFinite(video.duration) && video.duration > 0);
   };
@@ -241,10 +282,6 @@ export default function Home() {
               controls={false}
               aria-label="Mona fashion-show Frame Motion Hero"
               onLoadedMetadata={handleMotionLoaded}
-              onTimeUpdate={(event) => {
-                const video = event.currentTarget;
-                if (video.duration > 0) setMotionProgress(video.currentTime / video.duration);
-              }}
             />
           </div>
           <div className="hero-vignette" />
