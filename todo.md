@@ -157,3 +157,11 @@
 - [x] Extract and upload the video’s first frame as the poster so no old Hero image appears during initial load.
 - [x] Validate TypeScript, production build, desktop/mobile screenshots, and first-frame presentation.
 - [x] Save and deliver the cleaned Hero checkpoint.
+
+## Vite HMR WebSocket fix
+
+- [x] Inspect `vite.config.ts`, package scripts, and recent dev-server diagnostics.
+- [x] Identify whether the Preview proxy requires explicit HMR host/protocol/client-port settings.
+- [x] Apply the smallest compatible Vite HMR configuration fix without changing page behavior.
+- [x] Restart the dev server and validate Preview connectivity, TypeScript, and production build.
+- [x] Save and deliver a corrected checkpoint.

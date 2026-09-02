@@ -224,6 +224,10 @@ export default defineConfig({
     port: 3000,
     strictPort: false, // Will find next available port if 3000 is busy
     host: true,
+    // Manus Preview serves the app through an HTTPS reverse proxy, but the
+    // sandbox does not expose a stable public HMR socket endpoint. Disable
+    // HMR to prevent the client from attempting localhost WebSocket connects.
+    hmr: false,
     allowedHosts: [
       ".manuspre.computer",
       ".manus.computer",
