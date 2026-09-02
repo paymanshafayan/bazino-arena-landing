@@ -213,3 +213,9 @@
 - [ ] Remove the opaque dark overlay from the video layer and reduce only the text-protection gradient as needed.
 - [ ] Validate that Mona and the gaming-lounge background are visibly clear while headings and CTA remain readable.
 - [ ] Run TypeScript/build and save a corrected checkpoint after approval.
+
+## Hero single-playback revision
+
+- [ ] Remove looping from the Hero video so it plays only once.
+- [ ] Freeze the Hero on the final video frame after playback ends.
+- [ ] Validate the final-frame behavior on desktop and mobile, then save a checkpoint.

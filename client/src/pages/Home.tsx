@@ -183,11 +183,11 @@ export default function Home() {
               poster={images.motionPoster}
               muted
               autoPlay
-              loop
               playsInline
               preload="auto"
               controls={false}
-              aria-label="Mona fashion-show Hero video"
+              onEnded={(event) => event.currentTarget.pause()}
+              aria-label="Mona fashion-show Hero video, plays once"
             >
               <source src={images.motionVideo} />
             </video>

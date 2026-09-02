@@ -9,3 +9,7 @@
 ## Final pass
 
 After a clean dev-server restart, the desktop preview showed the active continuous-ending source with the updated “THE SHOW” metadata and no full-screen dark overlay. The final mobile preview remained readable, showed the same corrected video composition, and displayed the new autoplay-show footnote rather than scrub instructions. No percentage indicator, resize cursor, or Frame Motion UI remains in the Hero CSS.
+
+## Single-playback revision
+
+The Hero video no longer has the `loop` attribute. It uses muted autoplay with `playsInline` and pauses explicitly on `ended`, leaving the media element on its final frame. TypeScript and production build pass. Desktop at 1280×720 and mobile at 390×844 both render the corrected clear Hero composition with readable copy and no Frame Motion UI.
