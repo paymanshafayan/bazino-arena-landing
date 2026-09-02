@@ -216,6 +216,13 @@
 
 ## Hero single-playback revision
 
-- [ ] Remove looping from the Hero video so it plays only once.
-- [ ] Freeze the Hero on the final video frame after playback ends.
-- [ ] Validate the final-frame behavior on desktop and mobile, then save a checkpoint.
+- [x] Remove looping from the Hero video so it plays only once.
+- [x] Freeze the Hero on the final video frame after playback ends.
+- [x] Validate the final-frame behavior on desktop and mobile, then save a checkpoint.
+
+## Hero replay and final-frame CTA
+
+- [x] Add a small styled replay button that restarts the Hero video on demand.
+- [x] Show an attractive reservation CTA over the final video frame after playback ends.
+- [x] Keep controls accessible, multilingual, responsive, and visually consistent with Bazino.
+- [x] Validate the interactive states and save a checkpoint.

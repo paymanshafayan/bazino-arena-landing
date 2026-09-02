@@ -3,7 +3,7 @@
  * This page keeps the Instagram identity visible: charcoal black, championship gold,
  * electric blue, console-only messaging, and a recurring virtual host.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { portalNav } from "@/data/portalData";
@@ -17,6 +17,7 @@ import { ArrowDownRight,
   Menu,
   Smartphone,
   Sparkles,
+  RotateCcw,
   Trophy,
   X,
 } from "lucide-react";
@@ -35,7 +36,7 @@ const images = {
 const copy: Record<Lang, {
   languageName: string;
   nav: { arena: string; experiences: string; tournament: string; visit: string };
-  hero: { eyebrow: string; lineOne: string; lineTwo: string; body: string; primary: string; secondary: string; cursor: string; chapter: string };
+  hero: { eyebrow: string; lineOne: string; lineTwo: string; body: string; primary: string; secondary: string; cursor: string; chapter: string; replay: string; finalCta: string; finalLabel: string };
   chapterLabels: { console: string; vip: string; tournament: string };
   section: { eyebrow: string; title: string; body: string; explore: string };
   experiences: Array<{ label: string; title: string; body: string }>;
@@ -48,7 +49,7 @@ const copy: Record<Lang, {
   tr: {
     languageName: "Türkçe",
     nav: { arena: "Arena", experiences: "Deneyimler", tournament: "Turnuvalar", visit: "Bizi Bul" },
-    hero: { eyebrow: "İSKELE • KIBRIS / CHAPTER 01", lineOne: "GELECEK TURUN", lineTwo: "BURADA BAŞLAR.", body: "PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar. Her tur, kendi sahnesini hak eder.", primary: "Rezervasyon yap", secondary: "Arenayı keşfet", cursor: "ORBIT TO EXPLORE", chapter: "Bölüm" },
+    hero: { eyebrow: "İSKELE • KIBRIS / CHAPTER 01", lineOne: "GELECEK TURUN", lineTwo: "BURADA BAŞLAR.", body: "PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar. Her tur, kendi sahnesini hak eder.", primary: "Rezervasyon yap", secondary: "Arenayı keşfet", cursor: "ORBIT TO EXPLORE", chapter: "Bölüm", replay: "Yeniden izle", finalCta: "Rezervasyon yap", finalLabel: "SAHNE SENİN" },
     chapterLabels: { console: "CONSOLE ARENA", vip: "VIP CHALLENGE", tournament: "TOURNAMENT NIGHT" },
     section: { eyebrow: "THE PLAYGROUND", title: "Sadece oyun değil.\nBir gece planı.", body: "Instagram’daki enerjiyi gerçek mekâna taşıyan, konsol deneyimi etrafında tasarlanmış bir gaming lounge.", explore: "Deneyimleri incele" },
     experiences: [
@@ -66,7 +67,7 @@ const copy: Record<Lang, {
   fa: {
     languageName: "فارسی",
     nav: { arena: "آرنا", experiences: "تجربه‌ها", tournament: "تورنومنت‌ها", visit: "مسیریابی" },
-    hero: { eyebrow: "ایسکله • قبرس / فصل ۰۱", lineOne: "راند بعدی‌ات", lineTwo: "از اینجا شروع می‌شود.", body: "تجربه‌ی PS5 و Xbox Series X، سالن VIP و نمایشگرهای ۸۵ اینچی؛ هر راند، صحنه‌ی خودش را دارد.", primary: "رزرو کن", secondary: "کشف آرنا", cursor: "برای کشف حرکت کن", chapter: "فصل" },
+    hero: { eyebrow: "ایسکله • قبرس / فصل ۰۱", lineOne: "راند بعدی‌ات", lineTwo: "از اینجا شروع می‌شود.", body: "تجربه‌ی PS5 و Xbox Series X، سالن VIP و نمایشگرهای ۸۵ اینچی؛ هر راند، صحنه‌ی خودش را دارد.", primary: "رزرو کن", secondary: "کشف آرنا", cursor: "برای کشف حرکت کن", chapter: "فصل", replay: "دوباره تماشا کن", finalCta: "رزرو کن", finalLabel: "نوبت توست" },
     chapterLabels: { console: "آرنای کنسول", vip: "چالش VIP", tournament: "شب تورنومنت" },
     section: { eyebrow: "THE PLAYGROUND", title: "فقط بازی نیست.\nبرنامه‌ی یک شب است.", body: "انرژی اینستاگرام بازینو را به یک فضای واقعی منتقل کردیم؛ جایی که همه‌چیز حول تجربه‌ی کنسول می‌چرخد.", explore: "تجربه‌ها را ببین" },
     experiences: [
@@ -84,7 +85,7 @@ const copy: Record<Lang, {
   en: {
     languageName: "English",
     nav: { arena: "Arena", experiences: "Experiences", tournament: "Tournaments", visit: "Find us" },
-    hero: { eyebrow: "İSKELE • CYPRUS / CHAPTER 01", lineOne: "YOUR NEXT ROUND", lineTwo: "STARTS HERE.", body: "PS5 and Xbox Series X. A VIP lounge. 85-inch screens. Every round deserves its own scene.", primary: "Reserve your round", secondary: "Explore the arena", cursor: "ORBIT TO EXPLORE", chapter: "Chapter" },
+    hero: { eyebrow: "İSKELE • CYPRUS / CHAPTER 01", lineOne: "YOUR NEXT ROUND", lineTwo: "STARTS HERE.", body: "PS5 and Xbox Series X. A VIP lounge. 85-inch screens. Every round deserves its own scene.", primary: "Reserve your round", secondary: "Explore the arena", cursor: "ORBIT TO EXPLORE", chapter: "Chapter", replay: "Watch again", finalCta: "Reserve your round", finalLabel: "YOUR ROUND IS NEXT" },
     chapterLabels: { console: "CONSOLE ARENA", vip: "VIP CHALLENGE", tournament: "TOURNAMENT NIGHT" },
     section: { eyebrow: "THE PLAYGROUND", title: "More than a game.\nA night plan.", body: "The energy of the Instagram feed, translated into a real lounge built around console play, social time and big-screen moments.", explore: "Explore the experiences" },
     experiences: [
@@ -102,7 +103,7 @@ const copy: Record<Lang, {
   ru: {
     languageName: "Русский",
     nav: { arena: "Арена", experiences: "Впечатления", tournament: "Турниры", visit: "Как найти" },
-    hero: { eyebrow: "ИСКЕЛЕ • КИПР / ГЛАВА 01", lineOne: "ТВОЙ СЛЕДУЮЩИЙ РАУНД", lineTwo: "НАЧИНАЕТСЯ ЗДЕСЬ.", body: "PS5 и Xbox Series X, VIP-зал и экраны 85 дюймов. Каждый раунд заслуживает своей сцены.", primary: "Забронировать раунд", secondary: "Открыть арену", cursor: "ДВИГАЙСЯ, ЧТОБЫ ИССЛЕДОВАТЬ", chapter: "Глава" },
+    hero: { eyebrow: "ИСКЕЛЕ • КИПР / ГЛАВА 01", lineOne: "ТВОЙ СЛЕДУЮЩИЙ РАУНД", lineTwo: "НАЧИНАЕТСЯ ЗДЕСЬ.", body: "PS5 и Xbox Series X, VIP-зал и экраны 85 дюймов. Каждый раунд заслуживает своей сцены.", primary: "Забронировать раунд", secondary: "Открыть арену", cursor: "ДВИГАЙСЯ, ЧТОБЫ ИССЛЕДОВАТЬ", chapter: "Глава", replay: "Смотреть снова", finalCta: "Забронировать", finalLabel: "ТВОЙ РАУНД СЛЕДУЮЩИЙ" },
     chapterLabels: { console: "КОНСОЛЬНАЯ АРЕНА", vip: "VIP-ЧЕЛЛЕНДЖ", tournament: "ТУРНИРНАЯ НОЧЬ" },
     section: { eyebrow: "THE PLAYGROUND", title: "Больше, чем игра.\nПлан на вечер.", body: "Энергия Instagram превращается в реальное пространство вокруг консольной игры, общения и больших экранов.", explore: "Смотреть впечатления" },
     experiences: [
@@ -127,8 +128,18 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("tr");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const t = copy[lang];
+
+  const handleReplay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    setVideoEnded(false);
+    video.currentTime = 0;
+    void video.play();
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -179,6 +190,7 @@ export default function Home() {
           <div className="hero-noise" />
           <div className="mona-cinematic-scene">
             <video
+              ref={videoRef}
               className="mona-motion-video"
               poster={images.motionPoster}
               muted
@@ -186,11 +198,27 @@ export default function Home() {
               playsInline
               preload="auto"
               controls={false}
-              onEnded={(event) => event.currentTarget.pause()}
+              onEnded={(event) => {
+                event.currentTarget.pause();
+                setVideoEnded(true);
+              }}
               aria-label="Mona fashion-show Hero video, plays once"
             >
               <source src={images.motionVideo} />
             </video>
+            {videoEnded && (
+              <div className="hero-final-panel" aria-live="polite">
+                <div className="hero-final-copy">
+                  <span className="hero-final-label"><Sparkles size={13} />{t.hero.finalLabel}</span>
+                  <a className="hero-final-cta" href="https://bazino.pro" target="_blank" rel="noreferrer">
+                    <span>{t.hero.finalCta}</span><ArrowUpRight size={18} />
+                  </a>
+                </div>
+                <button className="hero-replay" type="button" onClick={handleReplay} aria-label={t.hero.replay}>
+                  <RotateCcw size={15} /><span>{t.hero.replay}</span>
+                </button>
+              </div>
+            )}
           </div>
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
