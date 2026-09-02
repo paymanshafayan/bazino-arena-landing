@@ -182,3 +182,19 @@
 - [x] Improve scrub easing so pointer deltas feel natural without adding lag or overshoot.
 - [x] Preserve the first-frame poster, touch drag, reduced-motion behavior, and CTA clarity.
 - [x] Do not implement until the user explicitly approves the detailed plan.
+
+## Hero mobile quality restoration
+
+- [ ] Replace the overly compressed 854×480 mobile encode with a higher-quality source.
+- [ ] Target approximately 854×480 at CRF 23–24, preserving 24fps, frequent keyframes, and no audio.
+- [ ] Keep the current 1280×720 desktop source unchanged unless validation shows a separate issue.
+- [ ] Compare file size against visible quality and verify Mona’s face, hair, clothing, and background detail.
+- [ ] Present the quality-restoration plan and wait for explicit approval before changing media or code.
+
+## Original video Hero mode
+
+- [x] Disable Frame Motion pointer and touch handlers in the Hero.
+- [x] Replace the mobile/optimized source selection with the original 16:9 MP4 source.
+- [x] Enable normal muted autoplay and looping playback while preserving the approved poster and CTA overlays.
+- [x] Remove or hide the Frame Motion percentage and interaction instruction from the Hero.
+- [x] Validate desktop/mobile playback and production build after explicit approval.
