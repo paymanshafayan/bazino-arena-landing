@@ -28,7 +28,7 @@ const images = {
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
-  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9.mp4",
+  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9_4ad5df77.mp4",
   motionPoster: "/manus-storage/mona-fashion-show-hero-first-frame_394df0be.jpg",
 };
 

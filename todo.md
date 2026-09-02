@@ -198,3 +198,10 @@
 - [x] Enable normal muted autoplay and looping playback while preserving the approved poster and CTA overlays.
 - [x] Remove or hide the Frame Motion percentage and interaction instruction from the Hero.
 - [x] Validate desktop/mobile playback and production build after explicit approval.
+
+## Hero MP4 playback repair
+
+- [x] Verify whether `/manus-storage/mona-fashion-show-hero-16x9.mp4` resolves or returns 404 in Preview.
+- [x] If missing, upload the original local MP4 and replace the Hero source with the returned stable Storage path.
+- [x] Validate muted autoplay, loop, desktop/mobile playback, and production build.
+- [x] Save a corrected playback checkpoint.
