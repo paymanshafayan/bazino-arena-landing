@@ -139,3 +139,21 @@
 - [x] Add touch drag fallback and a visible interaction cue without obscuring the CTA.
 - [x] Preserve keyboard focus, reduced-motion fallback, poster/first-frame readability, and responsive behavior.
 - [x] Do not edit code until the user explicitly approves the implementation plan.
+
+## Hero legacy cleanup
+
+- [x] Audit Home.tsx for old pointer parallax, spring transforms, chapter-slider behavior, and stale Hero fallbacks.
+- [x] Audit index.css for old Hero image, orb, grid, chapter, and cursor-motion rules that conflict with Frame Motion.
+- [x] Identify stale asset references, especially the old Hero image and poster path shown before the video loads.
+- [x] Present the exact cleanup scope and wait for explicit approval before editing code.
+- [x] After approval, make Frame Motion the sole Hero timeline controller and ensure the video’s first frame is the only initial visual.
+- [x] Validate desktop/mobile, first-frame loading, pointer direction, touch drag, reduced motion, and production build.
+
+## Approved Hero cleanup execution
+
+- [x] Re-read the static web guidance and current Hero files after context compaction.
+- [x] Remove legacy Parallax motion values, handlers, transforms, and moving overlay layers from Home.tsx.
+- [x] Remove obsolete Hero image/fallback CSS and ensure the video is the only Hero visual timeline.
+- [x] Extract and upload the video’s first frame as the poster so no old Hero image appears during initial load.
+- [x] Validate TypeScript, production build, desktop/mobile screenshots, and first-frame presentation.
+- [x] Save and deliver the cleaned Hero checkpoint.

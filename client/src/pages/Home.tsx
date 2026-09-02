@@ -3,15 +3,13 @@
  * This page keeps the Instagram identity visible: charcoal black, championship gold,
  * electric blue, console-only messaging, and a recurring virtual host.
  */
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { portalNav } from "@/data/portalData";
 import { ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   Coffee,
   Crown,
   Gamepad2,
@@ -25,22 +23,13 @@ import { ArrowDownRight,
 
 type Lang = "tr" | "fa" | "en" | "ru";
 
-type Chapter = {
-  id: string;
-  kicker: string;
-  title: string;
-  body: string;
-  image: string;
-  index: string;
-};
-
 const images = {
-  hero: "/manus-storage/bazino-hero-reference_074c7394.png",
   vip: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1800&q=88",
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
   motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-continuous-ending_3efd7343.mp4",
+  motionPoster: "/manus-storage/mona-fashion-show-hero-first-frame_394df0be.jpg",
 };
 
 const copy: Record<Lang, {
@@ -130,54 +119,19 @@ const copy: Record<Lang, {
   },
 };
 
-const chapterData: Record<Lang, Chapter[]> = {
-  tr: [
-    { id: "console", kicker: "CHAPTER 01", title: "Console Arena", body: "PS5 ve Xbox Series X için tasarlanmış, ışığı ve sesi oyuna göre değişen ana sahne.", image: images.hero, index: "01" },
-    { id: "vip", kicker: "CHAPTER 02", title: "VIP Challenge", body: "Daha fazla alan, daha fazla konfor ve raundlar arasında sana ait bir tempo.", image: images.vip, index: "02" },
-    { id: "tournament", kicker: "CHAPTER 03", title: "Tournament Night", body: "İzle, katıl, yeniden dene. Resmi turnuva ve ödül bilgileri bazino.pro’da.", image: images.tournament, index: "03" },
-  ],
-  fa: [
-    { id: "console", kicker: "فصل ۰۱", title: "آرنای کنسول", body: "صحنه‌ی اصلی برای PS5 و Xbox Series X؛ جایی که نور و صدا با بازی تغییر می‌کنند.", image: images.hero, index: "۰۱" },
-    { id: "vip", kicker: "فصل ۰۲", title: "چالش VIP", body: "فضای بیشتر، راحتی بیشتر و ریتمی که بین راندها متعلق به توست.", image: images.vip, index: "۰۲" },
-    { id: "tournament", kicker: "فصل ۰۳", title: "شب تورنومنت", body: "تماشا کن، شرکت کن و دوباره تلاش کن. اطلاعات رسمی در bazino.pro است.", image: images.tournament, index: "۰۳" },
-  ],
-  en: [
-    { id: "console", kicker: "CHAPTER 01", title: "Console Arena", body: "The main stage for PS5 and Xbox Series X, tuned with light and sound for the round.", image: images.hero, index: "01" },
-    { id: "vip", kicker: "CHAPTER 02", title: "VIP Challenge", body: "More room, more comfort, and a tempo that belongs to you between rounds.", image: images.vip, index: "02" },
-    { id: "tournament", kicker: "CHAPTER 03", title: "Tournament Night", body: "Watch, enter, try again. Official tournament and prize information lives at bazino.pro.", image: images.tournament, index: "03" },
-  ],
-  ru: [
-    { id: "console", kicker: "ГЛАВА 01", title: "Консольная арена", body: "Главная сцена для PS5 и Xbox Series X, где свет и звук работают на раунд.", image: images.hero, index: "01" },
-    { id: "vip", kicker: "ГЛАВА 02", title: "VIP-челлендж", body: "Больше пространства, больше комфорта и свой ритм между раундами.", image: images.vip, index: "02" },
-    { id: "tournament", kicker: "ГЛАВА 03", title: "Турнирная ночь", body: "Смотри, участвуй, пробуй снова. Официальные детали на bazino.pro.", image: images.tournament, index: "03" },
-  ],
-};
-
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("tr");
-  const [activeChapter, setActiveChapter] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [motionProgress, setMotionProgress] = useState(0);
   const [motionReady, setMotionReady] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const motionPointerX = useRef<number | null>(null);
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const smoothX = useSpring(pointerX, { stiffness: 80, damping: 18, mass: 0.6 });
-  const smoothY = useSpring(pointerY, { stiffness: 80, damping: 18, mass: 0.6 });
-  const heroX = useTransform(smoothX, [-0.5, 0.5], [-28, 28]);
-  const heroY = useTransform(smoothY, [-0.5, 0.5], [-12, 12]);
-  const heroScale = useTransform(smoothY, [-0.5, 0.5], [1.055, 1.075]);
-  const heroRotate = useTransform(smoothX, [-0.5, 0.5], [-0.45, 0.45]);
-  const stageX = useTransform(smoothX, [-0.5, 0.5], [15, -15]);
-  const stageY = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
   const t = copy[lang];
-  const chapters = useMemo(() => chapterData[lang], [lang]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -190,21 +144,6 @@ export default function Home() {
     document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
     document.body.dataset.locale = lang;
   }, [lang]);
-
-  useEffect(() => {
-    setActiveChapter(0);
-  }, [lang]);
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
-    pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
-  };
-
-  const handlePointerLeave = () => {
-    pointerX.set(0);
-    pointerY.set(0);
-  };
 
   const scrubHeroVideo = (clientX: number, rect: DOMRect) => {
     const video = heroVideoRef.current;
@@ -248,11 +187,8 @@ export default function Home() {
     setMotionReady(Number.isFinite(video.duration) && video.duration > 0);
   };
 
-  const nextChapter = () => setActiveChapter((value) => (value + 1) % chapters.length);
-  const previousChapter = () => setActiveChapter((value) => (value - 1 + chapters.length) % chapters.length);
-
   return (
-    <div className="site-shell" onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
+    <div className="site-shell">
       <header className={`site-header ${scrolled ? "site-header--scrolled" : ""}`}>
         <a className="brand-lockup" href="#top" aria-label="Bazino home">
           <span className="brand-mark-css" aria-hidden="true">B</span>
@@ -286,22 +222,19 @@ export default function Home() {
         <section
           id="top"
           className="hero mona-hero"
-          style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}
-          onPointerMove={(event) => {
-            handlePointerMove(event);
-            handleMotionPointerMove(event);
-          }}
+          onPointerMove={handleMotionPointerMove}
           onPointerDown={handleMotionPointerDown}
           onPointerUp={handleMotionPointerUp}
+          onPointerCancel={() => { motionPointerX.current = null; }}
+          onPointerLeave={() => { motionPointerX.current = null; }}
         >
           <div className="hero-noise" />
-          <motion.div className="hero-grid" style={{ x: stageX, y: stageY }} />
-          <motion.div className="mona-cinematic-scene" style={{ x: heroX, y: heroY, scale: heroScale }}>
+          <div className="mona-cinematic-scene">
             <video
               ref={heroVideoRef}
               className="mona-motion-video"
               src={images.motionVideo}
-              poster={images.hero}
+              poster={images.motionPoster}
               muted
               playsInline
               preload="auto"
@@ -313,10 +246,8 @@ export default function Home() {
                 if (video.duration > 0) setMotionProgress(video.currentTime / video.duration);
               }}
             />
-          </motion.div>
+          </div>
           <div className="hero-vignette" />
-          <motion.div className="hero-light-orb hero-light-orb--blue" style={{ x: stageX, y: stageY }} />
-          <motion.div className="hero-light-orb hero-light-orb--gold" style={{ x: heroX, y: heroY }} />
 
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
@@ -330,7 +261,7 @@ export default function Home() {
               <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "موس را به جلو و عقب حرکت بده تا اجرای مونا را کنترل کنی" : lang === "ru" ? "Двигайте мышью вперёд и назад, чтобы управлять сценой Моны" : lang === "en" ? "Move forward and back to control Mona’s scene" : "Mona’nın sahnesini ileri ve geri hareketle kontrol et"}</div>
             </motion.div>
 
-            <motion.div className="hero-stage-meta" style={{ x: stageX, y: stageY }}>
+            <div className="hero-stage-meta">
               <div className="stage-coordinates">35°20' N / 33°59' E</div>
               <div className="stage-chapter-card mona-status-card">
                 <div className="stage-card-top"><span>MONA / LIVE</span><span>360° ORBIT</span></div>
@@ -338,7 +269,7 @@ export default function Home() {
                 <span className="stage-card-caption">{lang === "fa" ? "تصویرها را در هوا ترسیم می‌کند" : lang === "ru" ? "Рисует игровые миры в воздухе" : lang === "en" ? "Tracing game worlds in the air" : "Oyun dünyalarını havada çiziyor"}</span>
                 <div className="stage-card-line"><span /></div>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           <div className="mona-hero-control layout-frame" aria-label="Frame Motion control">
