@@ -24,6 +24,8 @@ import { ArrowDownRight,
 
 type Lang = "tr" | "fa" | "en" | "ru";
 
+const reservationUrl = "/reservations";
+
 const images = {
   vip: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1800&q=88",
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
@@ -49,7 +51,7 @@ const copy: Record<Lang, {
   tr: {
     languageName: "Türkçe",
     nav: { arena: "Arena", experiences: "Deneyimler", tournament: "Turnuvalar", visit: "Bizi Bul" },
-    hero: { eyebrow: "İSKELE • KIBRIS / CHAPTER 01", lineOne: "GELECEK TURUN", lineTwo: "BURADA BAŞLAR.", body: "PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar. Her tur, kendi sahnesini hak eder.", primary: "Rezervasyon yap", secondary: "Arenayı keşfet", cursor: "ORBIT TO EXPLORE", chapter: "Bölüm", replay: "Yeniden izle", finalCta: "Rezervasyon yap", finalLabel: "SAHNE SENİN" },
+    hero: { eyebrow: "İSKELE • KIBRIS / CHAPTER 01", lineOne: "ŞAMPİYONSAN,", lineTwo: "İŞTE BURASI.", body: "PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar. Her tur, kendi sahnesini hak eder.", primary: "Rezervasyon yap", secondary: "Arenayı keşfet", cursor: "ORBIT TO EXPLORE", chapter: "Bölüm", replay: "Yeniden izle", finalCta: "Rezervasyon yap", finalLabel: "SAHNE SENİN" },
     chapterLabels: { console: "CONSOLE ARENA", vip: "VIP CHALLENGE", tournament: "TOURNAMENT NIGHT" },
     section: { eyebrow: "THE PLAYGROUND", title: "Sadece oyun değil.\nBir gece planı.", body: "Instagram’daki enerjiyi gerçek mekâna taşıyan, konsol deneyimi etrafında tasarlanmış bir gaming lounge.", explore: "Deneyimleri incele" },
     experiences: [
@@ -67,7 +69,7 @@ const copy: Record<Lang, {
   fa: {
     languageName: "فارسی",
     nav: { arena: "آرنا", experiences: "تجربه‌ها", tournament: "تورنومنت‌ها", visit: "مسیریابی" },
-    hero: { eyebrow: "ایسکله • قبرس / فصل ۰۱", lineOne: "راند بعدی‌ات", lineTwo: "از اینجا شروع می‌شود.", body: "تجربه‌ی PS5 و Xbox Series X، سالن VIP و نمایشگرهای ۸۵ اینچی؛ هر راند، صحنه‌ی خودش را دارد.", primary: "رزرو کن", secondary: "کشف آرنا", cursor: "برای کشف حرکت کن", chapter: "فصل", replay: "دوباره تماشا کن", finalCta: "رزرو کن", finalLabel: "نوبت توست" },
+    hero: { eyebrow: "ایسکله • قبرس / فصل ۰۱", lineOne: "اگر قهرمانی،", lineTwo: "اینجاست.", body: "تجربه‌ی PS5 و Xbox Series X، سالن VIP و نمایشگرهای ۸۵ اینچی؛ هر راند، صحنه‌ی خودش را دارد.", primary: "رزرو کن", secondary: "کشف آرنا", cursor: "برای کشف حرکت کن", chapter: "فصل", replay: "دوباره تماشا کن", finalCta: "رزرو کن", finalLabel: "نوبت توست" },
     chapterLabels: { console: "آرنای کنسول", vip: "چالش VIP", tournament: "شب تورنومنت" },
     section: { eyebrow: "THE PLAYGROUND", title: "فقط بازی نیست.\nبرنامه‌ی یک شب است.", body: "انرژی اینستاگرام بازینو را به یک فضای واقعی منتقل کردیم؛ جایی که همه‌چیز حول تجربه‌ی کنسول می‌چرخد.", explore: "تجربه‌ها را ببین" },
     experiences: [
@@ -85,7 +87,7 @@ const copy: Record<Lang, {
   en: {
     languageName: "English",
     nav: { arena: "Arena", experiences: "Experiences", tournament: "Tournaments", visit: "Find us" },
-    hero: { eyebrow: "İSKELE • CYPRUS / CHAPTER 01", lineOne: "YOUR NEXT ROUND", lineTwo: "STARTS HERE.", body: "PS5 and Xbox Series X. A VIP lounge. 85-inch screens. Every round deserves its own scene.", primary: "Reserve your round", secondary: "Explore the arena", cursor: "ORBIT TO EXPLORE", chapter: "Chapter", replay: "Watch again", finalCta: "Reserve your round", finalLabel: "YOUR ROUND IS NEXT" },
+    hero: { eyebrow: "İSKELE • CYPRUS / CHAPTER 01", lineOne: "IF YOU ARE A CHAMP,", lineTwo: "THIS IS IT.", body: "PS5 and Xbox Series X. A VIP lounge. 85-inch screens. Every round deserves its own scene.", primary: "Reserve your round", secondary: "Explore the arena", cursor: "ORBIT TO EXPLORE", chapter: "Chapter", replay: "Watch again", finalCta: "Reserve your round", finalLabel: "YOUR ROUND IS NEXT" },
     chapterLabels: { console: "CONSOLE ARENA", vip: "VIP CHALLENGE", tournament: "TOURNAMENT NIGHT" },
     section: { eyebrow: "THE PLAYGROUND", title: "More than a game.\nA night plan.", body: "The energy of the Instagram feed, translated into a real lounge built around console play, social time and big-screen moments.", explore: "Explore the experiences" },
     experiences: [
@@ -103,7 +105,7 @@ const copy: Record<Lang, {
   ru: {
     languageName: "Русский",
     nav: { arena: "Арена", experiences: "Впечатления", tournament: "Турниры", visit: "Как найти" },
-    hero: { eyebrow: "ИСКЕЛЕ • КИПР / ГЛАВА 01", lineOne: "ТВОЙ СЛЕДУЮЩИЙ РАУНД", lineTwo: "НАЧИНАЕТСЯ ЗДЕСЬ.", body: "PS5 и Xbox Series X, VIP-зал и экраны 85 дюймов. Каждый раунд заслуживает своей сцены.", primary: "Забронировать раунд", secondary: "Открыть арену", cursor: "ДВИГАЙСЯ, ЧТОБЫ ИССЛЕДОВАТЬ", chapter: "Глава", replay: "Смотреть снова", finalCta: "Забронировать", finalLabel: "ТВОЙ РАУНД СЛЕДУЮЩИЙ" },
+    hero: { eyebrow: "ИСКЕЛЕ • КИПР / ГЛАВА 01", lineOne: "ЕСЛИ ТЫ ЧЕМПИОН,", lineTwo: "ТЕБЕ СЮДА.", body: "PS5 и Xbox Series X, VIP-зал и экраны 85 дюймов. Каждый раунд заслуживает своей сцены.", primary: "Забронировать раунд", secondary: "Открыть арену", cursor: "ДВИГАЙСЯ, ЧТОБЫ ИССЛЕДОВАТЬ", chapter: "Глава", replay: "Смотреть снова", finalCta: "Забронировать", finalLabel: "ТВОЙ РАУНД СЛЕДУЮЩИЙ" },
     chapterLabels: { console: "КОНСОЛЬНАЯ АРЕНА", vip: "VIP-ЧЕЛЛЕНДЖ", tournament: "ТУРНИРНАЯ НОЧЬ" },
     section: { eyebrow: "THE PLAYGROUND", title: "Больше, чем игра.\nПлан на вечер.", body: "Энергия Instagram превращается в реальное пространство вокруг консольной игры, общения и больших экранов.", explore: "Смотреть впечатления" },
     experiences: [
@@ -210,7 +212,7 @@ export default function Home() {
               <div className="hero-final-panel" aria-live="polite">
                 <div className="hero-final-copy">
                   <span className="hero-final-label"><Sparkles size={13} />{t.hero.finalLabel}</span>
-                  <a className="hero-final-cta" href="https://bazino.pro" target="_blank" rel="noreferrer">
+                  <a className="hero-final-cta" href={reservationUrl}>
                     <span>{t.hero.finalCta}</span><ArrowUpRight size={18} />
                   </a>
                 </div>

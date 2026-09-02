@@ -488,19 +488,27 @@ body[data-locale="fa"] .app-side-note { border-left: 0; border-right: 1px solid 
 }
 
 
-/* Autoplay Hero: cinematic source owns the motion; controls appear only on the final frame. */
+/* Autoplay Hero: controls arrive as a quiet, cinematic end-card rather than a full-screen overlay. */
 .mona-motion-video { display: block; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; width: 100%; }
 .mona-cinematic-scene::after { border: 1px solid rgba(255,196,0,.18); content: ""; inset: 4.5%; pointer-events: none; position: absolute; }
-.hero-final-panel { align-items: flex-end; backdrop-filter: blur(10px); background: linear-gradient(135deg, rgba(7,10,17,.86), rgba(7,10,17,.52)); border: 1px solid rgba(255,196,0,.48); bottom: clamp(34px, 9vh, 78px); box-shadow: 0 18px 50px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08); display: flex; gap: 24px; padding: 16px 18px 16px 20px; position: absolute; right: clamp(5%, 8vw, 11%); z-index: 6; }
+.hero-final-panel { align-items: flex-end; animation: hero-final-panel-in 620ms var(--ease-out) both; backdrop-filter: blur(10px); background: linear-gradient(135deg, rgba(7,10,17,.86), rgba(7,10,17,.52)); border: 1px solid rgba(255,196,0,.48); bottom: clamp(34px, 9vh, 78px); box-shadow: 0 18px 50px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08); display: flex; gap: 24px; padding: 16px 18px 16px 20px; position: absolute; right: clamp(5%, 8vw, 11%); z-index: 6; }
 .hero-final-copy { display: flex; flex-direction: column; gap: 10px; }
 .hero-final-label { align-items: center; color: var(--gold); display: flex; font-size: 9px; font-weight: 900; gap: 7px; letter-spacing: .18em; text-transform: uppercase; }
-.hero-final-cta { align-items: center; background: var(--gold); color: var(--ink); display: inline-flex; font-size: 11px; font-weight: 900; gap: 28px; justify-content: space-between; letter-spacing: .12em; min-width: 190px; padding: 14px 15px; text-decoration: none; text-transform: uppercase; transition: background-color 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-out); }
-.hero-final-cta:hover { background: var(--white); color: var(--ink); transform: translateY(-2px); }
+.hero-final-cta { align-items: center; animation: hero-final-cta-in 420ms var(--ease-out) 170ms both; background: var(--gold); color: var(--ink); display: inline-flex; font-size: 11px; font-weight: 900; gap: 28px; justify-content: space-between; letter-spacing: .12em; min-width: 190px; overflow: hidden; padding: 14px 15px; position: relative; text-decoration: none; text-transform: uppercase; transition: color 180ms var(--ease-out), transform 180ms var(--ease-out); }
+.hero-final-cta::before { background: var(--white); content: ""; inset: 0; position: absolute; transform: translateX(-102%); transition: transform 260ms var(--ease-out); z-index: 0; }
+.hero-final-cta:hover::before { transform: translateX(0); }
+.hero-final-cta span, .hero-final-cta svg { position: relative; z-index: 1; }
+.hero-final-cta svg { transition: transform 180ms var(--ease-out); }
+.hero-final-cta:hover { color: var(--ink); transform: translateY(-2px); }
+.hero-final-cta:hover svg { transform: translate(2px, -2px); }
 .hero-final-cta:active { transform: scale(.97); }
-.hero-replay { align-items: center; background: transparent; border: 1px solid rgba(246,244,237,.32); color: rgba(246,244,237,.86); cursor: pointer; display: inline-flex; font: inherit; font-size: 9px; font-weight: 800; gap: 8px; letter-spacing: .14em; padding: 12px 13px; text-transform: uppercase; transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-out); white-space: nowrap; }
+.hero-replay { align-items: center; animation: hero-replay-in 420ms var(--ease-out) 280ms both; background: transparent; border: 1px solid rgba(246,244,237,.32); color: rgba(246,244,237,.86); cursor: pointer; display: inline-flex; font: inherit; font-size: 9px; font-weight: 800; gap: 8px; letter-spacing: .14em; padding: 12px 13px; text-transform: uppercase; transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-out); white-space: nowrap; }
 .hero-replay:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
 .hero-replay:active { transform: scale(.97); }
 .hero-final-cta:focus-visible, .hero-replay:focus-visible { outline: 2px solid var(--white); outline-offset: 4px; }
+@keyframes hero-final-panel-in { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes hero-final-cta-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes hero-replay-in { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
 @media (max-width: 760px) {
   .mona-cinematic-scene { inset: -1.5%; }
   .mona-motion-video { object-position: center; }
@@ -513,6 +521,7 @@ body[data-locale="fa"] .app-side-note { border-left: 0; border-right: 1px solid 
 @media (prefers-reduced-motion: reduce) {
   .mona-motion-video { display: none; }
   .mona-cinematic-scene { background: #081019 url("/manus-storage/mona-fashion-show-hero-continuous-first-frame_0abe85da.jpg") center / cover no-repeat; }
+  .hero-final-panel, .hero-final-cta, .hero-replay { animation: none; }
 }
 
 

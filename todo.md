@@ -226,3 +226,11 @@
 - [x] Show an attractive reservation CTA over the final video frame after playback ends.
 - [x] Keep controls accessible, multilingual, responsive, and visually consistent with Bazino.
 - [x] Validate the interactive states and save a checkpoint.
+
+## Hero final-control motion and reservation CTA refinement
+
+- [x] Confirm the exact reservation route in the portal/site structure.
+- [x] Replace the Hero promotional line in Turkish, Persian, English, and Russian with localized equivalents of “If you are a champ, this is it.”
+- [x] Add subtle entrance animation for the final-frame reservation and replay controls.
+- [x] Add a polished hover treatment for the reservation CTA.
+- [x] Validate the updated route, copy, motion, hover state, and responsive presentation, then save a checkpoint.

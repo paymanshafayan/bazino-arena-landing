@@ -21,3 +21,7 @@ A headless Chromium playback check confirmed the video starts normally, reaches 
 ## Responsive polish
 
 The mobile ended-state capture was reviewed after the panel refinement. The final-frame reservation CTA now sits beneath the primary Hero actions, while the replay control remains within the same bordered panel and remains reachable. The interaction check still confirms natural end-state pause, panel visibility, replay reset, and resumed playback after the CSS-only adjustment.
+
+## Champ tagline and final-control polish
+
+The Hero headline now uses localized equivalents of “If you are a champ, this is it.” in Turkish, Persian, English, and Russian. The final-panel style check confirms `/reservations` as the CTA href, `hero-final-panel-in` and `hero-final-cta-in` as the active entry animations, and a color/transform transition on the reservation control. The updated desktop capture shows the localized Turkish headline and a balanced lower-right final panel with the reservation CTA and replay control.
