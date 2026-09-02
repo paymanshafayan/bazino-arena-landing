@@ -29,6 +29,7 @@ const images = {
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
   motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-scrub_46ee763d.mp4",
+  motionVideoMobile: "/manus-storage/mona-fashion-show-hero-mobile_39525e28.mp4",
   motionPoster: "/manus-storage/mona-fashion-show-hero-first-frame_394df0be.jpg",
 };
 
@@ -274,7 +275,6 @@ export default function Home() {
             <video
               ref={heroVideoRef}
               className="mona-motion-video"
-              src={images.motionVideo}
               poster={images.motionPoster}
               muted
               playsInline
@@ -282,7 +282,10 @@ export default function Home() {
               controls={false}
               aria-label="Mona fashion-show Frame Motion Hero"
               onLoadedMetadata={handleMotionLoaded}
-            />
+            >
+              <source media="(max-width: 720px)" src={images.motionVideoMobile} />
+              <source src={images.motionVideo} />
+            </video>
           </div>
           <div className="hero-vignette" />
 

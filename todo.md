@@ -174,3 +174,11 @@
 - [x] Present the recommended performance plan and wait for explicit approval before editing code or media.
 - [x] After approval, implement smoother requestAnimationFrame scrubbing and optimized media loading.
 - [x] Validate pointer/drag responsiveness, first-frame load, mobile behavior, and production build.
+
+## Hero progress, mobile media, and easing enhancements
+
+- [x] Add a subtle localized percentage indicator tied to the actual video timeline.
+- [x] Generate or encode a lighter mobile-specific 16:9 video source and wire it with responsive media selection.
+- [x] Improve scrub easing so pointer deltas feel natural without adding lag or overshoot.
+- [x] Preserve the first-frame poster, touch drag, reduced-motion behavior, and CTA clarity.
+- [x] Do not implement until the user explicitly approves the detailed plan.
