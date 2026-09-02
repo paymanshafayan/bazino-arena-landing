@@ -205,3 +205,11 @@
 - [x] If missing, upload the original local MP4 and replace the Hero source with the returned stable Storage path.
 - [x] Validate muted autoplay, loop, desktop/mobile playback, and production build.
 - [x] Save a corrected playback checkpoint.
+
+## Corrected Hero video and clarity pass
+
+- [ ] Verify the stable Storage path for the corrected `continuous-ending` video.
+- [ ] Replace the current Hero source with the corrected continuous-ending video.
+- [ ] Remove the opaque dark overlay from the video layer and reduce only the text-protection gradient as needed.
+- [ ] Validate that Mona and the gaming-lounge background are visibly clear while headings and CTA remain readable.
+- [ ] Run TypeScript/build and save a corrected checkpoint after approval.

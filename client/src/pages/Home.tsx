@@ -28,8 +28,8 @@ const images = {
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
-  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9_4ad5df77.mp4",
-  motionPoster: "/manus-storage/mona-fashion-show-hero-first-frame_394df0be.jpg",
+  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-continuous-ending_3c5326f9.mp4",
+  motionPoster: "/manus-storage/mona-fashion-show-hero-continuous-first-frame_0abe85da.jpg",
 };
 
 const copy: Record<Lang, {
@@ -192,8 +192,6 @@ export default function Home() {
               <source src={images.motionVideo} />
             </video>
           </div>
-          <div className="hero-vignette" />
-
           <div className="hero-content layout-frame">
             <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
               <div className="eyebrow"><span className="eyebrow-line" />{t.hero.eyebrow}</div>
@@ -203,15 +201,15 @@ export default function Home() {
                 <a className="button button--gold" href="https://bazino.pro" target="_blank" rel="noreferrer">{t.hero.primary}<ArrowUpRight size={17} /></a>
                 <button className="text-button" type="button" onClick={() => scrollToId("experiences")}>{t.hero.secondary}<ArrowDownRight size={17} /></button>
               </div>
-              <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "موس را به جلو و عقب حرکت بده تا اجرای مونا را کنترل کنی" : lang === "ru" ? "Двигайте мышью вперёд и назад, чтобы управлять сценой Моны" : lang === "en" ? "Move forward and back to control Mona’s scene" : "Mona’nın sahnesini ileri ve geri hareketle kontrol et"}</div>
+              <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "اجرای سینمایی مونا را تماشا کن و برای دور بعد آماده شو" : lang === "ru" ? "Смотрите кинематографическое шоу Моны и готовьтесь к следующему раунду" : lang === "en" ? "Watch Mona’s cinematic show and get ready for the next round" : "Mona’nın sinematik şovunu izle, sonraki raunda hazır ol"}</div>
             </motion.div>
 
             <div className="hero-stage-meta">
               <div className="stage-coordinates">35°20' N / 33°59' E</div>
               <div className="stage-chapter-card mona-status-card">
-                <div className="stage-card-top"><span>MONA / LIVE</span><span>360° ORBIT</span></div>
+                <div className="stage-card-top"><span>MONA / LIVE</span><span>THE SHOW</span></div>
                 <strong>HALL OF<br />LEGENDS</strong>
-                <span className="stage-card-caption">{lang === "fa" ? "تصویرها را در هوا ترسیم می‌کند" : lang === "ru" ? "Рисует игровые миры в воздухе" : lang === "en" ? "Tracing game worlds in the air" : "Oyun dünyalarını havada çiziyor"}</span>
+                <span className="stage-card-caption">{lang === "fa" ? "میزبان شب‌های کنسولی بازینو" : lang === "ru" ? "Ведущая консольных ночей Bazino" : lang === "en" ? "Host of Bazino’s console nights" : "Bazino konsol gecelerinin sunucusu"}</span>
                 <div className="stage-card-line"><span /></div>
               </div>
             </div>
