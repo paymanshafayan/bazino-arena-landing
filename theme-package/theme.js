@@ -23,6 +23,8 @@
         var navigate = props.onNavigate || function () {};
         var language = props.language || 'tr';
         var dir = props.dir || (language === 'fa' ? 'rtl' : 'ltr');
+        var genreState = R.useState ? R.useState('all') : ['all', function () {}];
+        var activeGenre = genreState[0];
         var settings = props.settings || {};
         var copy = {
           tr: { hero: 'ŞAMPİYONSAN, İŞTE BURASI.', sub: 'PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar.', cta: 'Rezervasyon yap', genres: 'Console arena', tournaments: 'Aktif turnuvalar', results: 'Match history', lounges: 'VIP ve kafe', passes: 'Giriş sinyali', visit: 'İskele’de buluşalım', app: 'Sinyali yanında taşı.' },
@@ -52,6 +54,10 @@
         var routeLink = function (title, tab) {
           return h('button', { className: 'theme-link-button', onClick: function () { navigate(tab); } }, title + '  ↗');
         };
+        var genreLabels = language === 'fa' ? ['همه', 'فوتبال', 'مسابقه‌ای', 'تاکتیکی', 'نقش‌آفرینی'] : language === 'ru' ? ['ВСЕ', 'ФУТБОЛ', 'ГОНКИ', 'ТАКТИКА', 'RPG'] : language === 'en' ? ['ALL', 'FOOTBALL', 'RACING', 'TACTICAL', 'RPG / QUEST'] : ['TÜMÜ', 'FUTBOL', 'YARIŞ', 'TAKTİK', 'RPG / GÖREV'];
+        var genreKeys = ['all', 'football', 'racing', 'tactical', 'rpg'];
+        var visibleTournaments = activeGenre === 'all' ? tournaments : tournaments.filter(function (entry) { return (entry.genre || entry.category || '').toLowerCase() === activeGenre; });
+        var genreFilter = h('div', { className: 'bazino-genre-filter', role: 'group', 'aria-label': 'Filter tournaments by game category' }, genreKeys.map(function (key, index) { return h('button', { key: key, type: 'button', className: activeGenre === key ? 'is-active' : '', 'aria-pressed': activeGenre === key, onClick: function () { genreState[1](key); } }, genreLabels[index]); }));
         return h('div', { className: 'bazino-home', dir: dir, 'data-theme-id': props.themeId || 'bazino-arena' },
           h('section', { className: 'bazino-chapter bazino-home-hero', 'data-chapter': '01' },
             h('div', { className: 'bazino-hero-image', style: { backgroundImage: 'url(' + image + ')' } }),
@@ -71,7 +77,8 @@
           ),
           h('section', { className: 'bazino-chapter bazino-tournament-surface', 'data-chapter': '03' },
             h('div', { className: 'bazino-section-head' }, h('span', { className: 'theme-chapter-label' }, 'CHAPTER 03'), h('h2', null, text.tournaments), h('p', null, 'STATUS / DATE / PRIZE INFORMATION')),
-            cardGrid(tournaments, 'TOURNAMENT', [ { title: 'Next tournament', status: 'OPEN', body: 'Dates, entry conditions and official prizes.' } ]),
+            genreFilter,
+            cardGrid(visibleTournaments, 'TOURNAMENT', [ { title: 'Next tournament', status: 'OPEN', body: 'Dates, entry conditions and official prizes.' } ]),
             routeLink('Open tournament hub', 'tournaments')
           ),
           h('section', { className: 'bazino-chapter bazino-score-surface', 'data-chapter': '04' },
@@ -91,7 +98,7 @@
           ),
           h('section', { className: 'bazino-chapter bazino-visit-surface', 'data-chapter': '07' },
             h('div', { className: 'bazino-visit-copy' }, h('span', { className: 'theme-chapter-label' }, 'CHAPTER 07'), h('h2', null, text.visit), h('p', null, settings.club_address || 'Vistamare Hotel • İskele, Cyprus'), h('a', { className: 'btn btn-outline', href: 'https://www.google.com/maps/search/?api=1&query=Vistamare+Hotel+Iskele+Cyprus', target: '_blank', rel: 'noreferrer' }, 'Open directions  ↗')),
-            h('div', { className: 'bazino-app-card' }, h('span', { className: 'theme-chapter-label' }, 'BAZINO MOBILE SIGNAL'), h('h3', null, text.app), h('p', null, 'Reservations, club notifications and official updates stay within reach.'), h('a', { className: 'btn cta-primary', href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, 'Visit bazino.pro  ↗'))
+            h('div', { className: 'bazino-app-card' }, h('span', { className: 'theme-chapter-label' }, 'BAZINO MOBILE SIGNAL'), h('h3', null, text.app), h('p', null, 'Reservations, club notifications and official updates stay within reach.'), h('div', { className: 'bazino-app-downloads' }, h('a', { className: 'btn btn-outline', href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, 'iOS APP  ↗'), h('a', { className: 'btn btn-outline', href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, 'ANDROID  ↗')))
           )
         );
       }

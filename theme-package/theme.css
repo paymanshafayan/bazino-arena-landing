@@ -175,3 +175,12 @@ body[data-theme='bazino-arena'] {
   .theme-bazino-arena .bazino-score-row { grid-template-columns: 1fr 1fr 1fr; min-width: 470px; }
   .theme-bazino-arena .bazino-scoreboard { overflow-x: auto; }
 }
+
+/* Interaction upgrade: genre filters and mobile-signal download actions. */
+.theme-bazino-arena .bazino-genre-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; position: relative; z-index: 2; }
+.theme-bazino-arena .bazino-genre-filter button { background: rgba(6,8,14,.5); border: 1px solid rgba(53,169,255,.4); color: var(--theme-text-color); cursor: pointer; font: inherit; font-size: .65rem; font-weight: 900; letter-spacing: .1em; padding: 10px 13px; transition: background 180ms var(--theme-ease), border-color 180ms var(--theme-ease), color 180ms var(--theme-ease), transform 180ms var(--theme-ease); }
+.theme-bazino-arena .bazino-genre-filter button:hover, .theme-bazino-arena .bazino-genre-filter button.is-active { background: var(--primary-color); border-color: var(--primary-color); color: #06080E; transform: translateY(-2px); }
+.theme-bazino-arena .bazino-app-downloads { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+.theme-bazino-arena .bazino-app-downloads .btn { border-color: rgba(53,169,255,.62); background: rgba(6,8,14,.28); color: var(--theme-text-color); }
+.theme-bazino-arena .bazino-app-downloads .btn:hover { border-color: var(--primary-color); box-shadow: 0 0 22px rgba(53,169,255,.22); color: var(--primary-color); }
+@media (max-width: 800px) { .theme-bazino-arena .bazino-genre-filter button { flex: 1 1 calc(50% - 8px); } .theme-bazino-arena .bazino-app-downloads { flex-direction: column; } }

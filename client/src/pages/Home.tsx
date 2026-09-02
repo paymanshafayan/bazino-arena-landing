@@ -12,9 +12,12 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Check,
   Coffee,
   Crown,
+  Download,
   Gamepad2,
   MapPin,
   Menu,
@@ -34,6 +37,35 @@ const images = {
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-continuous-ending_3c5326f9.mp4",
   motionPoster: "/manus-storage/mona-fashion-show-hero-continuous-first-frame_0abe85da.jpg",
+};
+
+const gameCardImages = [
+  { key: "football", url: "/manus-storage/bazino-card-football-arena-v2_fb055da4.jpg", alt: "Original football console arena visual" },
+  { key: "racing", url: "/manus-storage/bazino-card-racing-circuit-v2_3bf73f72.jpg", alt: "Original racing console circuit visual" },
+  { key: "tactical", url: "/manus-storage/bazino-card-tactical-night-v2_7e34b12a.jpg", alt: "Original tactical console night visual" },
+  { key: "rpg", url: "/manus-storage/bazino-card-rpg-quest-v2_b6110c90.jpg", alt: "Original fantasy console quest visual" },
+];
+
+const loungeGallery = [
+  { url: "/manus-storage/bazino-vip-cafe-slider_7381d50d.jpg", label: "VIP / CAFÉ", alt: "Bazino VIP café lounge" },
+  { url: "/manus-storage/bazino-vip-lounge-seating_0a4f6547.jpg", label: "VIP / PRIVATE", alt: "Bazino private VIP console lounge" },
+  { url: "/manus-storage/bazino-cafe-counter-night_2cda0f6c.jpg", label: "CAFÉ / SERVICE", alt: "Bazino café counter at night" },
+  { url: "/manus-storage/bazino-screen-wall-arena_5b93281a.jpg", label: "SCREEN / 85 INCH", alt: "Bazino 85-inch screen wall" },
+];
+
+const tournamentCategories = [
+  { key: "all", label: "ALL SIGNALS" },
+  { key: "football", label: "FOOTBALL" },
+  { key: "racing", label: "RACING" },
+  { key: "tactical", label: "TACTICAL" },
+  { key: "rpg", label: "RPG / QUEST" },
+] as const;
+
+const categoryLabels: Record<Lang, Record<(typeof tournamentCategories)[number]["key"], string>> = {
+  tr: { all: "TÜMÜ", football: "FUTBOL", racing: "YARIŞ", tactical: "TAKTİK", rpg: "RPG / GÖREV" },
+  fa: { all: "همه", football: "فوتبال", racing: "مسابقه‌ای", tactical: "تاکتیکی", rpg: "نقش‌آفرینی" },
+  en: { all: "ALL", football: "FOOTBALL", racing: "RACING", tactical: "TACTICAL", rpg: "RPG / QUEST" },
+  ru: { all: "ВСЕ", football: "ФУТБОЛ", racing: "ГОНКИ", tactical: "ТАКТИКА", rpg: "RPG / КВЕСТ" },
 };
 
 type Copy = {
@@ -150,8 +182,12 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("tr");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [tournamentFilter, setTournamentFilter] = useState<(typeof tournamentCategories)[number]["key"]>("all");
+  const [galleryIndex, setGalleryIndex] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const t = copy[lang];
+  const visibleGameCards = tournamentFilter === "all" ? gameCardImages : gameCardImages.filter((card) => card.key === tournamentFilter);
+  const activeGallery = loungeGallery[galleryIndex];
 
   const handleDepthMove = (event: ReactPointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -275,6 +311,15 @@ export default function Home() {
             <div className="section-index section-index--light">03<span>/</span>07</div>
             <Reveal className="tournament-copy"><div className="eyebrow eyebrow--light"><span className="eyebrow-line" />{t.tournament.eyebrow}</div><h2>{t.tournament.title}</h2><p>{t.tournament.body}</p><Link className="button button--gold" href="/tournaments">{t.tournament.button}<ArrowUpRight size={17} /></Link><span className="micro-note">{t.tournament.note}</span></Reveal>
             <Reveal className="tournament-status" delay={0.14}><div className="status-icon"><Trophy size={22} /></div><span>{t.tournament.statLabel}</span><strong>{t.tournament.statValue}</strong><div className="status-pulse"><i /> LIVE SIGNAL</div></Reveal>
+            <Reveal className="tournament-discovery" delay={0.2}>
+              <div className="filter-heading"><span>DISCOVER BY GENRE</span><i /></div>
+              <div className="tournament-filter" role="group" aria-label="Filter tournaments by game category">
+                {tournamentCategories.map((category) => <button key={category.key} type="button" className={tournamentFilter === category.key ? "is-active" : ""} aria-pressed={tournamentFilter === category.key} onClick={() => setTournamentFilter(category.key)}>{categoryLabels[lang][category.key]}</button>)}
+              </div>
+              <div className="tournament-cards">
+                {visibleGameCards.map((card, index) => <motion.article key={card.key} className="tournament-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: index * 0.06 }} onPointerMove={handleDepthMove} onPointerLeave={resetDepth}><img src={card.url} alt={card.alt} /><div className="tournament-card-shade" /><span>{categoryLabels[lang][card.key as keyof typeof categoryLabels["en"]]}</span><strong>{lang === "fa" ? "اطلاعات رسمی" : lang === "ru" ? "Официальные детали" : lang === "en" ? "Official details" : "Resmi detaylar"}</strong></motion.article>)}
+              </div>
+            </Reveal>
           </div>
         </section>
 
@@ -292,7 +337,7 @@ export default function Home() {
 
         <section id="lounge" className="lounge-section section-dark" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
           <div className="layout-frame lounge-layout">
-            <Reveal className="lounge-visual"><img src={images.cafe} alt="Bazino café and VIP lounge" /><div className="lounge-visual-frame" /><div className="lounge-stamp"><span>BAZINO</span><b>VIP / CAFÉ</b><small>ISKELE / NIGHT PLAY</small></div></Reveal>
+            <Reveal className="lounge-visual"><div className="lounge-slider-media"><img src={activeGallery.url} alt={activeGallery.alt} /><div className="lounge-visual-frame" /><div className="lounge-slider-shade" /><div className="lounge-slider-controls"><button type="button" aria-label="Previous lounge image" onClick={() => setGalleryIndex((index) => (index - 1 + loungeGallery.length) % loungeGallery.length)}><ChevronLeft size={18} /></button><span>{String(galleryIndex + 1).padStart(2, "0")} / {String(loungeGallery.length).padStart(2, "0")}</span><button type="button" aria-label="Next lounge image" onClick={() => setGalleryIndex((index) => (index + 1) % loungeGallery.length)}><ChevronRight size={18} /></button></div><div className="lounge-stamp"><span>BAZINO</span><b>{activeGallery.label}</b><small>ISKELE / NIGHT PLAY</small></div></div></Reveal>
             <Reveal className="lounge-copy" delay={0.1}><div className="section-index">05<span>/</span>07</div><div className="eyebrow"><span className="eyebrow-line" />{t.lounge.eyebrow}</div><h2>{splitLines(t.lounge.title)}</h2><p>{t.lounge.body}</p><Link className="button button--gold" href="/cafe">{t.lounge.button}<ArrowUpRight size={17} /></Link></Reveal>
             <div className="service-stack">{t.lounge.services.map((service, index) => <Reveal className="service-row" key={service.label} delay={0.12 + index * 0.06}><span className="service-label">{service.label}</span><div><h3>{service.title}</h3><p>{service.body}</p></div><span className="service-index">0{index + 1}</span></Reveal>)}</div>
           </div>
@@ -308,7 +353,7 @@ export default function Home() {
         <section id="visit" className="visit-signal-section section-dark" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
           <div className="layout-frame visit-signal-layout">
             <Reveal className="visit-signal-copy"><div className="section-index">07<span>/</span>07</div><div className="eyebrow"><span className="eyebrow-line" />{t.visit.eyebrow}</div><h2>{splitLines(t.visit.title)}</h2><p>{t.visit.body}</p><div className="visit-actions"><a className="button button--outline" href="https://www.google.com/maps/search/?api=1&query=Vistamare+Hotel+Iskele+Cyprus" target="_blank" rel="noreferrer"><MapPin size={17} />{t.visit.button}</a><span className="visit-directions"><MapPin size={14} />{t.visit.directions}</span></div></Reveal>
-            <Reveal className="visit-signal-card" delay={0.12}><div className="visit-card-top"><span>BAZINO MOBILE SIGNAL</span><Smartphone size={20} /></div><h3>{t.visit.appTitle}</h3><p>{t.visit.appBody}</p><a className="button button--gold" href="https://bazino.pro" target="_blank" rel="noreferrer">{t.visit.appButton}<ArrowUpRight size={17} /></a><div className="visit-card-meta"><span>VISTAMARE HOTEL</span><span>ISKELE / CYPRUS</span></div></Reveal>
+            <Reveal className="visit-signal-card" delay={0.12}><div className="visit-card-top"><span>BAZINO MOBILE SIGNAL</span><Smartphone size={20} /></div><h3>{t.visit.appTitle}</h3><p>{t.visit.appBody}</p><div className="app-downloads"><a className="app-download app-download--ios" href="https://bazino.pro" target="_blank" rel="noreferrer"><Smartphone size={18} /><span><small>DOWNLOAD ON</small><b>iOS APP</b></span><ArrowUpRight size={16} /></a><a className="app-download app-download--android" href="https://bazino.pro" target="_blank" rel="noreferrer"><Download size={18} /><span><small>GET IT ON</small><b>ANDROID</b></span><ArrowUpRight size={16} /></a></div><div className="visit-card-meta"><span>VISTAMARE HOTEL</span><span>ISKELE / CYPRUS</span></div></Reveal>
           </div>
         </section>
       </main>

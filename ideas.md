@@ -90,3 +90,6 @@
 - Blue neon is the required technology layer and must appear in every major chapter through glow, frame lines, data labels, screen atmosphere, or camera language.
 - Technical clipped-corner, scoreboard, and HUD motifs should repeat across booking, café, location, app, and footer surfaces so the full page reads as one cinematic trailer.
 - The approved Mona video remains the canonical Hero media; system-level depth, arena-screen context, and blue signal layers should strengthen her gaming-lounge role without changing her locked identity or wardrobe.
+- Each major chapter should read as a distinct cinematic scene rather than a repeated editorial panel: tournament uses a signal board, lounge uses a camera/gallery cutaway, and the visit/app chapter uses a mobile beacon.
+- Blue neon must be structural across the scroll through frame lines, screen atmosphere, data labels, and interaction feedback; yellow remains the focused action signal.
+- The current approved Hero media is preserved as canonical; any future Mona media must follow the locked black gaming-jacket, gold-piping, blue-accent host identity.

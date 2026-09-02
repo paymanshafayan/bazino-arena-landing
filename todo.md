@@ -265,3 +265,14 @@
 - [x] Preserve the Instagram-aligned console-only Bazino visual system and Mona identity rules.
 - [x] Validate desktop/mobile behavior, accessibility, routes, and production build.
 - [x] Save the completed seven-section Landing Page checkpoint.
+
+## Landing Page interaction and asset upgrade
+
+- [x] Re-check the official GameNet homepage and guide for any missing homepage surfaces.
+- [x] Generate and upload distinct console/game-inspired card images plus VIP/Café slider imagery.
+- [x] Add accessible tournament game-category filtering.
+- [x] Add interactive VIP/Café image slider with hover depth and keyboard controls.
+- [x] Add Android/iOS download buttons with neon icon treatments and official-link placeholders where URLs are unavailable.
+- [x] Install and apply Vazirmatn for Persian text without weakening Turkish/English/Russian typography.
+- [x] Intensify cinematic cursor and scroll-reveal motion while respecting reduced motion.
+- [x] Validate all changes across desktop/mobile and save a new checkpoint.
