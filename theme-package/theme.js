@@ -25,6 +25,11 @@
         var dir = props.dir || (language === 'fa' ? 'rtl' : 'ltr');
         var genreState = R.useState ? R.useState('all') : ['all', function () {}];
         var activeGenre = genreState[0];
+        var searchState = R.useState ? R.useState('') : ['', function () {}];
+        var sortState = R.useState ? R.useState('featured') : ['featured', function () {}];
+        var galleryState = R.useState ? R.useState(0) : [0, function () {}];
+        var galleryPauseState = R.useState ? R.useState(false) : [false, function () {}];
+        var loadingState = R.useState ? R.useState(true) : [false, function () {}];
         var settings = props.settings || {};
         var copy = {
           tr: { hero: 'ŞAMPİYONSAN, İŞTE BURASI.', sub: 'PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar.', cta: 'Rezervasyon yap', genres: 'Console arena', tournaments: 'Aktif turnuvalar', results: 'Match history', lounges: 'VIP ve kafe', passes: 'Giriş sinyali', visit: 'İskele’de buluşalım', app: 'Sinyali yanında taşı.' },
@@ -56,9 +61,19 @@
         };
         var genreLabels = language === 'fa' ? ['همه', 'فوتبال', 'مسابقه‌ای', 'تاکتیکی', 'نقش‌آفرینی'] : language === 'ru' ? ['ВСЕ', 'ФУТБОЛ', 'ГОНКИ', 'ТАКТИКА', 'RPG'] : language === 'en' ? ['ALL', 'FOOTBALL', 'RACING', 'TACTICAL', 'RPG / QUEST'] : ['TÜMÜ', 'FUTBOL', 'YARIŞ', 'TAKTİK', 'RPG / GÖREV'];
         var genreKeys = ['all', 'football', 'racing', 'tactical', 'rpg'];
-        var visibleTournaments = activeGenre === 'all' ? tournaments : tournaments.filter(function (entry) { return (entry.genre || entry.category || '').toLowerCase() === activeGenre; });
+        var tournamentSearch = searchState[0].trim().toLowerCase();
+        var visibleTournaments = tournaments.filter(function (entry) { var matchesGenre = activeGenre === 'all' || (entry.genre || entry.category || '').toLowerCase() === activeGenre; var label = (entry.title || entry.name || entry.body || entry.description || '').toLowerCase(); return matchesGenre && (!tournamentSearch || label.indexOf(tournamentSearch) !== -1); }).sort(function (a, b) { if (sortState[0] === 'date') return String(b.date || b.startDate || '').localeCompare(String(a.date || a.startDate || '')); if (sortState[0] === 'prize') return Number(b.prizeAmount || b.prize || 0) - Number(a.prizeAmount || a.prize || 0); return 0; });
+        var loungeImages = lounges.filter(function (entry) { return entry && (entry.imageUrl || entry.image); });
+        var loungeIndex = loungeImages.length ? galleryState[0] % loungeImages.length : 0;
+        var activeLounge = loungeImages[loungeIndex];
         var genreFilter = h('div', { className: 'bazino-genre-filter', role: 'group', 'aria-label': 'Filter tournaments by game category' }, genreKeys.map(function (key, index) { return h('button', { key: key, type: 'button', className: activeGenre === key ? 'is-active' : '', 'aria-pressed': activeGenre === key, onClick: function () { genreState[1](key); } }, genreLabels[index]); }));
-        return h('div', { className: 'bazino-home', dir: dir, 'data-theme-id': props.themeId || 'bazino-arena' },
+        var tournamentTools = h('div', { className: 'bazino-tournament-tools' }, h('label', { className: 'bazino-tournament-search' }, h('span', { className: 'sr-only' }, 'Search tournaments'), h('input', { type: 'search', value: searchState[0], placeholder: language === 'fa' ? 'جستجوی تورنومنت' : language === 'ru' ? 'Поиск турниров' : language === 'en' ? 'Search tournaments' : 'Turnuva ara', onChange: function (event) { searchState[1](event.target.value); } })), h('label', { className: 'bazino-tournament-sort' }, h('span', null, language === 'fa' ? 'مرتب‌سازی' : language === 'ru' ? 'Сортировка' : language === 'en' ? 'Sort' : 'Sırala'), h('select', { value: sortState[0], onChange: function (event) { sortState[1](event.target.value); } }, h('option', { value: 'featured' }, language === 'fa' ? 'پیشنهادی' : language === 'ru' ? 'Избранное' : language === 'en' ? 'Featured' : 'Öne çıkan'), h('option', { value: 'date' }, language === 'fa' ? 'بر اساس تاریخ' : language === 'ru' ? 'По дате' : language === 'en' ? 'By date' : 'Tarihe göre'), h('option', { value: 'prize' }, language === 'fa' ? 'بر اساس جایزه' : language === 'ru' ? 'По призу' : language === 'en' ? 'By prize' : 'Ödüle göre'))));
+        if (R.useEffect) {
+          R.useEffect(function () { if (!loadingState[0]) return; var timer = window.setTimeout(function () { loadingState[1](false); }, 820); return function () { window.clearTimeout(timer); }; }, [loadingState[0]]);
+          R.useEffect(function () { if (galleryPauseState[0] || loungeImages.length < 2) return; var timer = window.setInterval(function () { galleryState[1](function (index) { return (index + 1) % loungeImages.length; }); }, 5200); return function () { window.clearInterval(timer); }; }, [galleryPauseState[0], loungeImages.length]);
+        }
+        return h('div', { className: 'bazino-home', dir: dir, 'data-theme-id': props.themeId || 'bazino-arena', 'aria-busy': loadingState[0] },
+          loadingState[0] && h('div', { className: 'bazino-theme-loader', role: 'status' }, h('div', { className: 'bazino-theme-loader-mark' }, 'B'), h('strong', null, 'BAZINO'), h('span', null, 'LOADING ARENA SIGNAL')),
           h('section', { className: 'bazino-chapter bazino-home-hero', 'data-chapter': '01' },
             h('div', { className: 'bazino-hero-image', style: { backgroundImage: 'url(' + image + ')' } }),
             h('div', { className: 'bazino-hero-grid' }),
@@ -78,6 +93,7 @@
           h('section', { className: 'bazino-chapter bazino-tournament-surface', 'data-chapter': '03' },
             h('div', { className: 'bazino-section-head' }, h('span', { className: 'theme-chapter-label' }, 'CHAPTER 03'), h('h2', null, text.tournaments), h('p', null, 'STATUS / DATE / PRIZE INFORMATION')),
             genreFilter,
+            tournamentTools,
             cardGrid(visibleTournaments, 'TOURNAMENT', [ { title: 'Next tournament', status: 'OPEN', body: 'Dates, entry conditions and official prizes.' } ]),
             routeLink('Open tournament hub', 'tournaments')
           ),
@@ -88,6 +104,7 @@
           ),
           h('section', { className: 'bazino-chapter bazino-lounge-surface', 'data-chapter': '05' },
             h('div', { className: 'bazino-section-head' }, h('span', { className: 'theme-chapter-label' }, 'CHAPTER 05'), h('h2', null, text.lounges), h('p', null, 'VIP / CAFÉ / BETWEEN ROUNDS')),
+            activeLounge && h('div', { className: 'bazino-theme-lounge-slider', onMouseEnter: function () { galleryPauseState[1](true); }, onMouseLeave: function () { galleryPauseState[1](false); }, onFocus: function () { galleryPauseState[1](true); }, onBlur: function () { galleryPauseState[1](false); }, tabIndex: 0 }, h('img', { src: activeLounge.imageUrl || activeLounge.image, alt: activeLounge.alt || activeLounge.title || 'Bazino lounge' }), h('div', { className: 'bazino-theme-slider-status' }, String(loungeIndex + 1).padStart(2, '0') + ' / ' + String(loungeImages.length).padStart(2, '0'), galleryPauseState[0] ? 'PAUSED' : 'AUTOPLAY')),
             cardGrid(lounges, 'LOUNGE', [ { title: 'VIP Lounge', body: 'More room, more comfort, a quieter pace.' }, { title: 'Gaming Café', body: 'A social pause without leaving the night.' } ]),
             routeLink('Explore café', 'cafe')
           ),

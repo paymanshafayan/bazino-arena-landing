@@ -810,3 +810,38 @@ body[data-locale="fa"] h1, body[data-locale="fa"] h2, body[data-locale="fa"] h3,
 @media (prefers-reduced-motion: reduce) {
   .tournament-section .tournament-copy, .tournament-section .tournament-status, .lounge-slider-media { transform: none; }
 }
+
+/* Home interaction upgrade: a short arena boot sequence, auto-advancing lounge frames, and discoverable tournament tools. */
+.site-shell { opacity: 1; transition: opacity 420ms var(--ease-out, cubic-bezier(.23,1,.32,1)); }
+.site-shell--loading { opacity: 0; pointer-events: none; }
+.site-shell--ready { opacity: 1; }
+.bazino-loader { align-items: center; background: #05070d; color: #f6f4ed; display: flex; flex-direction: column; inset: 0; justify-content: center; position: fixed; z-index: 100; }
+.bazino-loader::before, .bazino-loader::after { border: 1px solid rgba(53,169,255,.24); content: ""; height: min(72vw, 420px); pointer-events: none; position: absolute; width: min(72vw, 420px); }
+.bazino-loader::before { border-radius: 50%; border-right-color: rgba(255,196,0,.82); animation: bazino-loader-orbit 1.8s linear infinite; }
+.bazino-loader::after { height: min(58vw, 340px); opacity: .5; transform: rotate(45deg); width: min(58vw, 340px); }
+.bazino-loader-mark { align-items: center; background: #ffc400; color: #07090f; display: flex; font-family: var(--font-display, sans-serif); font-size: 2.4rem; font-style: italic; font-weight: 950; height: 58px; justify-content: center; position: relative; transform: skew(-8deg); width: 58px; z-index: 1; }
+.bazino-loader-wordmark { font-family: var(--font-display, sans-serif); font-size: clamp(1.25rem, 3vw, 1.8rem); font-weight: 900; letter-spacing: .16em; margin: 18px 0 28px; position: relative; z-index: 1; }
+.bazino-loader-track { background: rgba(255,255,255,.13); height: 2px; overflow: hidden; position: relative; width: min(260px, 60vw); z-index: 1; }
+.bazino-loader-track span { animation: bazino-loader-progress 1s var(--ease-out, cubic-bezier(.23,1,.32,1)) both; background: linear-gradient(90deg, #ffc400, #35a9ff); display: block; height: 100%; transform-origin: left center; }
+.bazino-loader p { color: rgba(255,255,255,.86); font-family: var(--font-display, sans-serif); font-size: .68rem; font-weight: 800; letter-spacing: .14em; margin: 20px 0 6px; position: relative; text-transform: uppercase; z-index: 1; }
+.bazino-loader small { color: rgba(255,255,255,.48); font-size: .72rem; position: relative; z-index: 1; }
+@keyframes bazino-loader-orbit { to { transform: rotate(360deg); } }
+@keyframes bazino-loader-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.tournament-tools { align-items: stretch; display: flex; gap: 10px; margin: 14px 0 9px; max-width: 560px; }
+.tournament-search, .tournament-sort { align-items: center; background: rgba(5,8,14,.68); border: 1px solid rgba(53,169,255,.32); color: rgba(255,255,255,.66); display: flex; min-height: 42px; }
+.tournament-search { flex: 1 1 58%; gap: 9px; padding: 0 12px; }
+.tournament-search input { background: transparent; border: 0; color: #fff; font: inherit; min-width: 0; outline: 0; width: 100%; }
+.tournament-search input::placeholder { color: rgba(255,255,255,.48); }
+.tournament-search:focus-within, .tournament-sort:focus-within { border-color: #35a9ff; box-shadow: 0 0 0 2px rgba(53,169,255,.13); }
+.tournament-sort { flex: 0 0 150px; gap: 8px; padding: 0 10px; }
+.tournament-sort span { color: rgba(255,255,255,.42); font-size: .59rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.tournament-sort select { appearance: none; background: transparent; border: 0; color: #ffc400; cursor: pointer; font: inherit; font-size: .63rem; font-weight: 900; letter-spacing: .06em; min-width: 0; outline: 0; }
+.tournament-sort option { background: #08101c; color: #fff; }
+.tournament-tool-note { color: rgba(255,255,255,.48); font-size: .6rem; letter-spacing: .1em; margin: 0 0 15px; text-transform: uppercase; }
+.tournament-empty { border: 1px dashed rgba(53,169,255,.42); color: rgba(255,255,255,.72); font-size: .78rem; padding: 22px; }
+.lounge-slider-media { outline: 0; }
+.lounge-slider-media:focus-visible { box-shadow: 0 0 0 2px #ffc400, 0 0 0 6px rgba(53,169,255,.28), 20px 24px 0 rgba(53,169,255,.08); }
+.lounge-slider-media::after { background: linear-gradient(90deg, transparent, rgba(53,169,255,.78), transparent); content: ""; height: 1px; left: 11%; opacity: .85; position: absolute; right: 11%; top: 13%; transform: scaleX(.35); transform-origin: center; transition: transform 520ms var(--ease-out, cubic-bezier(.23,1,.32,1)); z-index: 5; }
+.lounge-slider-media:hover::after, .lounge-slider-media:focus-visible::after { transform: scaleX(1); }
+@media (max-width: 760px) { .tournament-tools { flex-direction: column; } .tournament-sort { flex-basis: auto; } .bazino-loader::before { height: 72vw; width: 72vw; } .lounge-slider-media:focus-visible { box-shadow: 0 0 0 2px #ffc400, 0 0 0 5px rgba(53,169,255,.28), 9px 12px 0 rgba(53,169,255,.08); } }
+@media (prefers-reduced-motion: reduce) { .bazino-loader::before, .bazino-loader-track span { animation: none; } .bazino-loader-track span { transform: scaleX(1); } .site-shell { transition-duration: 160ms; } }

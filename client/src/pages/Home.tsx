@@ -21,6 +21,7 @@ import {
   Gamepad2,
   MapPin,
   Menu,
+  Search,
   Smartphone,
   Sparkles,
   Trophy,
@@ -39,7 +40,9 @@ const images = {
   motionPoster: "/manus-storage/mona-fashion-show-hero-continuous-first-frame_0abe85da.jpg",
 };
 
-const gameCardImages = [
+type GameCardImage = { key: string; url: string; alt: string; publishedAt?: string; prizeValue?: number; searchTerms?: string };
+
+const gameCardImages: GameCardImage[] = [
   { key: "football", url: "/manus-storage/bazino-card-football-arena-v2_fb055da4.jpg", alt: "Original football console arena visual" },
   { key: "racing", url: "/manus-storage/bazino-card-racing-circuit-v2_3bf73f72.jpg", alt: "Original racing console circuit visual" },
   { key: "tactical", url: "/manus-storage/bazino-card-tactical-night-v2_7e34b12a.jpg", alt: "Original tactical console night visual" },
@@ -67,6 +70,15 @@ const categoryLabels: Record<Lang, Record<(typeof tournamentCategories)[number][
   en: { all: "ALL", football: "FOOTBALL", racing: "RACING", tactical: "TACTICAL", rpg: "RPG / QUEST" },
   ru: { all: "ВСЕ", football: "ФУТБОЛ", racing: "ГОНКИ", tactical: "ТАКТИКА", rpg: "RPG / КВЕСТ" },
 };
+
+const uiCopy: Record<Lang, { search: string; sort: string; featured: string; date: string; prize: string; noResults: string; galleryAuto: string; galleryPaused: string; previous: string; next: string; loader: string; loaderSub: string }> = {
+  tr: { search: "Turnuva ara", sort: "Sırala", featured: "Öne çıkan", date: "Tarihe göre", prize: "Ödüle göre", noResults: "Bu sinyal için eşleşme bulunamadı.", galleryAuto: "OTOMATİK GEÇİŞ", galleryPaused: "DURAKLATILDI", previous: "Önceki lounge görseli", next: "Sonraki lounge görseli", loader: "ARENA SİNYALİ YÜKLENİYOR", loaderSub: "Bazino gece akışı hazırlanıyor" },
+  fa: { search: "جستجوی تورنومنت", sort: "مرتب‌سازی", featured: "پیشنهادی", date: "بر اساس تاریخ", prize: "بر اساس جایزه", noResults: "برای این سیگنال نتیجه‌ای پیدا نشد.", galleryAuto: "حرکت خودکار", galleryPaused: "متوقف", previous: "تصویر قبلی لانژ", next: "تصویر بعدی لانژ", loader: "در حال بارگذاری سیگنال آرنا", loaderSub: "جریان شبانه‌ی بازینو آماده می‌شود" },
+  en: { search: "Search tournaments", sort: "Sort", featured: "Featured", date: "By date", prize: "By prize", noResults: "No signal matches this search.", galleryAuto: "AUTOPLAY", galleryPaused: "PAUSED", previous: "Previous lounge image", next: "Next lounge image", loader: "LOADING ARENA SIGNAL", loaderSub: "Preparing the Bazino night flow" },
+  ru: { search: "Поиск турниров", sort: "Сортировка", featured: "Избранное", date: "По дате", prize: "По призу", noResults: "Совпадений для этого сигнала нет.", galleryAuto: "АВТОПЕРЕХОД", galleryPaused: "ПАУЗА", previous: "Предыдущее фото лаунжа", next: "Следующее фото лаунжа", loader: "ЗАГРУЗКА СИГНАЛА АРЕНЫ", loaderSub: "Готовим ночной поток Bazino" },
+};
+
+type TournamentSort = "featured" | "date" | "prize";
 
 type Copy = {
   languageName: string;
@@ -183,10 +195,22 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [tournamentFilter, setTournamentFilter] = useState<(typeof tournamentCategories)[number]["key"]>("all");
+  const [tournamentQuery, setTournamentQuery] = useState("");
+  const [tournamentSort, setTournamentSort] = useState<TournamentSort>("featured");
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [galleryPaused, setGalleryPaused] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const t = copy[lang];
-  const visibleGameCards = tournamentFilter === "all" ? gameCardImages : gameCardImages.filter((card) => card.key === tournamentFilter);
+  const ui = uiCopy[lang];
+  const visibleGameCards = [...gameCardImages]
+    .filter((card) => tournamentFilter === "all" || card.key === tournamentFilter)
+    .filter((card) => `${card.key} ${card.alt} ${card.searchTerms ?? ""}`.toLowerCase().includes(tournamentQuery.trim().toLowerCase()))
+    .sort((a, b) => {
+      if (tournamentSort === "date") return (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "");
+      if (tournamentSort === "prize") return (b.prizeValue ?? 0) - (a.prizeValue ?? 0);
+      return 0;
+    });
   const activeGallery = loungeGallery[galleryIndex];
 
   const handleDepthMove = (event: ReactPointerEvent<HTMLElement>) => {
@@ -209,13 +233,41 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (galleryPaused) return;
+    const timer = window.setInterval(() => setGalleryIndex((index) => (index + 1) % loungeGallery.length), 5200);
+    return () => window.clearInterval(timer);
+  }, [galleryPaused]);
+
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const delay = reduced ? 360 : 980;
+    const fontReady = document.fonts?.ready ?? Promise.resolve();
+    const timer = new Promise<void>((resolve) => window.setTimeout(resolve, delay));
+    let cancelled = false;
+    Promise.all([fontReady, timer]).then(() => {
+      if (!cancelled) setIsLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
     document.body.dataset.locale = lang;
   }, [lang]);
 
   return (
-    <div className="site-shell">
+    <>
+      {isLoading && (
+        <div className="bazino-loader" role="status" aria-live="polite">
+          <div className="bazino-loader-mark" aria-hidden="true">B</div>
+          <div className="bazino-loader-wordmark">BAZINO</div>
+          <div className="bazino-loader-track"><span /></div>
+          <p>{ui.loader}</p>
+          <small>{ui.loaderSub}</small>
+        </div>
+      )}
+      <div className={`site-shell ${isLoading ? "site-shell--loading" : "site-shell--ready"}`} aria-busy={isLoading} aria-hidden={isLoading}>
       <header className={`site-header ${scrolled ? "site-header--scrolled" : ""}`}>
         <a className="brand-lockup" href="#top" aria-label="Bazino home">
           <span className="brand-mark-css" aria-hidden="true">B</span>
@@ -311,13 +363,19 @@ export default function Home() {
             <div className="section-index section-index--light">03<span>/</span>07</div>
             <Reveal className="tournament-copy"><div className="eyebrow eyebrow--light"><span className="eyebrow-line" />{t.tournament.eyebrow}</div><h2>{t.tournament.title}</h2><p>{t.tournament.body}</p><Link className="button button--gold" href="/tournaments">{t.tournament.button}<ArrowUpRight size={17} /></Link><span className="micro-note">{t.tournament.note}</span></Reveal>
             <Reveal className="tournament-status" delay={0.14}><div className="status-icon"><Trophy size={22} /></div><span>{t.tournament.statLabel}</span><strong>{t.tournament.statValue}</strong><div className="status-pulse"><i /> LIVE SIGNAL</div></Reveal>
-            <Reveal className="tournament-discovery" delay={0.2}>
+                          <Reveal className="tournament-discovery" delay={0.2}>
               <div className="filter-heading"><span>DISCOVER BY GENRE</span><i /></div>
               <div className="tournament-filter" role="group" aria-label="Filter tournaments by game category">
                 {tournamentCategories.map((category) => <button key={category.key} type="button" className={tournamentFilter === category.key ? "is-active" : ""} aria-pressed={tournamentFilter === category.key} onClick={() => setTournamentFilter(category.key)}>{categoryLabels[lang][category.key]}</button>)}
               </div>
+              <div className="tournament-tools">
+                <label className="tournament-search"><Search size={15} aria-hidden="true" /><span className="sr-only">{ui.search}</span><input type="search" value={tournamentQuery} onChange={(event) => setTournamentQuery(event.target.value)} placeholder={ui.search} /></label>
+                <label className="tournament-sort"><span>{ui.sort}</span><select value={tournamentSort} onChange={(event) => setTournamentSort(event.target.value as TournamentSort)} aria-label={ui.sort}><option value="featured">{ui.featured}</option><option value="date">{ui.date}</option><option value="prize">{ui.prize}</option></select></label>
+              </div>
+              <div className="tournament-tool-note">{tournamentSort === "featured" ? ui.featured : tournamentSort === "date" ? ui.date : ui.prize} · {tournamentQuery ? `${visibleGameCards.length} / ${gameCardImages.length}` : `${gameCardImages.length} SIGNALS`}</div>
+
               <div className="tournament-cards">
-                {visibleGameCards.map((card, index) => <motion.article key={card.key} className="tournament-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: index * 0.06 }} onPointerMove={handleDepthMove} onPointerLeave={resetDepth}><img src={card.url} alt={card.alt} /><div className="tournament-card-shade" /><span>{categoryLabels[lang][card.key as keyof typeof categoryLabels["en"]]}</span><strong>{lang === "fa" ? "اطلاعات رسمی" : lang === "ru" ? "Официальные детали" : lang === "en" ? "Official details" : "Resmi detaylar"}</strong></motion.article>)}
+                {visibleGameCards.length ? visibleGameCards.map((card, index) => <motion.article key={card.key} className="tournament-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: index * 0.06 }} onPointerMove={handleDepthMove} onPointerLeave={resetDepth}><img src={card.url} alt={card.alt} /><div className="tournament-card-shade" /><span>{categoryLabels[lang][card.key as keyof typeof categoryLabels["en"]]}</span><strong>{lang === "fa" ? "اطلاعات رسمی" : lang === "ru" ? "Официальные детали" : lang === "en" ? "Official details" : "Resmi detaylar"}</strong></motion.article>) : <div className="tournament-empty" role="status">{ui.noResults}</div>}
               </div>
             </Reveal>
           </div>
@@ -337,7 +395,8 @@ export default function Home() {
 
         <section id="lounge" className="lounge-section section-dark" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
           <div className="layout-frame lounge-layout">
-            <Reveal className="lounge-visual"><div className="lounge-slider-media"><img src={activeGallery.url} alt={activeGallery.alt} /><div className="lounge-visual-frame" /><div className="lounge-slider-shade" /><div className="lounge-slider-controls"><button type="button" aria-label="Previous lounge image" onClick={() => setGalleryIndex((index) => (index - 1 + loungeGallery.length) % loungeGallery.length)}><ChevronLeft size={18} /></button><span>{String(galleryIndex + 1).padStart(2, "0")} / {String(loungeGallery.length).padStart(2, "0")}</span><button type="button" aria-label="Next lounge image" onClick={() => setGalleryIndex((index) => (index + 1) % loungeGallery.length)}><ChevronRight size={18} /></button></div><div className="lounge-stamp"><span>BAZINO</span><b>{activeGallery.label}</b><small>ISKELE / NIGHT PLAY</small></div></div></Reveal>
+                          <Reveal className="lounge-visual"><div className="lounge-slider-media" tabIndex={0} aria-label={galleryPaused ? ui.galleryPaused : ui.galleryAuto} onMouseEnter={() => setGalleryPaused(true)} onMouseLeave={() => setGalleryPaused(false)} onFocus={() => setGalleryPaused(true)} onBlur={() => setGalleryPaused(false)}><img src={activeGallery.url} alt={activeGallery.alt} /><div className="lounge-visual-frame" /><div className="lounge-slider-shade" /><div className="lounge-slider-controls"><button type="button" aria-label={ui.previous} onClick={() => setGalleryIndex((index) => (index - 1 + loungeGallery.length) % loungeGallery.length)}><ChevronLeft size={18} /></button><span>{String(galleryIndex + 1).padStart(2, "0")} / {String(loungeGallery.length).padStart(2, "0")}</span><button type="button" aria-label={ui.next} onClick={() => setGalleryIndex((index) => (index + 1) % loungeGallery.length)}><ChevronRight size={18} /></button></div><div className="lounge-stamp"><span>BAZINO</span><b>{activeGallery.label}</b><small>{galleryPaused ? ui.galleryPaused : ui.galleryAuto}</small></div></div></Reveal>
+
             <Reveal className="lounge-copy" delay={0.1}><div className="section-index">05<span>/</span>07</div><div className="eyebrow"><span className="eyebrow-line" />{t.lounge.eyebrow}</div><h2>{splitLines(t.lounge.title)}</h2><p>{t.lounge.body}</p><Link className="button button--gold" href="/cafe">{t.lounge.button}<ArrowUpRight size={17} /></Link></Reveal>
             <div className="service-stack">{t.lounge.services.map((service, index) => <Reveal className="service-row" key={service.label} delay={0.12 + index * 0.06}><span className="service-label">{service.label}</span><div><h3>{service.title}</h3><p>{service.body}</p></div><span className="service-index">0{index + 1}</span></Reveal>)}</div>
           </div>
@@ -358,7 +417,9 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="site-footer"><div className="layout-frame footer-main"><a className="brand-lockup" href="#top"><span className="brand-mark-css" aria-hidden="true">B</span><span className="brand-wordmark">BAZINO</span><span className="brand-submark">GAMING LOUNGE</span></a><p className="footer-line">{t.footer.line}</p><div className="footer-location"><MapPin size={14} />{t.footer.location}</div></div><div className="layout-frame footer-bottom"><span>© {new Date().getFullYear()} BAZINO GAMING LOUNGE</span><a href="https://bazino.pro" target="_blank" rel="noreferrer">{t.footer.official} <ArrowUpRight size={14} /></a><span>{t.footer.privacy}</span></div></footer>
-    </div>
+      <footer className="site-footer"><div className="layout-frame footer-main"><a className="brand-lockup" href="#top"><span className="brand-mark-css" aria-hidden="true">B</span><span className="brand-wordmark">BAZINO</span><span className="brand-submark">GAMING LOUNGE</span></a><p className="footer-line">{t.footer.line}</p><div className="footer-location"><MapPin size={14} />{t.footer.location}</div></div><div className="layout-frame footer-bottom"><span>© {new Date().getFullYear()} BAZINO GAMING LOUNGE</span><a href="https://bazino.pro" target="_blank" rel="noreferrer">{t.footer.official} <ArrowUpRight size={14} /></a><span>{t.footer.privacy}</span></div>      </footer>
+      </div>
+    </>
   );
+
 }

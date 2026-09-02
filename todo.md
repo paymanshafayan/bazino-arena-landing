@@ -276,3 +276,12 @@
 - [x] Install and apply Vazirmatn for Persian text without weakening Turkish/English/Russian typography.
 - [x] Intensify cinematic cursor and scroll-reveal motion while respecting reduced motion.
 - [x] Validate all changes across desktop/mobile and save a new checkpoint.
+
+## Home interaction and loading upgrade
+
+- [x] Inspect existing slider, tournament data, and loading behavior.
+- [x] Add VIP/Café autoplay with pause on hover and keyboard focus.
+- [x] Add tournament search and sort by date or prize amount.
+- [x] Add a cinematic Bazino-logo loader before Home becomes visible.
+- [x] Validate keyboard, mobile, reduced-motion, loading, and production build behavior.
+- [ ] Save a new checkpoint.
