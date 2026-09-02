@@ -3,7 +3,7 @@
  * This page keeps the Instagram identity visible: charcoal black, championship gold,
  * electric blue, console-only messaging, and a recurring virtual host.
  */
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import { portalNav } from "@/data/portalData";
@@ -40,6 +40,7 @@ const images = {
   tournament: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1800&q=88",
   cafe: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=88",
   mark: "/manus-storage/bazino-mark_2aba1000.png",
+  motionVideo: "/manus-storage/mona-fashion-show-hero-16x9-continuous-ending_3efd7343.mp4",
 };
 
 const copy: Record<Lang, {
@@ -161,6 +162,10 @@ export default function Home() {
   const [activeChapter, setActiveChapter] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [motionProgress, setMotionProgress] = useState(0);
+  const [motionReady, setMotionReady] = useState(false);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const motionPointerX = useRef<number | null>(null);
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
   const smoothX = useSpring(pointerX, { stiffness: 80, damping: 18, mass: 0.6 });
@@ -201,6 +206,48 @@ export default function Home() {
     pointerY.set(0);
   };
 
+  const scrubHeroVideo = (clientX: number, rect: DOMRect) => {
+    const video = heroVideoRef.current;
+    if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
+    const previousX = motionPointerX.current;
+    motionPointerX.current = clientX;
+    if (previousX === null) return;
+    const delta = clientX - previousX;
+    const nextTime = Math.min(video.duration, Math.max(0, video.currentTime + (delta / rect.width) * video.duration * 1.25));
+    if (Math.abs(video.currentTime - nextTime) > 0.005) video.currentTime = nextTime;
+    setMotionProgress(video.duration ? nextTime / video.duration : 0);
+  };
+
+  const isInteractiveTarget = (target: EventTarget | null) =>
+    target instanceof HTMLElement && Boolean(target.closest("a, button, select"));
+
+  const handleMotionPointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    if (!motionReady || isInteractiveTarget(event.target)) return;
+    scrubHeroVideo(event.clientX, event.currentTarget.getBoundingClientRect());
+  };
+
+  const handleMotionPointerDown = (event: React.PointerEvent<HTMLElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (isInteractiveTarget(event.target)) return;
+    motionPointerX.current = event.clientX;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleMotionPointerUp = (event: React.PointerEvent<HTMLElement>) => {
+    motionPointerX.current = null;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handleMotionLoaded = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = event.currentTarget;
+    video.pause();
+    video.currentTime = 0;
+    setMotionProgress(0);
+    setMotionReady(Number.isFinite(video.duration) && video.duration > 0);
+  };
+
   const nextChapter = () => setActiveChapter((value) => (value + 1) % chapters.length);
   const previousChapter = () => setActiveChapter((value) => (value - 1 + chapters.length) % chapters.length);
 
@@ -236,10 +283,37 @@ export default function Home() {
       </header>
 
       <main>
-        <section id="top" className="hero mona-hero" style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}>
+        <section
+          id="top"
+          className="hero mona-hero"
+          style={{ "--hero-x": "0px", "--hero-y": "0px" } as CSSProperties}
+          onPointerMove={(event) => {
+            handlePointerMove(event);
+            handleMotionPointerMove(event);
+          }}
+          onPointerDown={handleMotionPointerDown}
+          onPointerUp={handleMotionPointerUp}
+        >
           <div className="hero-noise" />
           <motion.div className="hero-grid" style={{ x: stageX, y: stageY }} />
-          <motion.div className="mona-cinematic-scene" style={{ x: heroX, y: heroY, scale: heroScale }} />
+          <motion.div className="mona-cinematic-scene" style={{ x: heroX, y: heroY, scale: heroScale }}>
+            <video
+              ref={heroVideoRef}
+              className="mona-motion-video"
+              src={images.motionVideo}
+              poster={images.hero}
+              muted
+              playsInline
+              preload="auto"
+              controls={false}
+              aria-label="Mona fashion-show Frame Motion Hero"
+              onLoadedMetadata={handleMotionLoaded}
+              onTimeUpdate={(event) => {
+                const video = event.currentTarget;
+                if (video.duration > 0) setMotionProgress(video.currentTime / video.duration);
+              }}
+            />
+          </motion.div>
           <div className="hero-vignette" />
           <motion.div className="hero-light-orb hero-light-orb--blue" style={{ x: stageX, y: stageY }} />
           <motion.div className="hero-light-orb hero-light-orb--gold" style={{ x: heroX, y: heroY }} />
@@ -253,7 +327,7 @@ export default function Home() {
                 <a className="button button--gold" href="https://bazino.pro" target="_blank" rel="noreferrer">{t.hero.primary}<ArrowUpRight size={17} /></a>
                 <button className="text-button" type="button" onClick={() => scrollToId("experiences")}>{t.hero.secondary}<ArrowDownRight size={17} /></button>
               </div>
-              <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "حرکت موس، مسیر هولوگرام را باز می‌کند" : lang === "ru" ? "Двигайте мышью, чтобы открыть орбиту" : lang === "en" ? "Move the pointer to open the orbit" : "Mona’nın yörüngesini keşfetmek için hareket et"}</div>
+              <div className="hero-footnote"><Sparkles size={14} /> {lang === "fa" ? "موس را به جلو و عقب حرکت بده تا اجرای مونا را کنترل کنی" : lang === "ru" ? "Двигайте мышью вперёд и назад, чтобы управлять сценой Моны" : lang === "en" ? "Move forward and back to control Mona’s scene" : "Mona’nın sahnesini ileri ve geri hareketle kontrol et"}</div>
             </motion.div>
 
             <motion.div className="hero-stage-meta" style={{ x: stageX, y: stageY }}>
@@ -267,7 +341,12 @@ export default function Home() {
             </motion.div>
           </div>
 
-          <div className="mona-hero-control layout-frame"><span className="mona-control-dot" /> <span>{lang === "fa" ? "برای چرخش حرکت دهید" : lang === "ru" ? "Двигайте мышью для вращения" : lang === "en" ? "Move to rotate the scene" : "Sahneyi döndürmek için hareket et"}</span><span className="mona-control-line" /></div>
+          <div className="mona-hero-control layout-frame" aria-label="Frame Motion control">
+            <span className="mona-control-dot" />
+            <span>{lang === "fa" ? "حرکت افقی موس = جلو / عقب رفتن فریم‌ها" : lang === "ru" ? "Горизонтальное движение = вперёд / назад по кадрам" : lang === "en" ? "Horizontal pointer movement = forward / reverse frames" : "Yatay hareket = ileri / geri kareler"}</span>
+            <span className="mona-control-line" />
+            <span className="mona-motion-percent">{Math.round(motionProgress * 100)}%</span>
+          </div>
         </section>
 
         <div className="gold-marquee" aria-hidden="true"><div>PLAY HARD / STAY LATE / MAKE THE NEXT ROUND COUNT / PLAY HARD / STAY LATE / MAKE THE NEXT ROUND COUNT /</div></div>

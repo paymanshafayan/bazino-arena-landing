@@ -506,7 +506,7 @@ body[data-locale="fa"] .app-side-note { border-left: 0; border-right: 1px solid 
 
 /* Mona Hero: corrected cinematic scene replacing the failed static orbit draft. */
 .mona-hero { isolation: isolate; min-height: 760px; }
-.mona-cinematic-scene { background: center / cover no-repeat url('/manus-storage/mona-cinematic-hero-scene_63deca72.png'); inset: -3%; opacity: .96; position: absolute; z-index: 0; }
+.mona-cinematic-scene { background: var(--ink); inset: -3%; opacity: .96; overflow: hidden; position: absolute; touch-action: pan-y; will-change: transform; z-index: 0; }
 .mona-hero .hero-content { z-index: 8; }
 .mona-hero .hero-copy { max-width: 550px; }
 .mona-hero-control { align-items: center; bottom: 42px; color: rgba(246,244,237,.5); display: flex; font-size: 8px; font-weight: 900; gap: 9px; letter-spacing: .16em; position: absolute; text-transform: uppercase; z-index: 10; }
@@ -523,4 +523,28 @@ body[data-locale="fa"] .app-side-note { border-left: 0; border-right: 1px solid 
   .mona-cinematic-scene { background-position: 64% center; }
   .mona-hero-control { bottom: 24px; font-size: 7px; }
   .mona-control-line { width: 48px; }
+}
+
+
+/* Frame Motion Hero: the video is a paused timeline controlled by horizontal pointer deltas. */
+.mona-hero { cursor: ew-resize; }
+.mona-hero a, .mona-hero button, .mona-hero select { cursor: pointer; }
+.mona-motion-video { display: block; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; width: 100%; }
+.mona-cinematic-scene::after { border: 1px solid rgba(255,196,0,.18); content: ""; inset: 4.5%; pointer-events: none; position: absolute; }
+.mona-motion-percent { color: var(--gold); font-variant-numeric: tabular-nums; min-width: 34px; text-align: right; }
+@media (max-width: 760px) {
+  .mona-hero { cursor: ew-resize; }
+  .mona-cinematic-scene { inset: -1.5%; }
+  .mona-motion-video { object-position: center; }
+  .mona-motion-percent { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mona-hero { cursor: default; }
+  .mona-motion-video { transform: none !important; }
+}
+
+
+/* Mobile safety: keep the interactive media and conversion actions clear of nonessential stage metadata. */
+@media (max-width: 760px) {
+  .mona-hero .hero-stage-meta { display: none; }
 }

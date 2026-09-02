@@ -82,3 +82,60 @@
 - [x] Create a manifest identifying the close-up, full-body, sleeveless-top, and black/gold outfit references.
 - [x] Update `MONA.md` with the user-approved image set as canonical and explicitly prohibit identity drift.
 - [x] Do not modify Hero, Landing Page, theme files, or application code during this lock step.
+
+## New Bazino brand-system skill
+
+- [x] Initialize `bazino-brand-system` using the skill creator scaffold.
+- [x] Write a concise trigger and workflow in `SKILL.md`.
+- [x] Add reference files for Instagram carousels, Reels, visual templates, captions/hashtags, Telegram cross-posting, website alignment, and locked Mona identity.
+- [x] Include the explicit approval gate, three-item batching rule, console-only content focus, prize-information CTA, and no-PC constraint.
+- [x] Validate the skill with the official quick validator.
+- [x] Deliver the SKILL.md package for installation.
+
+## Mona character bible integration
+
+- [x] Add the user-provided `Mona.txt` content as the authoritative character-bible reference inside `bazino-brand-system`.
+- [x] Update SKILL.md routing and precedence so the character bible is read for all Mona-related work.
+- [x] Preserve the locked visual asset references while adding the personality and communication rules.
+- [x] Validate and deliver the updated skill package.
+
+## Mona game-role wardrobe rule
+
+- [x] Add a rule that every new Mona image or video uses a distinct game-role wardrobe or character archetype.
+- [x] Preserve Mona’s locked face, hair, skin, body silhouette, and personality while allowing requested role-specific clothing changes.
+- [x] Specify original archetypes such as footballer, formula driver, fantasy adventurer, and cyberpunk hero without copying protected characters, logos, or signature costumes.
+- [x] Update the main skill routing, validate the skill, and deliver the updated SKILL.md.
+
+## Mona cinematic wardrobe-change video
+
+- [x] Produce a 10–15 second video, ideally 12 seconds, with Mona performing a natural human full-body spin like a fashion-show reveal.
+- [x] Preserve the locked Mona face, hair identity, skin tone, body proportions, and confident playful presence in every frame.
+- [x] Use four original game-role wardrobe archetypes: football champion, formula-style racing driver, cyberpunk arena hero, and fantasy adventure champion.
+- [x] Make wardrobe changes occur during clean full rotations with believable cloth, hair, body weight, and lighting continuity.
+- [x] Keep the output cinematic and realistic, without direct copyrighted character costumes, logos, or signature weapons.
+- [x] Do not generate until the user explicitly approves the detailed plan.
+
+## Mona Hero output correction
+
+- [x] Rebuild the successful Mona fashion-show motion as a true full-frame 16:9 Hero video.
+- [x] Preserve the successful natural spin, identity continuity, and wardrobe transitions.
+- [x] Fill the complete frame with a cinematic Bazino gaming-lounge environment; do not leave vertical side gaps or pillarboxing.
+- [x] Do not attempt transparent video in this pass; the Hero recommendation is a full-background master.
+- [x] Generate only after explicit approval of the correction plan, then validate the file without integrating it into code.
+
+## Mona Hero continuity correction
+
+- [ ] Keep the successful action through second 7 unchanged.
+- [ ] Complete the rotation naturally after second 7 before any approach toward camera.
+- [ ] Preserve the exact outfit and Mona identity through the ending; prohibit any sudden wardrobe change.
+- [ ] Make the final approach to camera gradual, human, and continuous with stable lighting and background.
+- [ ] Generate only after explicit approval of this correction plan; validate the edited file without integrating it into code.
+
+## Hero Frame Motion conversion
+
+- [x] Use the corrected 16:9 Mona video as the Hero motion asset.
+- [x] Upload the video through the webdev asset workflow and reference the returned stable URL.
+- [x] Add a paused video scrubber controlled by forward/backward mouse movement, with clamped currentTime and no autoplay.
+- [x] Add touch drag fallback and a visible interaction cue without obscuring the CTA.
+- [x] Preserve keyboard focus, reduced-motion fallback, poster/first-frame readability, and responsive behavior.
+- [x] Do not edit code until the user explicitly approves the implementation plan.
