@@ -288,9 +288,17 @@
 
 ## QR download and THE PLAYGROUND imagery
 
-- [ ] Inspect current Android/iOS download controls, THE PLAYGROUND panels, and available official destinations.
-- [ ] Generate distinct console-focused images for the THE PLAYGROUND panels.
-- [ ] Upload generated images to durable WebDev storage and wire them into the panels.
-- [ ] Add QR previews on Android/iOS button Hover and keyboard Focus, with accessible labels and mobile fallback.
-- [ ] Validate QR destinations, image loading, responsive behavior, and production build.
+- [x] Inspect current Android/iOS download controls, THE PLAYGROUND panels, and available official destinations.
+- [x] Generate distinct console-focused images for the THE PLAYGROUND panels.
+- [x] Upload generated images to durable WebDev storage and wire them into the panels.
+- [x] Add QR previews on Android/iOS button Hover and keyboard Focus, with accessible labels and mobile fallback.
+- [x] Validate QR destinations, image loading, responsive behavior, and production build.
+- [x] Save a new checkpoint.
+
+## Home interaction polish
+
+- [ ] Add a short neon scan instruction below QR previews on mobile.
+- [ ] Add cinematic hover zoom and expanded information for THE PLAYGROUND cards.
+- [ ] Redesign VIP/Café previous/next controls with clearer gaming affordances and neon states.
+- [ ] Validate desktop/mobile, keyboard focus, reduced-motion, and production build.
 - [ ] Save a new checkpoint.

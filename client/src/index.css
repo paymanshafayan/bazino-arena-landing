@@ -865,3 +865,31 @@ body[data-locale="fa"] h1, body[data-locale="fa"] h2, body[data-locale="fa"] h3,
 @media (prefers-reduced-motion: reduce) {
   .experience-card-image, .app-qr-popover { transition: none; }
 }
+
+/* Bazino Hall of Legends — interaction polish: mobile QR guidance, cinematic Playground reveals, and readable gaming slider controls. */
+.experience-card-reveal { align-items: center; color: var(--gold); display: flex; font-family: "Barlow Condensed", sans-serif; font-size: 10px; font-weight: 800; gap: 7px; letter-spacing: .12em; opacity: 0; transform: translateY(10px); transition: opacity 220ms var(--ease-out), transform 260ms var(--ease-out); text-transform: uppercase; }
+.experience-card:hover .experience-card-reveal, .experience-card:focus-within .experience-card-reveal { opacity: 1; transform: translateY(0); }
+.experience-card-reveal svg { transition: transform 220ms var(--ease-out); }
+.experience-card:hover .experience-card-reveal svg, .experience-card:focus-within .experience-card-reveal svg { transform: translate(2px, -2px); }
+.app-qr-popover { flex-direction: column !important; gap: 5px !important; }
+.app-qr-popover > small { font-size: 8px !important; text-align: center; }
+.app-qr-hint { color: #0b4c78 !important; display: none !important; font-family: "Vazirmatn", sans-serif !important; font-size: 9px !important; font-weight: 800; letter-spacing: 0 !important; line-height: 1.35; text-align: center; white-space: normal !important; }
+.lounge-slider-controls { align-items: center; display: flex; gap: 10px; }
+.lounge-control-button { align-items: center; background: rgba(4,13,26,.88); border: 1px solid rgba(53,169,255,.75); box-shadow: 0 0 0 1px rgba(53,169,255,.1), 0 0 15px rgba(53,169,255,.18), inset 0 0 12px rgba(53,169,255,.08); color: var(--white); cursor: pointer; display: inline-flex; height: 38px; justify-content: center; position: relative; transition: background 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-out); width: 38px; }
+.lounge-control-button::before { border-left: 1px solid var(--gold); border-top: 1px solid var(--gold); content: ""; height: 6px; left: 4px; position: absolute; top: 4px; width: 6px; }
+.lounge-control-button:hover, .lounge-control-button:focus-visible { background: rgba(53,169,255,.24); border-color: var(--gold); box-shadow: 0 0 22px rgba(53,169,255,.5), 0 0 8px rgba(255,196,0,.35), inset 0 0 16px rgba(53,169,255,.18); color: var(--gold); transform: translateY(-2px); }
+.lounge-control-button:active { transform: translateY(0) scale(.96); }
+.lounge-control-indicator { align-items: center; color: var(--white); display: flex; font-family: "Barlow Condensed", sans-serif; font-size: 16px; font-style: italic; font-weight: 800; gap: 5px; letter-spacing: .08em; }
+.lounge-control-indicator small { color: var(--blue); font-size: 8px; font-style: normal; letter-spacing: .16em; }
+.lounge-control-indicator i { color: var(--gold); font-style: normal; }
+@media (max-width: 760px) {
+  .app-qr-popover { padding: 8px 8px 7px; }
+  .app-qr-hint { display: block !important; max-width: 118px; }
+  .experience-card-reveal { opacity: 1; transform: none; }
+  .lounge-control-button { height: 42px; width: 42px; }
+  .lounge-control-indicator { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience-card-reveal, .experience-card-reveal svg, .lounge-control-button { transition: none; }
+  .experience-card-reveal { opacity: 1; transform: none; }
+}
