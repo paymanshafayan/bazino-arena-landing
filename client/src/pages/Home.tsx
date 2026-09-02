@@ -132,12 +132,22 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoEndStateRef = useRef(false);
 
   const t = copy[lang];
+
+  const revealFinalControls = (video: HTMLVideoElement) => {
+    if (videoEndStateRef.current) return;
+    videoEndStateRef.current = true;
+    video.pause();
+    if (Number.isFinite(video.duration)) video.currentTime = video.duration;
+    setVideoEnded(true);
+  };
 
   const handleReplay = () => {
     const video = videoRef.current;
     if (!video) return;
+    videoEndStateRef.current = false;
     setVideoEnded(false);
     video.currentTime = 0;
     void video.play();
@@ -200,10 +210,11 @@ export default function Home() {
               playsInline
               preload="auto"
               controls={false}
-              onEnded={(event) => {
-                event.currentTarget.pause();
-                setVideoEnded(true);
+              onTimeUpdate={(event) => {
+                const video = event.currentTarget;
+                if (video.duration > 0 && video.currentTime >= video.duration - 0.08) revealFinalControls(video);
               }}
+              onEnded={(event) => revealFinalControls(event.currentTarget)}
               aria-label="Mona fashion-show Hero video, plays once"
             >
               <source src={images.motionVideo} />

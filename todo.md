@@ -234,3 +234,9 @@
 - [x] Add subtle entrance animation for the final-frame reservation and replay controls.
 - [x] Add a polished hover treatment for the reservation CTA.
 - [x] Validate the updated route, copy, motion, hover state, and responsive presentation, then save a checkpoint.
+
+## Hero missing final controls bug fix
+
+- [x] Reproduce why the final-frame replay and reservation controls are not visible in Preview.
+- [x] Make final-frame control visibility robust across video end events and browser autoplay behavior.
+- [x] Validate desktop/mobile visibility, replay reset, reservation navigation, and build health, then save a checkpoint.
