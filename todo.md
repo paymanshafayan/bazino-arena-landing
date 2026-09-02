@@ -240,3 +240,28 @@
 - [x] Reproduce why the final-frame replay and reservation controls are not visible in Preview.
 - [x] Make final-frame control visibility robust across video end events and browser autoplay behavior.
 - [x] Validate desktop/mobile visibility, replay reset, reservation navigation, and build health, then save a checkpoint.
+
+## Landing Page redesign
+
+- [x] Remove the unreliable Hero replay and final-frame reservation controls.
+- [x] Audit the current landing sections against the portal-compatible content structure.
+- [x] Redesign the console arena, VIP lounge, tournament, café, app, visit, and footer flow.
+- [x] Validate responsive layout, routes, accessibility, and cinematic brand consistency.
+- [x] Save a redesign checkpoint after user approval.
+
+## Website finish focus
+
+- [x] Audit the current website and theme package before implementation.
+- [x] Remove the abandoned Hero end controls.
+- [x] Complete the remaining cinematic console-first Landing Page sections.
+- [x] Verify all portal routes, responsive states, accessibility, and theme package structure.
+- [x] Save the finished website checkpoint.
+
+## Seven-section cinematic Landing Page
+
+- [x] Extract the exact seven homepage sections from the theme design guide.
+- [x] Prepare and approve the cinematic interaction and scroll-animation plan before coding.
+- [x] Implement cursor depth, interactive section elements, and scroll-triggered entrance animations.
+- [x] Preserve the Instagram-aligned console-only Bazino visual system and Mona identity rules.
+- [x] Validate desktop/mobile behavior, accessibility, routes, and production build.
+- [x] Save the completed seven-section Landing Page checkpoint.

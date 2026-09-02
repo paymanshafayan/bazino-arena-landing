@@ -1,9 +1,9 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Bazino Gaming Lounge",
-  "description": "A cinematic, console-first theme for Bazino Gaming Lounge with interactive arena chapters, tournament surfaces, lounge services, and shared styling for every portal page.",
+  "description": "A seven-chapter cinematic, console-first theme for Bazino Gaming Lounge with pointer depth, scroll reveals, tournament surfaces, lounge services, app signal, and shared styling for every portal page.",
   "colors": {
     "primary": "#FFC400",
     "accent": "#35A9FF",

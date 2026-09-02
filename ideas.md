@@ -83,3 +83,10 @@
 ## Mona identity contract
 
 “Mona” is the permanent project shorthand for Bazino’s recurring virtual influencer. Preserve her Mediterranean/Cypriot appearance, dark ponytail, black gaming jacket with gold piping and blue accents, confident half-smile, cinematic night lighting, and welcoming premium energy. Keep her original and brand-owned: no recognizable game characters, logos, weapons, or copyrighted game-world designs. In the Hero she anchors a 360-degree orbit of original genre signals, with pointer-driven camera movement and mobile/reduced-motion fallbacks.
+
+## Style Decisions
+
+- Yellow trophy `#FFC400` remains a signal color for CTAs, numerals, ticker moments, and trophy-state panels rather than a dominant full-field background.
+- Blue neon is the required technology layer and must appear in every major chapter through glow, frame lines, data labels, screen atmosphere, or camera language.
+- Technical clipped-corner, scoreboard, and HUD motifs should repeat across booking, café, location, app, and footer surfaces so the full page reads as one cinematic trailer.
+- The approved Mona video remains the canonical Hero media; system-level depth, arena-screen context, and blue signal layers should strengthen her gaming-lounge role without changing her locked identity or wardrobe.
