@@ -853,10 +853,10 @@ body[data-locale="fa"] h1, body[data-locale="fa"] h2, body[data-locale="fa"] h3,
 .experience-card:hover .experience-card-image, .experience-card:focus-within .experience-card-image { filter: saturate(1.18) contrast(1.05); opacity: .82; transform: scale(1.1); }
 .experience-card > *:not(.experience-card-image):not(.experience-card-image-shade):not(.experience-card-glow) { position: relative; z-index: 2; }
 .app-download { isolation: isolate; }
-.app-qr-popover { align-items: center; background: rgba(246,244,237,.98); border: 1px solid var(--gold); box-shadow: 0 16px 34px rgba(0,0,0,.46), 0 0 26px rgba(53,169,255,.32); color: #08111f; display: flex !important; flex: none !important; gap: 6px !important; opacity: 0; padding: 9px 9px 7px; pointer-events: none; position: absolute !important; right: 8px; top: 50%; transform: translateY(-42%) translateX(8px) scale(.94); transition: opacity 190ms var(--ease-out), transform 220ms var(--ease-out); z-index: 5 !important; }
+.app-qr-popover { align-items: center; background: rgba(246,244,237,.98); border: 1px solid var(--gold); box-shadow: 0 16px 34px rgba(0,0,0,.46), 0 0 26px rgba(53,169,255,.32); color: #08111f; display: flex !important; flex: none !important; gap: 6px !important; opacity: 0; padding: 9px 9px 7px; pointer-events: none; position: absolute !important; right: 8px; top: 50%; transform: translateY(-42%) translateX(8px) scale(.94); transition: opacity 190ms var(--ease-out), transform 220ms var(--ease-out), visibility 190ms var(--ease-out); visibility: hidden; z-index: 5 !important; }
 .app-qr-popover svg { display: block; height: 86px; width: 86px; }
 .app-qr-popover small { color: #08111f !important; font-family: "Barlow Condensed", sans-serif; font-size: 8px !important; letter-spacing: .08em; white-space: nowrap; }
-.app-download:hover .app-qr-popover, .app-download:focus-visible .app-qr-popover, .app-download:focus-within .app-qr-popover { opacity: 1; pointer-events: auto; transform: translateY(-50%) translateX(0) scale(1); }
+.app-download-wrap:hover .app-qr-popover, .app-download-wrap:focus-within .app-qr-popover { opacity: 1; pointer-events: none; transform: translateY(-50%) translateX(0) scale(1); visibility: visible; }
 @media (max-width: 760px) {
   .app-qr-popover { right: 6px; }
   .app-qr-popover svg { height: 72px; width: 72px; }
@@ -892,4 +892,12 @@ body[data-locale="fa"] h1, body[data-locale="fa"] h2, body[data-locale="fa"] h3,
 @media (prefers-reduced-motion: reduce) {
   .experience-card-reveal, .experience-card-reveal svg, .lounge-control-button { transition: none; }
   .experience-card-reveal { opacity: 1; transform: none; }
+}
+
+/* QR collision fix: each platform owns an isolated hover/focus layer. */
+.app-download-wrap { min-width: 0; position: relative; }
+.app-download-wrap .app-qr-popover { opacity: 0; pointer-events: none; transform: translateY(-42%) translateX(8px) scale(.94); visibility: hidden; }
+.app-download-wrap.is-qr-active .app-qr-popover { opacity: 1; pointer-events: none; transform: translateY(-50%) translateX(0) scale(1); visibility: visible; }
+@media (prefers-reduced-motion: reduce) {
+  .app-download-wrap .app-qr-popover { transform: translateY(-50%) !important; }
 }

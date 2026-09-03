@@ -297,8 +297,15 @@
 
 ## Home interaction polish
 
-- [ ] Add a short neon scan instruction below QR previews on mobile.
-- [ ] Add cinematic hover zoom and expanded information for THE PLAYGROUND cards.
-- [ ] Redesign VIP/Café previous/next controls with clearer gaming affordances and neon states.
-- [ ] Validate desktop/mobile, keyboard focus, reduced-motion, and production build.
+- [x] Add a short neon scan instruction below QR previews on mobile.
+- [x] Add cinematic hover zoom and expanded information for THE PLAYGROUND cards.
+- [x] Redesign VIP/Café previous/next controls with clearer gaming affordances and neon states.
+- [x] Validate desktop/mobile, keyboard focus, reduced-motion, and production build.
+- [x] Save a new checkpoint.
+
+## QR iOS hover collision fix
+
+- [x] Separate iOS and Android QR hover/focus layers so they cannot overlap or flicker.
+- [x] Stabilize the iOS QR panel position and stacking context.
+- [x] Validate independent Hover/Focus behavior, mobile layout, and production build.
 - [ ] Save a new checkpoint.
