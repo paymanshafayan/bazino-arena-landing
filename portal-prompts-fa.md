@@ -105,4 +105,26 @@
 
 ---
 
-*(پرامپت‌های بعدی در ادامه شماره‌گذاری و اضافه می‌شوند)*
+## پرامپت ۶ — موارد پایانی PageSpeed (robots.txt، خطاهای کنسول، باندلها، لوگو، Agentic)
+
+```text
+موارد باقی‌مانده‌ی گزارش PageSpeed که سمت پورتال است:
+
+1) robots.txt نامعتبر است (۳۵ خطا — دسته‌ی SEO). یک robots.txt استاندارد بسازید (User-agent/Allow/Disallow و در صورت نیاز Sitemap). اگر سایت باید ایندکس شود، مطمئن شوید صفحات اصلی را بلاک نمی‌کند.
+
+2) «Browser errors were logged to the console» و «Issues were logged to the Issues panel»: در تب Console/Issues کروم روی bazino.pro ببینید چه خطاهایی ثبت می‌شود — به‌احتمال زیاد همان درخواست kinesis تزریقی (پرامپت ۵) و فونت‌های گوگل بلاک‌شده‌اند؛ هر دو باید پاک شوند تا Best Practices کامل سبز شود.
+
+3) بهداشت باندلهای JS: PSI موارد Duplicated JavaScript، Legacy JavaScript (پلیفیل‌های بی‌مورد)، Reduce unused JavaScript و Render-blocking requests را علامت زده — پارتیشن‌بندی باندل (حذف کد تکراری بین index/HomeTab، target مدرن ES20xx برای مرورگرهای امروزی، defer بخش‌های غیرحیاتی) را بررسی کنید.
+
+4) «Serves images with low resolution» (Best Practices): تصاویری که رزولوشن طبیعی‌شان از اندازه‌ی نمایش کوچک‌تر است — لوگوی ۲۵۶px دیده می‌شود؛ با اصلاح پرامپت ۲ (لوگوی وبپی با عرض مناسب و srcset) این هم حل می‌شود.
+
+5) Agentic Browsing (جدید Lighthouse): llms.txt ندارد یا استاندارد نیست و accessibility tree کامل form نیست — یک llms.txt ساده (معرفی سایت + مسیرهای اصلی) اضافه کنید و ساختار ARIA هدر/دکمه‌های آیکونی را بازبینی کنید (همان‌ها که «دکمه بدون نام accessible» هم شده‌اند).
+
+6) آیتم‌های دستی Trust and Safety (HSTS قوی، COOP، XFO/CSP against clickjacking، Trusted Types) را طبق چک‌لیست Lighthouse بازبینی و در صورت امکان روی هدرهای سرور فعال کنید.
+
+فایل‌های درگیر: public/robots.txt، index.html، vite.config.ts (build/target/چانک‌ها)، server.ts (هدرهای امنیتی)، public/logo.png.
+```
+
+---
+
+*(پایان — ۶ پرامپت؛ فایل را به‌ترتیب به ایجنت پورتال بدهید)*

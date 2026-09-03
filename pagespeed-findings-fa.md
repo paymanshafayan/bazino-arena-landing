@@ -168,4 +168,36 @@ CSSOM و match شدن عنصر کشف می‌کند؛ background هیچ‌وقت
 
 ---
 
-*(بخش‌های بعدی در ادامه ثبت می‌شوند)*
+## بخش ۶ — مجموعه‌ی پایانی (Minify JS + Payloadهای بزرگ + CPU + دسترس‌پذیری + SEO و…) — 🟢 سهم قالب رفع شد
+
+**۱) Minify JavaScript (صرفه‌جویی ~۳KiB):** `theme.js` قالب با توضیحات خوانا منتشر می‌شد.
+✅ رفع در **۳.۵.۰**: theme.js داخل زیپ حالا minify است (terser/ES5؛ سورس خوانا در ریپو). ۳۰.۶KB → ۱۵.۶KB خام (~۴۹٪).
+اعتبارسنجی: parse + بقای نشانگرهای `BazinoThemeSDK`/`registerComponent('home')` + بدون setInterval + رندر SSR کامل با فایل minified — همه پاس. اسکریپت `build-theme-zip.sh` برای build تکرارپذیر اضافه شد.
+
+**۲) Avoid enormous network payloads (مجموع ۳,۳۱۴KiB):**
+- `hero-arena.mp4` (۲,۷۳۴KiB — قالب): عمداً با کیفیت رسمی حفظ شد (ویدئوی رسمی برند، سقف ۳MB، بارگذاری تعویقی بعد از لود، faststart دارد — moov قبل از mdat بررسی شد). گزینه‌های فشرده‌سازی بیشتر (مثلاً ~۱.۵MB با CRM بالاتر) تصمیم محصولی است — **انجام‌نشده/در دسترس**.
+- تصاویر `-960` (۳ مورد) و `esports-800` (۳۶.۶KB): داده‌ی پورتال — رفع سمت قالب از ۳.۲.۰ آماده است (srcset) ولی **سایت لایو هنوز نسخه‌ی ۳.۱.0 دارد**؛ با نصب ۳.۵.۰ این اقلام کوچک می‌شوند. حضور `esports-800` در payload همان preload اشتباه ایستای index.html است (بخش ۵).
+- `logo.png` (۵۵.۷KB) و باندلهای `/assets/*` — پورتال.
+
+**۳) JavaScript execution time:** theme.js فقط ۱۱۴ms CPU (۳۵ms eval) — با minify کمی بهتر؛ `vendor-react` ۱۲۶ms و بقیه پورتال.
+
+**۴) دسترس‌پذیری «Buttons do not have an accessible name»:** خروجی قالب ممیزی شد — **هر ۱۹ دکمه/role=button قالب نام دارند** (aria-label یا متن؛ تست SSR) → این پرچم متعلق به دکمه‌های پورتال است (احتمالاً دکمه‌های آیکونی هدر/ناوبری).
+
+**۵) سایر موارد این بخش (همه پورتال/زیرساخت → پرامپت ۶):** robots.txt نامعتبر (۳۵ خطا، SEO)، «Browser errors logged to console» و «Issues panel» (به‌احتمال زیاد همان kinesis/فونت‌های بلاک — بخش ۵)، Duplicated/Legacy/Unused JavaScript باندلها، «Serves images with low resolution» (لوگوی ۲۵۶px)، llms.txt و accessibility tree (بخش Agentic Browsing)، و آیتم‌های دستی Trust/Safety (HSTS/COOP/XFO).
+
+**تست‌شده:** minify + صحت رندر + ممیزی نصب. **تست‌نشده:** اندازه‌گیری مجدد PSI پس از دپلوی (هر دو طرف).
+
+---
+
+## جمع‌بندی کل یافته‌ها (بخش‌های ۱–۶)
+
+| # | موضوع | سهم قالب | سهم پورتال |
+|---|---|---|---|
+| ۱ | Cache TTL | — | ✅ پرامپت ۱ |
+| ۲ | تحویل تصویر (~۳۰۱KiB) | ✅ ۳.۲.۰ (srcset + پوستر موبایل) | ✅ پرامپت ۲ (لوگو و…) |
+| ۳ | CLS (0.157) | ✅ ۳.۳.۰ (رزرو فضا) | ✅ پرامپت ۳ (هدر/placeholder/فونت) |
+| ۴ | کشف LCP | ✅ ۳.۴.۰ (img + fetchpriority) | ✅ پرامپت ۴ (preload آگاه از قالب) |
+| ۵ | زنجیره‌ی حیاتی | — | ✅ پرامپت ۵ (kinesis + preload اشتباه) |
+| ۶ | Minify JS + payloadها + … | ✅ ۳.۵.۰ (minify) | ✅ پرامپت ۶ (robots.txt، باندلها، …) |
+
+**قالب نهایی برای نصب: `bazino-arena-theme.zip` نسخه ۳.۵.۰** (جمع‌بندی تمام رفع‌های سمت قالب).

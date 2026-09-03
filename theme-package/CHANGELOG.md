@@ -1,5 +1,20 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 3.5.0 — minify فایل theme.js در بسته‌ی نصبی (PageSpeed بخش ۶ — Minify JavaScript)
+- PSI برای `theme.js` صرفه‌جویی ~۲.۵KiB (از ۷.۶KiB انتقالی) تخمین زد؛ فایل با توضیحات خوانا منتشر می‌شد.
+- از این نسخه **theme.js داخل زیپ minify می‌شود** (terser، هدف ES5، mangle، بدون کامنت + هدر یک‌خطی
+  مشخص‌کننده‌ی نسخه و منبع) — سورس خوانا در `theme-package/theme.js` ریپو باقی می‌ماند.
+- اعتبارسنجی بعد از minify: parse با `new Function`، بقای نشانگرهای `BazinoThemeSDK` و
+  `registerComponent('home')` (ممیزی نصب پورتال به همین‌ها وابسته است)، بدون `setInterval(`، ES5،
+  و رندر SSR کامل با فایل minified (پوستر LCP با fetchpriority، srcset، RTL، ارقام فارسی) — همه پاس.
+- بررسی دسترس‌پذیری: هر ۱۹ دکمه/نقش‌دکمه‌ی خروجی قالب نام accessible دارند (آر ia-label یا متن) →
+  پرچم «Buttons do not have an accessible name» در PSI مربوط به دکمه‌های خود پورتال است.
+- ویدئوی رسمی (۲.۷MB): عمداً با کیفیت رسمی حفظ شد (سقف ۳MB پورتال، بارگذاری تعویقی بعد از لود،
+  faststart از قبل دارد — moov قبل از mdat بررسی شد). گزینه‌های بیشتر (فشرده‌سازی مجدد ~۱.۵MB یا
+  نسخه‌ی کوتاه) تصمیم محصولی است و انجام نشد.
+- اسکریپت `build-theme-zip.sh` در ریشه‌ی ریپو اضافه شد (minify + sanity + زیپ به‌صورت تکرارپذیر).
+- تست‌نشده: اندازه‌گیری مجدد PSI پس از دپلوی.
+
 ## 3.4.0 — کشف‌پذیری LCP (PageSpeed بخش ۴ — LCP request discovery)
 - PSI عنصر LCP را `div.bazino-hero-poster-layer` معرفی کرد: پوستر به‌صورت background-image در CSS
   بود → دیر کشف می‌شد، fetchpriority نمی‌گرفت و در سند اولیه قابل کشف نبود.
