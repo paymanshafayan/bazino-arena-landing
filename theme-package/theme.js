@@ -130,6 +130,38 @@
     return 'other';
   }
 
+  function ArenaFooter(props) {
+    var p = props || {};
+    var language = p.language || 'fa';
+    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
+    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
+    function T(key) { return ts(key); }
+    var settings = p.settings || {};
+    var address = settings.club_address || T('addressFallback');
+    var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(address));
+    var year = new Date().getFullYear();
+    var h = R.createElement;
+
+    return h('footer', { className: 'bazino-footer', dir: dir },
+      h('div', { className: 'bazino-footer-main' },
+        h('div', { className: 'bazino-footer-brand' },
+          h('img', { className: 'theme-brand-logo', src: p.logoUrl || '/logo.png', alt: settings.club_name || 'Bazino', height: 42 }),
+          h('span', { className: 'bazino-footer-sub' }, 'GAMING LOUNGE')
+        ),
+        h('p', { className: 'bazino-footer-line' }, T('footerLine')),
+        h('a', { className: 'bazino-footer-location', href: mapsUrl, target: '_blank', rel: 'noreferrer' }, '⌖ ' + address)
+      ),
+      h('div', { className: 'bazino-footer-bottom' },
+        h('span', null, '© ' + num(language, year) + ' BAZINO GAMING LOUNGE'),
+        h('a', { href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, T('officialSite') + '  ↗'),
+        h('button', {
+          className: 'bazino-footer-top',
+          onClick: function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
+        }, '↑ ' + T('backTop'))
+      )
+    );
+  }
+
   function ArenaHome(props) {
     var p = props || {};
     var language = p.language || 'fa';
@@ -419,6 +451,47 @@
     var loungeIndex = loungeImages.length ? galleryState[0] % loungeImages.length : 0;
     var activeLounge = loungeImages[loungeIndex];
 
+
+    /* ---------- chapter 07: real map ----------
+       Location registered in the portal: club_address setting + the lounge's
+       own map coordinates (35.7810, 51.4340 — the same pin the portal's
+       built-in home uses). If the admin registered an explicit maps link
+       (club_map_url / google_map_url / maps_url or a google-maps entry in
+       social_media_links) it wins. */
+    var MAP_COORDS = '35.7810,51.4340';
+    function findRegisteredMapUrl() {
+      var keys = ['club_map_url', 'google_map_url', 'maps_url', 'map_url'];
+      for (var i = 0; i < keys.length; i++) {
+        if (settings[keys[i]]) return String(settings[keys[i]]);
+      }
+      try {
+        var socials = settings.social_media_links ? JSON.parse(settings.social_media_links) : null;
+        if (socials && socials.length) {
+          for (var j = 0; j < socials.length; j++) {
+            var u = String(socials[j] && (socials[j].url || socials[j].link) || '');
+            if (/maps\.google|goo\.gl\/maps|maps\.app\.goo\.gl|google\.[a-z.]+\/maps/i.test(u)) return u;
+          }
+        }
+      } catch (e) { /* not JSON */ }
+      return '';
+    }
+    function mapEmbedSrc() {
+      var reg = findRegisteredMapUrl();
+      if (reg) {
+        if (/output=embed/i.test(reg)) return reg;
+        var at = reg.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+        if (at) return 'https://www.google.com/maps?q=' + encodeURIComponent(at[1] + ',' + at[2]) + '&z=16&output=embed';
+        var q = reg.match(/[?&]q=([^&]+)/);
+        if (q) return 'https://www.google.com/maps?q=' + encodeURIComponent(decodeURIComponent(q[1])) + '&z=16&output=embed';
+      }
+      return 'https://www.google.com/maps?q=' + encodeURIComponent(MAP_COORDS) + '&z=16&output=embed';
+    }
+    function mapDirectionsUrl() {
+      var reg = findRegisteredMapUrl();
+      if (reg && !/output=embed/i.test(reg)) return reg;
+      return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(MAP_COORDS);
+    }
+
     /* ---------- builders ---------- */
     function sectionHead(chapter, title, meta) {
       return h('div', { className: 'bazino-section-head', 'data-rvl': '1' },
@@ -656,19 +729,31 @@
         ),
         h('div', { className: 'bazino-location-card', 'data-rvl': '1' },
           h('span', { className: 'theme-chapter-label' }, T('locationTitle')),
-          h('div', { className: 'bazino-location-radar', 'aria-hidden': 'true' },
-            h('span', { className: 'bazino-location-pin' }, '⌖')
+          h('div', { className: 'bazino-location-map-frame' },
+            h('iframe', {
+              key: 'map',
+              className: 'bazino-location-map',
+              src: mapEmbedSrc(),
+              title: T('locationTitle'),
+              loading: 'lazy',
+              referrerPolicy: 'no-referrer-when-downgrade',
+              allowFullScreen: true
+            }),
+            h('span', { className: 'bazino-location-map-badge', 'aria-hidden': 'true' }, T('liveLocation'))
           ),
           h('p', { className: 'bazino-location-address' }, settings.club_address || T('addressFallback')),
           settings.club_phone ? h('p', { className: 'bazino-location-phone' }, T('phoneLabel') + ': ' + String(settings.club_phone)) : null,
           h('a', {
             className: 'btn btn-outline bazino-location-link',
-            href: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(settings.club_address || 'Vistamare Hotel İskele Cyprus')),
+            href: mapDirectionsUrl(),
             target: '_blank',
             rel: 'noreferrer'
           }, T('directions') + '  ↗')
         )
-      )
+      ),
+
+      /* footer inline: the portal mounts only the home region */
+      ArenaFooter({ language: language, dir: dir, ts: ts, settings: settings, logoUrl: logo })
     );
   }
 
@@ -685,38 +770,6 @@
      The portal's default footer renders nothing (fallback={null}), so
      registering this region ADDS the reference footer: brand lockup,
      signal line, location, copyright, official-site link, back-to-top. */
-  function ArenaFooter(props) {
-    var p = props || {};
-    var language = p.language || 'fa';
-    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
-    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
-    function T(key) { return ts(key); }
-    var settings = p.settings || {};
-    var address = settings.club_address || T('addressFallback');
-    var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(address));
-    var year = new Date().getFullYear();
-    var h = R.createElement;
-
-    return h('footer', { className: 'bazino-footer', dir: dir },
-      h('div', { className: 'bazino-footer-main' },
-        h('div', { className: 'bazino-footer-brand' },
-          h('img', { className: 'theme-brand-logo', src: p.logoUrl || '/logo.png', alt: settings.club_name || 'Bazino', height: 42 }),
-          h('span', { className: 'bazino-footer-sub' }, 'GAMING LOUNGE')
-        ),
-        h('p', { className: 'bazino-footer-line' }, T('footerLine')),
-        h('a', { className: 'bazino-footer-location', href: mapsUrl, target: '_blank', rel: 'noreferrer' }, '⌖ ' + address)
-      ),
-      h('div', { className: 'bazino-footer-bottom' },
-        h('span', null, '© ' + num(language, year) + ' BAZINO GAMING LOUNGE'),
-        h('a', { href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, T('officialSite') + '  ↗'),
-        h('button', {
-          className: 'bazino-footer-top',
-          onClick: function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
-        }, '↑ ' + T('backTop'))
-      )
-    );
-  }
-
   SDK.registerComponent('footer', function () {
     return {
       apiVersion: 2,

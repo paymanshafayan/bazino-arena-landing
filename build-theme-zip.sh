@@ -11,7 +11,7 @@ trap 'rm -rf "$STAGE"' EXIT
 
 mkdir -p "$STAGE/assets"
 cp theme-package/theme.json theme-package/theme.css theme-package/CHANGELOG.md "$STAGE/"
-cp theme-package/assets/hero-arena.mp4 theme-package/assets/hero-poster.webp theme-package/assets/hero-poster-small.webp "$STAGE/assets/"
+cp -R theme-package/assets/. "$STAGE/assets/"
 
 VER=$(node -p "require('./theme-package/theme.json').version")
 

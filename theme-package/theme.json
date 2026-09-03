@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "Seven-chapter cinematic arena theme for the Bazino portal — SDK v2 package: design tokens (--bz-*), four-language strings (fa/en/ru/tr), admin-slider-driven hero over the official deferred hero video, full-site CSS-variable coverage, logical-property RTL/LTR, zero third-party origins, zero web-font requests.",
@@ -102,7 +102,7 @@
       "demoPass3Body": "بررسی در دسترس بودن رویداد رسمی.",
       "passTitleFallback": "پاس بازینو",
       "coachDefault": "مربی",
-      "addressFallback": "هتل ویستاماره • ایسکله، قبرس",
+      "addressFallback": "تهران، اتوبان صدر، خیابان شریعتی، بن‌بست پلاک ۲۴، مجتمع تجاری بازی نو، طبقه منفی ۱",
       "demoSlide2Title": "شب‌های تورنمنت",
       "demoSlide2Desc": "در مسابقات رسمی شرکت کن و جدول امتیازات را دنبال کن.",
       "demoSlide3Title": "مکث در سالن VIP",
@@ -118,7 +118,8 @@
       "phoneLabel": "تماس",
       "footerLine": "راند بعدی‌ات از اینجا شروع می‌شود.",
       "officialSite": "سایت رسمی",
-      "backTop": "بازگشت به بالا"
+      "backTop": "بازگشت به بالا",
+      "liveLocation": "لوکیشن زنده"
     },
     "en": {
       "hero": "IF YOU ARE A CHAMP, THIS IS IT.",
@@ -193,7 +194,7 @@
       "demoPass3Body": "Check official event availability.",
       "passTitleFallback": "Bazino pass",
       "coachDefault": "COACH",
-      "addressFallback": "Vistamare Hotel • İskele, Cyprus",
+      "addressFallback": "Level -1, BAZINO Plaza, No. 24, Shariati St., Sadr Hwy, Tehran",
       "demoSlide2Title": "Tournament nights",
       "demoSlide2Desc": "Join official competition and follow the standings.",
       "demoSlide3Title": "Pause in the VIP lounge",
@@ -209,7 +210,8 @@
       "phoneLabel": "Phone",
       "footerLine": "Your next match starts here.",
       "officialSite": "Official site",
-      "backTop": "Back to top"
+      "backTop": "Back to top",
+      "liveLocation": "LIVE LOCATION"
     },
     "ru": {
       "hero": "ЕСЛИ ТЫ ЧЕМПИОН, ТЕБЕ СЮДА.",
@@ -284,7 +286,7 @@
       "demoPass3Body": "Проверь доступность официального события.",
       "passTitleFallback": "Пасс Bazino",
       "coachDefault": "ТРЕНЕР",
-      "addressFallback": "Отель Vistamare • Искеле, Кипр",
+      "addressFallback": "Тегеран, шосе Садр, ул. Шариати, тупик 24, ТЦ Bazino, уровень -1",
       "demoSlide2Title": "Турнирные ночи",
       "demoSlide2Desc": "Присоединяйся к официальным матчам и следи за таблицей.",
       "demoSlide3Title": "Пауза в VIP-зале",
@@ -300,7 +302,8 @@
       "phoneLabel": "Телефон",
       "footerLine": "Твой следующий раунд начинается здесь.",
       "officialSite": "Официальный сайт",
-      "backTop": "Наверх"
+      "backTop": "Наверх",
+      "liveLocation": "ЖИВАЯ ЛОКАЦИЯ"
     },
     "tr": {
       "hero": "ŞAMPİYONSAN, İŞTE BURASI.",
@@ -375,7 +378,7 @@
       "demoPass3Body": "Resmî etkinlik uygunluğunu kontrol et.",
       "passTitleFallback": "Bazino pası",
       "coachDefault": "KOÇ",
-      "addressFallback": "Vistamare Otel • İskele, Kıbrıs",
+      "addressFallback": "Tahran, Sadr Otoyolu, Şariati Sk. No: 24, Bazino Plaza, Kat -1",
       "demoSlide2Title": "Turnuva geceleri",
       "demoSlide2Desc": "Resmî yarışmalara katıl ve sıralamayı takip et.",
       "demoSlide3Title": "VIP salonda mola",
@@ -391,7 +394,8 @@
       "phoneLabel": "Telefon",
       "footerLine": "Bir sonraki raundun burada başlar.",
       "officialSite": "Resmî site",
-      "backTop": "Yukarı dön"
+      "backTop": "Yukarı dön",
+      "liveLocation": "CANLI KONUM"
     }
   },
   "contentContract": {

@@ -10,7 +10,8 @@
    Persian headlines joined, upright and readable (no letter-spacing
    breakage, no italic synthesis, correct gradient direction).
    Performance rules obeyed:
-     • no external origins, no @import, no @font-face (system stacks only)
+     • no external origins, no @import; local Vazirmatn woff2 only (bundled,
+       font-display: swap) — still zero network font requests
      • hero video is deferred by theme.js; poster paints first (no CLS)
      • transforms/opacity-only motion; content-visibility below the fold
      • prefers-reduced-motion honored
@@ -127,33 +128,102 @@ body[data-theme='bazino-arena'] .app-bg-main {
   box-shadow: 0 0 0 4px var(--bz-primary-edge);
 }
 
+/* ---------- 3b) local fonts — Vazirmatn (Persian) ----------
+   Bundled in assets/fonts (no external request; the portal rewrites
+   url('assets/...') to its theme CDN path and serves woff2 natively).
+   font-display: swap is explicit so the portal's font policy keeps it. */
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('assets/fonts/Vazirmatn-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal; font-weight: 700; font-display: swap;
+  src: url('assets/fonts/Vazirmatn-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal; font-weight: 900; font-display: swap;
+  src: url('assets/fonts/Vazirmatn-Black.woff2') format('woff2');
+}
+
 /* ---------- 4) header / navigation (all pages) ---------- */
+/* reference header: deep ink glass + gold hairline, squashed uppercase nav
+   with gold underline, squared gold-outline actions (overrides the portal's
+   Tailwind utilities: bg-dark-card/90, rounded-lg, text-primary, ...) */
 .theme-bazino-arena .site-header,
 .theme-bazino-arena .portal-header,
 .theme-bazino-arena .app-header {
-  background-color: var(--bz-header-bg);
-  border-bottom: 1px solid var(--bz-primary-edge);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(14px);
+  background-color: rgba(5, 8, 14, 0.82) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  height: 76px;
 }
+/* the signature gold hairline (reference .site-header::after) */
+.theme-bazino-arena .site-header::after,
+.theme-bazino-arena .portal-header::after,
+.theme-bazino-arena .app-header::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 196, 0, 0.65), transparent);
+  bottom: -1px; content: ''; height: 1px; left: 38px; opacity: 0.18;
+  position: absolute; right: 38px; pointer-events: none;
+}
+.theme-bazino-arena .site-header { padding-inline: clamp(18px, 3vw, 38px); }
+
+/* wordmark: italic display cut like the reference brand lockup */
+.theme-bazino-arena .site-header .font-display {
+  font-style: italic; font-weight: 900; letter-spacing: 0.13em; text-transform: uppercase;
+}
+.theme-bazino-arena .site-header .font-display .text-primary { color: var(--primary-color) !important; }
+
+/* nav: 10px / 800 / .16em caps, gold underline on hover & active */
 .theme-bazino-arena .site-header nav button,
 .theme-bazino-arena .site-header nav a {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(246, 244, 237, 0.63);
+  border-bottom: 2px solid transparent;
+  position: relative;
+  transition: color 180ms var(--arena-ease), border-color 180ms var(--arena-ease);
 }
-.theme-bazino-arena .site-header nav button,
-.theme-bazino-arena .site-header nav a { position: relative; }
 .theme-bazino-arena .site-header nav button::after,
 .theme-bazino-arena .site-header nav a::after {
-  background: var(--primary-color); content: ''; height: 1px; inset-inline: 0; bottom: -4px;
-  opacity: 0; position: absolute; transform: scaleX(0.4); transform-origin: center;
-  transition: opacity 200ms var(--arena-ease), transform 200ms var(--arena-ease);
+  background: var(--primary-color); content: ''; height: 2px; inset-inline: 0; bottom: 0;
+  transform: scaleX(0); transform-origin: center;
+  transition: transform 180ms var(--arena-ease);
 }
-.theme-bazino-arena .site-header nav button:hover::after,
-.theme-bazino-arena .site-header nav a:hover::after { opacity: 0.9; transform: scaleX(1); }
 .theme-bazino-arena .site-header nav button:hover,
-.theme-bazino-arena .site-header nav a:hover { color: var(--primary-color); }
+.theme-bazino-arena .site-header nav a:hover { color: var(--bz-text); }
+.theme-bazino-arena .site-header nav button:hover::after,
+.theme-bazino-arena .site-header nav a:hover::after { transform: scaleX(1); }
+.theme-bazino-arena .site-header nav button.text-primary {
+  color: var(--primary-color) !important;
+  border-bottom-color: var(--primary-color) !important;
+}
+
+/* login CTA: squared gold outline (reference .button--outline) */
+.theme-bazino-arena .site-header button.bg-primary {
+  background: transparent !important; color: var(--primary-color) !important;
+  border: 1px solid rgba(255, 196, 0, 0.6); border-radius: 0;
+  font-size: 10px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase;
+  transition: background 180ms var(--arena-ease), color 180ms var(--arena-ease), transform 180ms var(--arena-ease);
+}
+.theme-bazino-arena .site-header button.bg-primary:hover {
+  background: var(--primary-color) !important; color: var(--dark-bg-color) !important; transform: translateY(-1px);
+}
+/* help / theme picker icon buttons: squared hairline chrome */
+.theme-bazino-arena .site-header button.bg-white\/5 {
+  background: transparent !important; border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 0; color: var(--bz-text-dim);
+}
+.theme-bazino-arena .site-header button.bg-white\/5:hover { color: var(--primary-color); border-color: rgba(255, 196, 0, 0.5); }
+/* Persian header chrome uses Vazirmatn (wordmark stays Latin display) */
+.theme-bazino-arena[dir='rtl'] .site-header nav button,
+.theme-bazino-arena[dir='rtl'] .site-header button.bg-primary,
+.theme-bazino-arena[dir='rtl'] .site-header button.bg-white\/5 {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+}
 /* mother-site logo stays untouched (exclusive logo law) */
 .theme-bazino-arena .brand-logo-guard,
 .theme-bazino-arena .site-logo,
@@ -561,6 +631,28 @@ body[data-theme='bazino-arena'] .app-bg-main {
 .theme-bazino-arena .bazino-location-address { color: var(--bz-text-soft); font-size: 0.95rem; line-height: 1.8; margin: 14px 0 0; max-width: 340px; }
 .theme-bazino-arena .bazino-location-phone { color: var(--bz-muted); font-size: 0.8rem; letter-spacing: 0.06em; margin: 8px 0 0; }
 .theme-bazino-arena .bazino-location-link { display: inline-flex; margin-top: 20px; position: relative; z-index: 3; }
+/* real interactive map (Google Maps embed) inside the gold inset frame */
+.theme-bazino-arena .bazino-location-map-frame {
+  border: 1px solid var(--bz-info-line-strong); margin: 18px 0 4px;
+  aspect-ratio: 16 / 10; min-height: 230px; overflow: hidden; position: relative; width: 100%;
+}
+.theme-bazino-arena .bazino-location-map-frame::before {
+  border: 1px solid var(--bz-primary-line-strong); content: ''; inset: 8px;
+  pointer-events: none; position: absolute; z-index: 2;
+}
+.theme-bazino-arena .bazino-location-map {
+  border: 0; filter: saturate(0.82) contrast(1.04) brightness(0.94);
+  height: 100%; width: 100%;
+}
+.theme-bazino-arena .bazino-location-map-badge {
+  align-items: center; background: rgba(5, 8, 14, 0.85); border: 1px solid var(--bz-primary-line-strong);
+  color: var(--primary-color); display: flex; font-size: 9px; font-weight: 900; gap: 6px;
+  inset-inline-end: 12px; letter-spacing: 0.14em; padding: 4px 8px; position: absolute; top: 12px; text-transform: uppercase; z-index: 3;
+}
+.theme-bazino-arena .bazino-location-map-badge::before {
+  animation: bazino-radar 2.6s var(--arena-ease) infinite; background: var(--primary-color);
+  border-radius: 50%; content: ''; height: 6px; width: 6px;
+}
 .theme-bazino-arena .bazino-location-radar {
   align-items: center; border: 1px solid var(--bz-info-line-mid); display: flex; height: 108px; margin: 22px 0 4px;
   justify-content: center; position: relative; width: 108px;
