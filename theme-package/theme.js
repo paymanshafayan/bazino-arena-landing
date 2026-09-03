@@ -73,6 +73,54 @@
     return t;
   }
 
+  /* Responsive first-party images: the portal serves /images/**-<width>.webp
+     variant sets (same convention as its own getResponsiveSrcSet). Build a
+     srcSet from the smaller variants when the URL matches, keep the original
+     as src fallback, and self-heal to the original if a variant 404s. */
+  var IMG_VW_RE = /^(\/images\/.*)-(\d{2,4})\.webp$/;
+  function imgVariants(url) {
+    var s = String(url || '');
+    var qi = s.indexOf('?');
+    var bare = qi === -1 ? s : s.slice(0, qi);
+    var q = qi === -1 ? '' : s.slice(qi);
+    var m = bare.match(IMG_VW_RE);
+    if (!m) return null;
+    var w = Number(m[2]);
+    var stem = m[1];
+    var widths = [];
+    var candidates = [320, 480, 640, w];
+    for (var k = 0; k < candidates.length; k++) {
+      var c = candidates[k];
+      if (c <= w && widths.indexOf(c) === -1) widths.push(c);
+    }
+    widths.sort(function (a, b) { return a - b; });
+    var set = [];
+    for (var j = 0; j < widths.length; j++) set.push(stem + '-' + widths[j] + '.webp' + q + ' ' + widths[j] + 'w');
+    return { srcSet: set.join(', ') };
+  }
+
+  function mediaImg(src, alt, className, sizes, key) {
+    var vr = imgVariants(src);
+    return R.createElement('img', {
+      key: key || 'media',
+      className: className,
+      src: src,
+      srcSet: vr ? vr.srcSet : undefined,
+      sizes: sizes,
+      alt: alt,
+      loading: 'lazy',
+      decoding: 'async',
+      onError: function (e) {
+        var t = e && e.target;
+        if (t && t.getAttribute('data-fallback') !== '1') {
+          t.setAttribute('data-fallback', '1');
+          t.removeAttribute('srcset');
+          t.src = src;
+        }
+      }
+    });
+  }
+
   function genreKeyOf(entry) {
     var g = String((entry && (entry.game || entry.genre || entry.category)) || '').toLowerCase();
     if (g.indexOf('cs') !== -1 || g.indexOf('counter') !== -1 || g.indexOf('valorant') !== -1 || g.indexOf('shoot') !== -1) return 'shooter';
@@ -160,6 +208,11 @@
     var reducedMotion = R.useMemo(function () {
       try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; }
     }, []);
+    /* narrow screens (phones) get the 640x360 poster — the LCP paint — instead
+       of the 1280x720 one; the CSS background swaps with the same class */
+    var smallScreen = R.useMemo(function () {
+      try { return !!(window.matchMedia && window.matchMedia('(max-width: 800px)').matches); } catch (e) { return false; }
+    }, []);
 
     /* ---------- slider + gallery state (one shared rAF heartbeat) ---------- */
     var slideState = R.useState(0);
@@ -176,7 +229,7 @@
     var activeSlide = slides[Math.min(slideIndex, slideCount - 1)] || slides[0];
 
     var videoUrl = String(settings.hero_video || settings.hero_video_url || '') || (base + 'hero-arena.mp4');
-    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + 'hero-poster.webp');
+    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + (smallScreen ? 'hero-poster-small.webp' : 'hero-poster.webp'));
 
     function startPlayback() {
       var v = videoRef.current;
@@ -326,7 +379,7 @@
         h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || T('signalWord'))
       ];
       if (withMedia && (entry.imageUrl || entry.image)) {
-        kids.push(h('img', { key: 'media', className: 'bazino-home-card-media', src: entry.imageUrl || entry.image, alt: loc(entry.title, language) || 'Bazino', loading: 'lazy', decoding: 'async' }));
+        kids.push(mediaImg(entry.imageUrl || entry.image, loc(entry.title, language) || 'Bazino', 'bazino-home-card-media', '(min-width: 801px) 25vw, 100vw', 'media'));
       }
       kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || T('cardTitleFallback')));
       kids.push(h('p', { key: 'p' }, loc(entry.subtitle || entry.desc || entry.description, language) || loc(entry.body, language) || T('cardBodyFallback')));
@@ -398,7 +451,7 @@
       (reducedMotion ? '' : (sliderPaused ? ' / ' + T('pausedWord') : ' / ' + T('autoWord')))
     ) : null;
 
-    return h('div', { className: 'bazino-home', dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
+    return h('div', { className: 'bazino-home' + (smallScreen ? ' is-small-screen' : ''), dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
 
       /* ── 01 HERO: poster first, admin slides over it, video deferred ── */
       h('section', {
@@ -503,7 +556,7 @@
           onBlur: function () { galleryPauseState[1](false); },
           tabIndex: 0
         },
-          h('img', { src: activeLounge.imageUrl || activeLounge.image, alt: loc(activeLounge.title, language) || 'Bazino lounge', loading: 'lazy', decoding: 'async' }),
+          mediaImg(activeLounge.imageUrl || activeLounge.image, loc(activeLounge.title, language) || 'Bazino lounge', '', '(min-width: 801px) 1120px, 100vw', 'lounge-img'),
           h('div', { className: 'bazino-theme-slider-status' }, pad2(language, loungeIndex + 1) + ' / ' + pad2(language, loungeImages.length) + (reducedMotion ? '' : (galleryPauseState[0] ? ' / ' + T('pausedWord') : ' / ' + T('autoWord'))))
         ) : null,
         cardGrid(lounges, T('loungeWord'), [

@@ -324,6 +324,10 @@ body[data-theme='bazino-arena'] .app-bg-main {
   background: var(--dark-bg-color) url('assets/hero-poster.webp') center / cover no-repeat;
   inset: 0; position: absolute;
 }
+/* phones paint the small poster (same URL as the <video poster> attr → one download) */
+.theme-bazino-arena .bazino-home.is-small-screen .bazino-hero-poster-layer {
+  background-image: url('assets/hero-poster-small.webp');
+}
 /* admin slide images never render here: the official hero video (and its
    first-frame poster) is always the hero background; slides carry text only */
 .theme-bazino-arena .bazino-hero-video {
