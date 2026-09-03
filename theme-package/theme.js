@@ -8,10 +8,12 @@
  *     (fa / en / ru / tr — complete tables, no hard-coded copy, no language
  *     ternaries anywhere);
  *   • the hero slider reads the admin-managed props.slides:
- *       slide.title[language] / slide.desc[language] / slide.imageUrl /
- *       slide.mobileImageUrl / slide.target -> props.onNavigate(slide.target);
- *     when the portal has no slides the theme renders its own demo slides
- *     (built with ts()) over the cinematic hero video;
+ *       slide.title[language] / slide.desc[language] /
+ *       slide.target -> props.onNavigate(slide.target);
+ *     slide images NEVER replace the background — the official hero video
+ *     (and its first-frame poster) is always the hero media; admin slides
+ *     drive only the text. When the portal has no slides the theme renders
+ *     its own demo slides (built with ts()) over the same video;
  *   • dir comes from props.dir and logical CSS properties handle RTL/LTR;
  *   • colors/fonts are CSS variables on body[data-theme='bazino-arena']
  *     (theme.json tokens are bridged by the portal to --bz-* on <body>).
@@ -111,37 +113,36 @@
       var as = adminSlides[i] || {};
       var title = loc(as.title, language);
       var desc = loc(as.desc, language);
-      var image = as.imageUrl || as.image || '';
-      if (!title && !desc && !image) continue;
+      /* slide images are intentionally ignored: the official hero video is
+         always the hero background; slides carry text + target only */
+      if (!title && !desc) continue;
       slides.push({
         id: as.id || ('admin-slide-' + i),
         title: title || T('hero'),
         desc: desc,
-        imageUrl: image,
-        mobileImageUrl: as.mobileImageUrl || '',
         target: normalizeTarget(as.target)
       });
     }
     if (!slides.length && featured.length) {
       for (i = 0; i < featured.length; i++) {
         var fg = featured[i] || {};
-        if (!fg.imageUrl && !fg.image && !loc(fg.title, language)) continue;
+        var ftitle = loc(fg.title, language);
+        var fdesc = loc(fg.desc || fg.subtitle || fg.description, language);
+        if (!ftitle && !fdesc) continue;
         slides.push({
           id: fg.id || ('featured-' + i),
-          title: loc(fg.title, language) || T('hero'),
-          desc: loc(fg.desc || fg.subtitle || fg.description, language),
-          imageUrl: fg.imageUrl || fg.image || '',
-          mobileImageUrl: fg.mobileImageUrl || '',
+          title: ftitle || T('hero'),
+          desc: fdesc,
           target: normalizeTarget(fg.target || fg.link || 'tournaments')
         });
       }
     }
     if (!slides.length) {
-      /* theme demo slides — copy from strings, media stays the cinematic video */
+      /* theme demo slides — copy from strings, media stays the hero video */
       slides = [
-        { id: 'demo-hero', title: T('hero'), desc: T('sub'), imageUrl: '', mobileImageUrl: '', target: 'reservations' },
-        { id: 'demo-tournaments', title: T('demoSlide2Title'), desc: T('demoSlide2Desc'), imageUrl: '', mobileImageUrl: '', target: 'tournaments' },
-        { id: 'demo-lounge', title: T('demoSlide3Title'), desc: T('demoSlide3Desc'), imageUrl: '', mobileImageUrl: '', target: 'cafe' }
+        { id: 'demo-hero', title: T('hero'), desc: T('sub'), target: 'reservations' },
+        { id: 'demo-tournaments', title: T('demoSlide2Title'), desc: T('demoSlide2Desc'), target: 'tournaments' },
+        { id: 'demo-lounge', title: T('demoSlide3Title'), desc: T('demoSlide3Desc'), target: 'cafe' }
       ];
     }
     var slideCount = slides.length;
@@ -173,7 +174,6 @@
     var galleryVisibleRef = R.useRef(true);
     var loungeImages = lounges.filter(function (l) { return l && (l.imageUrl || l.image); });
     var activeSlide = slides[Math.min(slideIndex, slideCount - 1)] || slides[0];
-    var slideHasMedia = !!(activeSlide && (activeSlide.imageUrl || activeSlide.mobileImageUrl));
 
     var videoUrl = String(settings.hero_video || settings.hero_video_url || '') || (base + 'hero-arena.mp4');
     var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + 'hero-poster.webp');
@@ -235,16 +235,6 @@
       return function () { document.removeEventListener('visibilitychange', onVis); };
     }, [phase, reducedMotion]);
 
-    /* While an admin slide with its own image is active, park the video. */
-    R.useEffect(function () {
-      var v = videoRef.current;
-      if (!v) return;
-      if (slideHasMedia) { try { v.pause(); } catch (e) {} }
-      else if (phase === 2 && !reducedMotion && heroVisibleRef.current && !document.hidden) {
-        var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
-      }
-    }, [slideHasMedia]);
-
     /* Lounge gallery visibility. */
     R.useEffect(function () {
       if (!window.IntersectionObserver || !galleryBoxRef.current) return;
@@ -287,7 +277,6 @@
     }, [reducedMotion, slideCount, sliderPausedState[0], galleryPauseState[0], loungeImages.length]);
 
     function onHeroClick() {
-      if (slideHasMedia) { goToSlide(slideIndex + 1); return; }
       if (!videoSrc) setVideoSrc(videoUrl);
       startPlayback();
     }
@@ -358,21 +347,6 @@
     var heroMediaLayers = [
       h('div', { key: 'poster', className: 'bazino-hero-poster-layer' })
     ];
-    for (i = 0; i < slideCount; i++) {
-      var sl = slides[i];
-      if (!sl.imageUrl && !sl.mobileImageUrl) continue;
-      heroMediaLayers.push(h('img', {
-        key: 'slide-media-' + sl.id,
-        className: 'bazino-slide-media' + (i === slideIndex ? ' is-active' : ''),
-        src: sl.imageUrl || sl.mobileImageUrl,
-        srcSet: (sl.imageUrl && sl.mobileImageUrl) ? (sl.mobileImageUrl + ' 640w, ' + sl.imageUrl + ' 1600w') : undefined,
-        sizes: '100vw',
-        alt: '',
-        loading: i === 0 ? 'eager' : 'lazy',
-        decoding: 'async',
-        'aria-hidden': true
-      }));
-    }
     heroMediaLayers.push(h('video', {
       key: 'video',
       ref: videoRef,
@@ -384,7 +358,7 @@
       loop: false,
       playsInline: true,
       preload: videoSrc ? 'auto' : 'none',
-      onCanPlay: function () { if (phase < 2 && !reducedMotion && heroVisibleRef.current && !document.hidden && !slideHasMedia) startPlayback(); else if (phase < 2) setPhase(1); },
+      onCanPlay: function () { if (phase < 2 && !reducedMotion && heroVisibleRef.current && !document.hidden) startPlayback(); else if (phase < 2) setPhase(1); },
       onPlay: function () { setPhase(2); },
       onEnded: function () { setPhase(3); },
       onError: function () { setPhase(4); },
@@ -428,7 +402,7 @@
 
       /* ── 01 HERO: poster first, admin slides over it, video deferred ── */
       h('section', {
-        className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : '') + (slideHasMedia ? ' has-slide-media' : ''),
+        className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : ''),
         'data-chapter': '01',
         ref: heroRef,
         dir: dir
@@ -447,8 +421,8 @@
         },
           heroMediaLayers,
           sliderControls,
-          phase < 2 && !slideHasMedia ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null,
-          (phase === 3 || phase === 4) && !slideHasMedia ? h('button', {
+          phase < 2 ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null,
+          (phase === 3 || phase === 4) ? h('button', {
             key: 'replay', className: 'bazino-hero-replay',
             onClick: function (e) { e.stopPropagation(); onHeroClick(); }
           }, T('replay')) : null
