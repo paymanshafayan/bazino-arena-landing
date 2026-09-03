@@ -398,7 +398,20 @@
 
     /* ---------- hero sub-render ---------- */
     var heroMediaLayers = [
-      h('div', { key: 'poster', className: 'bazino-hero-poster-layer' })
+      /* LCP element: a real <img> (NOT a CSS background) so the poster is
+         discoverable as an image, gets fetchpriority=high and is never
+         lazy-loaded (PageSpeed: LCP request discovery). Phones get the
+         640x360 variant via posterUrl (is-small-screen logic). */
+      h('img', {
+        key: 'poster',
+        className: 'bazino-hero-poster-layer',
+        src: posterUrl,
+        alt: '',
+        'aria-hidden': true,
+        fetchPriority: 'high',
+        decoding: 'async',
+        onError: function (e) { var t = e && e.target; if (t) t.style.visibility = 'hidden'; }
+      })
     ];
     heroMediaLayers.push(h('video', {
       key: 'video',

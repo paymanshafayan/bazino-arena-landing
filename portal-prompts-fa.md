@@ -69,4 +69,24 @@
 
 ---
 
+## پرامپت ۴ — کشف‌پذیری LCP (PageSpeed: LCP request discovery — سهم پورتال)
+
+```text
+طبق گزارش PageSpeed، تصویر LCP صفحه (پوستر هروی قالب فعال) در سند اولیه قابل کشف نیست چون سایت SPA است و همه‌چیز بعد از اجرای JS رندر می‌شود. قالب bazino-arena از نسخه 3.4.0 پوستر را به‌صورت <img fetchpriority="high"> (بدون lazy) رندر می‌کند؛ برای اینکه خیلی زودتر از رندر JS هم کشف شود:
+
+1) هنگام سرو HTML (مثل همان جایی که بوت‌استرپ/activeThemeId تزریق می‌شود)، برای قالب فعال یک تگ preload به head اضافه کنید:
+   <link rel="preload" as="image" href="/api/themes/<activeThemeId>/assets/<poster>" fetchpriority="high">
+   که <poster> از theme.json قالب فعال خوانده شود (فیلد media.heroPoster؛ قالب bazino-arena مقدار assets/hero-poster.webp و برای موبایل media.heroPosterSmall = assets/hero-poster-small.webp را اعلام کرده است).
+   در نمایشگرهای باریک (max-width: 800px) واریانت small را preload کنید؛ می‌توانید با media attribute روی لینک یا دو preload با media="(max-width:800px)".
+   اگر قالبی media.heroPoster نداشت، preload نکنید.
+
+2) جایگزین/مکمل بلندمدت: prerender یا SSR صفحه‌ی اصلی تا عنصر LCP در HTML اولیه باشد.
+
+3) توجه: preload فقط وقتی کمک می‌کند که URL دقیقاً همان URLی باشد که قالب رندر می‌کند (قالب از assetsBase استفاده می‌کند و در موبایل واریانت کوچک را برمی‌دارد)؛ پس URL را از همان مبدأ بسازید (readThemeCss/assetsBase + media.heroPoster*).
+
+فایل‌های درگیر: server.ts (سرو HTML و تزریق head)، server/themeStore.ts (خواندن theme.json قالب فعال)، src/App.tsx یا bootstrap (اگر از سمت کلاینت اضافه می‌شود).
+```
+
+---
+
 *(پرامپت‌های بعدی در ادامه شماره‌گذاری و اضافه می‌شوند)*

@@ -1,5 +1,19 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 3.4.0 — کشف‌پذیری LCP (PageSpeed بخش ۴ — LCP request discovery)
+- PSI عنصر LCP را `div.bazino-hero-poster-layer` معرفی کرد: پوستر به‌صورت background-image در CSS
+  بود → دیر کشف می‌شد، fetchpriority نمی‌گرفت و در سند اولیه قابل کشف نبود.
+- رفع: پوستر حالا یک **`<img>` واقعی** است — اولین فرزند هرو — با `fetchpriority="high"`،
+  `decoding="async"`، بدون هیچ `loading` (= eager، نه lazy)؛ CSS فقط چیدمانش را می‌سازد
+  (`object-fit: cover; position: absolute`) و دیگر هیچ تصویری از CSS لود نمی‌شود.
+- همان URL هم `poster` ویدئو است → همچنان فقط یک دانلود؛ موبایل همان 640×360 (منطق ۳.۲.۰).
+- onError پوستر آن را می‌پوشاند (بدون آیکون تصویر شکسته؛ لایه‌های ویدئو/گرادیان سر جایشان).
+- سهم باقی‌مانده سمت پورتال است (اسپا بودن سایت: تصویر تا رندر JS در HTML اولیه نیست) → پرامپت ۴
+  (preload پوستر قالب فعال در head از روی `theme.json.media.heroPoster`).
+- تست‌شده: رندر SSR (تگ img با `fetchpriority="high"`، بدون `loading="lazy"`، src پوستر درست)،
+  rebuild زیپ و ممیزی نصب پورتال `canInstall: true`.
+- تست‌نشده: اندازه‌گیری مجدد LCP با PSI پس از دپلوی.
+
 ## 3.3.0 — رزرو فضا برای متن اسلاید هرو (PageSpeed بخش ۳ — CLS)
 - PSI شیفت 0.048 را به `.bazino-hero-content` نسبت داد: پورتال اسلایدهای ادمین را ~۲.۵ ثانیه بعد از
   mount می‌فرستد و تیترها هر ~۷.۵ ثانیه می‌چرخند؛ با هر تعویض تیتر، تعداد خطوط h1 عوض می‌شد و

@@ -113,4 +113,31 @@
 
 ---
 
+## بخش ۴ — کشف‌پذیری درخواست LCP (LCP request discovery) — 🟢 سهم قالب رفع شد + سهم پورتال در پرامپت ۴
+
+**داده‌ی PSI:** عنصر LCP: `div.bazino-home > section.bazino-chapter > div.bazino-hero-media > div.bazino-hero-poster-layer`
+- LCP resources should not use loading=lazy
+- fetchpriority=high should be applied
+- Request is discoverable in initial document
+
+**تحلیل:** پوستر LCP قالب به‌صورت **background-image در CSS** رندر می‌شد → مرورگر آن را فقط بعد از ساخت
+CSSOM و match شدن عنصر کشف می‌کند؛ background هیچ‌وقت `fetchpriority` نمی‌گیرد و در preload scanner هم دیده نمی‌شود.
+
+**✅ اقدام قالب (نسخه ۳.۴.۰):**
+1. پوستر حالا **`<img>` واقعی** است (اولین فرزند `.bazino-hero-media`) با `fetchPriority="high"`،
+   `decoding="async"` و بدون هیچ اتریبیوت `loading` (یعنی eager، نه lazy) — سه بولتن PSI مستقیماً آدرس شدند.
+2. CSS دیگر هیچ تصویری لود نمی‌کند — فقط چیدمان (absolute/inset/object-fit)؛ قانون background-image و
+   override موبایل حذف شدند (انتخاب URL پوستر کوچک از قبل در JS است — ۳.۲.۰).
+3. همان URL در `poster` ویدئو هم هست → همچنان یک دانلود مشترک؛ `onError` پوستر را در صورت خطا می‌پوشاند.
+4. تأییدها: رندر SSR (تگ دقیق با fetchpriority=high، بدون lazy، src درست، اولین لایه) + `canInstall: true`.
+
+**⛔ باقی‌مانده سمت پورتال (پرامپت ۴):** «قابل کشف در سند اولیه» کامل نمی‌شود مگر اینکه URL پوستر در HTML
+اولیه باشد — سایت SPA است و همه‌چیز بعد از JS رندر می‌شود. راه‌حل پیشنهادی: تزریق
+`<link rel="preload" as="image" fetchpriority="high">` برای `theme.json.media.heroPoster` قالب فعال
+در head همان HTML سرو‌شده (به‌همراه در نظر گرفتن واریانت موبایل `heroPosterSmall`).
+
+**تست‌نشده:** اندازه‌گیری مجدد LCP با PSI پس از دپلوی.
+
+---
+
 *(بخش‌های بعدی در ادامه ثبت می‌شوند)*
