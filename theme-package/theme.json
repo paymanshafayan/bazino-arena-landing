@@ -1,19 +1,24 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "author": "Bazino Gaming Lounge",
-  "description": "A seven-chapter cinematic, console-first theme for Bazino Gaming Lounge with pointer depth, scroll reveals, tournament surfaces, lounge services, app signal, and shared styling for every portal page.",
+  "description": "Seven-chapter cinematic arena theme for the Bazino portal. Deferred hero video over a first-frame poster, all-pages coverage (home, reservations, cafe, shop, tournaments, blog, loyalty, chat, modals, admin), zero third-party origins, zero web fonts.",
   "colors": {
     "primary": "#FFC400",
-    "accent": "#35A9FF",
     "bg": "#06080E",
-    "card": "#0D1728",
-    "text": "#F6F4ED"
+    "card": "#0D1728"
   },
   "contentContract": {
     "required": ["gameGenres", "tournaments", "matchHistory", "loungeSections"],
     "optional": ["featuredGames", "pricingPackages", "staffTeam", "settings", "onNavigate"]
   },
-  "supportedRoutes": ["home", "reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"]
+  "supportedRoutes": ["home", "reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"],
+  "media": {
+    "heroVideo": "assets/hero-arena.mp4",
+    "heroPoster": "assets/hero-poster.webp",
+    "videoLoading": "deferred-after-window-load",
+    "videoAutoplay": "muted-playsinline-after-idle",
+    "videoReplay": "click-on-hero"
+  }
 }

@@ -309,3 +309,15 @@
 - [x] Stabilize the iOS QR panel position and stacking context.
 - [x] Validate independent Hover/Focus behavior, mobile layout, and production build.
 - [ ] Save a new checkpoint.
+
+## Theme v2 — Arena of Legends installable package
+
+- [x] Re-read the portal Theme Engine README and inspect the live portal source (sdk.ts, themeZipCore.ts, themePerformance.ts, HomeTab.tsx, index.css class inventory).
+- [x] Fix the hook-safety flaw of v1 theme.js: home component is now a real React component element returned from the factory, hooks legal across re-renders.
+- [x] Hero: first-frame poster paints immediately; <video preload="none"> gets its src only after window load + requestIdleCallback; muted autoplay after idle; click-on-hero replays; replay button on ended/error; paused off-screen and on hidden tab (IntersectionObserver + visibilitychange, no setInterval).
+- [x] Poster generated from the actual first frame of the encoded hero video (WebP, 46KB desktop + 12KB small).
+- [x] Hero media encoded in-repo: 1280x720, 24fps, 9.08s, H.264 high profile, faststart, no audio, 807KB.
+- [x] All-pages CSS coverage: header/nav, cards, forms, tables, scrollbars, focus rings, selection, modals, admin shell + Tailwind token flow (--primary-color/--dark-bg-color/--dark-card-color) + unified hard-coded card tints.
+- [x] Performance gate obeyed: zero third-party origins, no Google Fonts, no @font-face, no setInterval, assets 865KB total (limits: 3MB single / 8MB total), content-visibility on below-the-fold chapters, aspect-ratio card media to avoid CLS, reduced-motion honored.
+- [x] Verified with the portal's own tools: scripts/audit-theme-package.mts → canInstall:true, findings:[], externalOrigins:[]; SDK mount test with real src/themeSdk/sdk.ts + react-dom/client → all checks PASS.
+- [x] Deliver bazino-arena-theme.zip (theme.json + theme.css + theme.js + assets/) built with the portal's buildThemeZip.
