@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "3.5.0",
+  "version": "4.0.0",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "Seven-chapter cinematic arena theme for the Bazino portal — SDK v2 package: design tokens (--bz-*), four-language strings (fa/en/ru/tr), admin-slider-driven hero over the official deferred hero video, full-site CSS-variable coverage, logical-property RTL/LTR, zero third-party origins, zero web-font requests.",
@@ -24,7 +24,10 @@
     "info": "#35A9FF",
     "violet": "#8E7BFF"
   },
-  "regions": ["home"],
+  "regions": [
+    "home",
+    "footer"
+  ],
   "strings": {
     "fa": {
       "hero": "اگر قهرمانی، اینجاست.",
@@ -109,7 +112,13 @@
       "slidesLabel": "اسلایدهای ویژه",
       "autoWord": "خودکار",
       "pausedWord": "مکث",
-      "currency": "تومان"
+      "currency": "تومان",
+      "locationTitle": "مکان گیم‌نت",
+      "directions": "مسیریابی",
+      "phoneLabel": "تماس",
+      "footerLine": "راند بعدی‌ات از اینجا شروع می‌شود.",
+      "officialSite": "سایت رسمی",
+      "backTop": "بازگشت به بالا"
     },
     "en": {
       "hero": "IF YOU ARE A CHAMP, THIS IS IT.",
@@ -194,7 +203,13 @@
       "slidesLabel": "Featured slides",
       "autoWord": "AUTO",
       "pausedWord": "PAUSED",
-      "currency": "T"
+      "currency": "T",
+      "locationTitle": "FIND THE LOUNGE",
+      "directions": "Directions",
+      "phoneLabel": "Phone",
+      "footerLine": "Your next match starts here.",
+      "officialSite": "Official site",
+      "backTop": "Back to top"
     },
     "ru": {
       "hero": "ЕСЛИ ТЫ ЧЕМПИОН, ТЕБЕ СЮДА.",
@@ -279,7 +294,13 @@
       "slidesLabel": "Избранные слайды",
       "autoWord": "АВТО",
       "pausedWord": "ПАУЗА",
-      "currency": "T"
+      "currency": "T",
+      "locationTitle": "КАК НАЙТИ НАС",
+      "directions": "Маршрут",
+      "phoneLabel": "Телефон",
+      "footerLine": "Твой следующий раунд начинается здесь.",
+      "officialSite": "Официальный сайт",
+      "backTop": "Наверх"
     },
     "tr": {
       "hero": "ŞAMPİYONSAN, İŞTE BURASI.",
@@ -364,14 +385,41 @@
       "slidesLabel": "Öne çıkan slaytlar",
       "autoWord": "OTOMATİK",
       "pausedWord": "DURAKLATILDI",
-      "currency": "T"
+      "currency": "T",
+      "locationTitle": "BİZİ BUL",
+      "directions": "Yol tarifi",
+      "phoneLabel": "Telefon",
+      "footerLine": "Bir sonraki raundun burada başlar.",
+      "officialSite": "Resmî site",
+      "backTop": "Yukarı dön"
     }
   },
   "contentContract": {
-    "required": ["gameGenres", "tournaments", "matchHistory", "loungeSections"],
-    "optional": ["featuredGames", "pricingPackages", "staffTeam", "settings", "slides", "onNavigate"]
+    "required": [
+      "gameGenres",
+      "tournaments",
+      "matchHistory",
+      "loungeSections"
+    ],
+    "optional": [
+      "featuredGames",
+      "pricingPackages",
+      "staffTeam",
+      "settings",
+      "slides",
+      "onNavigate"
+    ]
   },
-  "supportedRoutes": ["home", "reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"],
+  "supportedRoutes": [
+    "home",
+    "reservations",
+    "cafe",
+    "shop",
+    "tournaments",
+    "blog",
+    "loyalty",
+    "chat"
+  ],
   "media": {
     "heroVideo": "assets/hero-arena.mp4",
     "heroPoster": "assets/hero-poster.webp",

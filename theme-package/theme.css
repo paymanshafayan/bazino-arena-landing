@@ -49,6 +49,7 @@ body[data-theme='bazino-arena'] {
   --bz-divider: rgba(255, 255, 255, 0.08);
   --bz-divider-mid: rgba(255, 255, 255, 0.1);
   --bz-info-faint: rgba(53, 169, 255, 0.1);
+  --bz-info-halo: rgba(53, 169, 255, 0.11);
   --bz-info-line: rgba(53, 169, 255, 0.24);
   --bz-info-line-mid: rgba(53, 169, 255, 0.32);
   --bz-info-line-strong: rgba(53, 169, 255, 0.4);
@@ -141,6 +142,16 @@ body[data-theme='bazino-arena'] .app-bg-main {
   text-transform: uppercase;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
+.theme-bazino-arena .site-header nav button,
+.theme-bazino-arena .site-header nav a { position: relative; }
+.theme-bazino-arena .site-header nav button::after,
+.theme-bazino-arena .site-header nav a::after {
+  background: var(--primary-color); content: ''; height: 1px; inset-inline: 0; bottom: -4px;
+  opacity: 0; position: absolute; transform: scaleX(0.4); transform-origin: center;
+  transition: opacity 200ms var(--arena-ease), transform 200ms var(--arena-ease);
+}
+.theme-bazino-arena .site-header nav button:hover::after,
+.theme-bazino-arena .site-header nav a:hover::after { opacity: 0.9; transform: scaleX(1); }
 .theme-bazino-arena .site-header nav button:hover,
 .theme-bazino-arena .site-header nav a:hover { color: var(--primary-color); }
 /* mother-site logo stays untouched (exclusive logo law) */
@@ -334,6 +345,7 @@ body[data-theme='bazino-arena'] .app-bg-main {
   transition: opacity 700ms var(--arena-ease);
 }
 .theme-bazino-arena .bazino-home-hero.is-playing .bazino-hero-video { opacity: 1; }
+.theme-bazino-arena .bazino-home-hero.is-ended .bazino-hero-video { opacity: 1; }
 .theme-bazino-arena .bazino-hero-grid {
   background-image: linear-gradient(var(--bz-info-faint) 1px, transparent 1px),
     linear-gradient(90deg, var(--bz-info-faint) 1px, transparent 1px);
@@ -344,16 +356,7 @@ body[data-theme='bazino-arena'] .app-bg-main {
 [dir='rtl'] .theme-bazino-arena .bazino-hero-grid {
   mask-image: linear-gradient(270deg, rgba(0, 0, 0, 0.75), transparent 78%);
 }
-.theme-bazino-arena .bazino-hero-overlay {
-  background: linear-gradient(90deg, var(--dark-bg-color) 0%, var(--bz-shade-strong) 32%, var(--bz-shade-soft) 75%, var(--bz-shade-mid) 100%),
-    linear-gradient(0deg, var(--bz-shade-deep), transparent 52%);
-  inset: 0; position: absolute; pointer-events: none;
-}
-[dir='rtl'] .theme-bazino-arena .bazino-hero-overlay {
-  background: linear-gradient(270deg, var(--dark-bg-color) 0%, var(--bz-shade-strong) 32%, var(--bz-shade-soft) 75%, var(--bz-shade-mid) 100%),
-    linear-gradient(0deg, var(--bz-shade-deep), transparent 52%);
-}
-.theme-bazino-arena .bazino-hero-cue {
+[dir='rtl'] .theme-bazino-arena .bazino-hero-cue {
   align-items: center; background: var(--bz-shade-panel);
   border: 1px solid var(--bz-primary-line); bottom: 22px; color: var(--primary-color);
   display: inline-flex; font-size: 0.62rem; font-weight: 900; gap: 8px;
@@ -365,14 +368,6 @@ body[data-theme='bazino-arena'] .app-bg-main {
 .theme-bazino-arena .bazino-home-hero.is-playing .bazino-hero-cue { opacity: 0; transform: translate(-50%, 8px); }
 [dir='rtl'] .theme-bazino-arena .bazino-home-hero.is-playing .bazino-hero-cue { transform: translate(50%, 8px); }
 .theme-bazino-arena .bazino-hero-cue::before { content: '▶'; font-size: 0.7rem; }
-.theme-bazino-arena .bazino-hero-replay {
-  background: var(--bz-shade-panel); border: 1px solid var(--bz-primary-line);
-  bottom: 22px; color: var(--primary-color); cursor: pointer; font: inherit;
-  font-size: 0.62rem; font-weight: 900; letter-spacing: 0.16em; padding: 9px 14px;
-  position: absolute; inset-inline-end: 22px; text-transform: uppercase;
-  transition: background 180ms var(--arena-ease), color 180ms var(--arena-ease);
-}
-.theme-bazino-arena .bazino-hero-replay:hover { background: var(--primary-color); color: var(--dark-bg-color); }
 
 /* hero slide text + controls */
 .theme-bazino-arena .bazino-hero-content { margin-inline: 0; max-width: 650px; padding: 30px; position: relative; z-index: 2; }
@@ -398,26 +393,6 @@ body[data-theme='bazino-arena'] .app-bg-main {
 .theme-bazino-arena .bazino-hero-content .theme-brand-logo {
   display: block; height: auto; margin-bottom: 34px; max-height: 42px; max-width: 160px; object-fit: contain;
 }
-.theme-bazino-arena .bazino-slider-meta { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
-.theme-bazino-arena .bazino-slider-dots { display: flex; flex-wrap: wrap; gap: 8px; }
-.theme-bazino-arena .bazino-slider-dot {
-  background: transparent; border: 1px solid var(--bz-primary-line); color: var(--bz-text-faint);
-  cursor: pointer; font: 900 0.58rem/1 var(--bz-font-display); letter-spacing: 0.12em;
-  padding: 7px 9px; transition: background 180ms var(--arena-ease), color 180ms var(--arena-ease), border-color 180ms var(--arena-ease);
-}
-.theme-bazino-arena .bazino-slider-dot:hover { border-color: var(--primary-color); color: var(--bz-text); }
-.theme-bazino-arena .bazino-slider-dot.is-active { background: var(--primary-color); border-color: var(--primary-color); color: var(--dark-bg-color); }
-.theme-bazino-arena .bazino-slider-status { color: var(--bz-muted); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.14em; }
-.theme-bazino-arena .bazino-slider-arrow {
-  align-items: center; background: var(--bz-shade-panel); border: 1px solid var(--bz-primary-line);
-  color: var(--primary-color); cursor: pointer; display: flex;
-  font: 900 1.15rem/1 var(--bz-font-display); height: 44px; position: absolute; top: 50%;
-  transform: translateY(-50%); transition: background 180ms var(--arena-ease), color 180ms var(--arena-ease);
-  width: 44px; z-index: 3;
-}
-.theme-bazino-arena .bazino-slider-arrow:hover { background: var(--primary-color); color: var(--dark-bg-color); }
-.theme-bazino-arena .bazino-slider-arrow-prev { inset-inline-start: 18px; }
-.theme-bazino-arena .bazino-slider-arrow-next { inset-inline-end: 18px; }
 
 /* ---------- RTL: connected-script typography (fa) ---------- */
 /* Letter-spacing and synthetic italics break joined scripts (fa); keep the
@@ -429,14 +404,12 @@ body[data-theme='bazino-arena'] .app-bg-main {
   font-style: normal; letter-spacing: 0; line-height: 1.12;
 }
 .theme-bazino-arena [dir='rtl'] .bazino-home-card h3,
-.theme-bazino-arena [dir='rtl'] .bazino-pass h3,
-.theme-bazino-arena [dir='rtl'] .bazino-app-card h3 {
+.theme-bazino-arena [dir='rtl'] .bazino-pass h3 {
   font-style: normal; letter-spacing: 0; line-height: 1.25;
 }
 .theme-bazino-arena [dir='rtl'] .theme-chapter-label,
 .theme-bazino-arena [dir='rtl'] .bazino-section-head p,
 .theme-bazino-arena [dir='rtl'] .bazino-hero-cue,
-.theme-bazino-arena [dir='rtl'] .bazino-hero-replay,
 .theme-bazino-arena [dir='rtl'] .theme-link-button,
 .theme-bazino-arena [dir='rtl'] .bazino-home .btn { letter-spacing: 0.02em; }
 
@@ -447,7 +420,7 @@ body[data-theme='bazino-arena'] .app-bg-main {
 }
 .theme-bazino-arena .bazino-section-head h2 {
   font-family: var(--bz-font-display);
-  font-size: clamp(2.2rem, 5vw, 4.6rem); font-style: italic; font-weight: 900;
+  font-size: clamp(2.6rem, 5.6vw, 5.2rem); font-style: italic; font-weight: 900;
   line-height: 0.96; margin: 20px 0 12px; text-transform: uppercase;
 }
 .theme-bazino-arena .bazino-section-head p {
@@ -473,14 +446,12 @@ body[data-theme='bazino-arena'] .app-bg-main {
   display: block; margin-bottom: 16px; object-fit: cover; width: 100%;
 }
 .theme-bazino-arena .bazino-home-card h3,
-.theme-bazino-arena .bazino-pass h3,
-.theme-bazino-arena .bazino-app-card h3 {
+.theme-bazino-arena .bazino-pass h3 {
   font-family: var(--bz-font-display);
   font-size: 1.7rem; font-style: italic; font-weight: 900; line-height: 1; margin: 13px 0; text-transform: uppercase;
 }
 .theme-bazino-arena .bazino-home-card p,
-.theme-bazino-arena .bazino-pass p,
-.theme-bazino-arena .bazino-app-card p { color: var(--bz-muted); font-size: 0.78rem; line-height: 1.7; margin: 0; max-width: 260px; }
+.theme-bazino-arena .bazino-pass p { color: var(--bz-muted); font-size: 0.78rem; line-height: 1.7; margin: 0; max-width: 260px; }
 .theme-bazino-arena .bazino-card-arrow { bottom: 18px; color: var(--primary-color); font-size: 1.3rem; position: absolute; inset-inline-end: 20px; }
 
 /* --- tournaments surface --- */
@@ -570,21 +541,115 @@ body[data-theme='bazino-arena'] .app-bg-main {
 
 /* --- visit surface --- */
 .theme-bazino-arena .bazino-visit-surface { align-items: center; display: grid; gap: 10%; grid-template-columns: 1fr 1fr; }
-.theme-bazino-arena .bazino-visit-copy, .theme-bazino-arena .bazino-app-card { position: relative; z-index: 1; }
+.theme-bazino-arena .bazino-visit-copy, .theme-bazino-arena .bazino-location-card { position: relative; z-index: 1; }
 .theme-bazino-arena .bazino-visit-copy h2 {
   font-family: var(--bz-font-display);
-  font-size: clamp(2.4rem, 6vw, 5.4rem); font-style: italic; font-weight: 900; line-height: 0.94; margin: 25px 0; text-transform: uppercase;
+  font-size: clamp(2.6rem, 6vw, 5.4rem); font-style: italic; font-weight: 900; line-height: 0.94; margin: 25px 0; text-transform: uppercase;
 }
 .theme-bazino-arena .bazino-visit-copy p { color: var(--bz-muted); font-size: 0.9rem; }
-.theme-bazino-arena .bazino-app-card {
+
+/* location card (chapter 07) — game net map/location, replaces mobile signal */
+.theme-bazino-arena .bazino-location-card {
   background: linear-gradient(135deg, var(--bz-card-2), var(--bz-card-3)); border: 1px solid var(--bz-info-line-strong);
   clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
-  min-height: 280px; padding: 30px;
+  min-height: 280px; padding: 30px; position: relative;
 }
-.theme-bazino-arena .bazino-app-card .btn { display: inline-flex; margin-top: 24px; }
-.theme-bazino-arena .bazino-app-downloads { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
-.theme-bazino-arena .bazino-app-downloads .btn { background: var(--bz-shade-thin); border-color: var(--bz-info-line-bold); color: var(--bz-text); }
-.theme-bazino-arena .bazino-app-downloads .btn:hover { border-color: var(--primary-color); box-shadow: 0 0 22px var(--bz-info-halo); color: var(--primary-color); }
+.theme-bazino-arena .bazino-location-card::before {
+  border: 1px solid var(--bz-primary-line-strong); content: ''; inset: 14px;
+  pointer-events: none; position: absolute; z-index: 2;
+}
+.theme-bazino-arena .bazino-location-address { color: var(--bz-text-soft); font-size: 0.95rem; line-height: 1.8; margin: 14px 0 0; max-width: 340px; }
+.theme-bazino-arena .bazino-location-phone { color: var(--bz-muted); font-size: 0.8rem; letter-spacing: 0.06em; margin: 8px 0 0; }
+.theme-bazino-arena .bazino-location-link { display: inline-flex; margin-top: 20px; position: relative; z-index: 3; }
+.theme-bazino-arena .bazino-location-radar {
+  align-items: center; border: 1px solid var(--bz-info-line-mid); display: flex; height: 108px; margin: 22px 0 4px;
+  justify-content: center; position: relative; width: 108px;
+}
+.theme-bazino-arena .bazino-location-radar::before,
+.theme-bazino-arena .bazino-location-radar::after {
+  border: 1px solid var(--bz-info-line); border-radius: 50%; content: ''; position: absolute;
+}
+.theme-bazino-arena .bazino-location-radar::before { height: 68px; width: 68px; }
+.theme-bazino-arena .bazino-location-radar::after { animation: bazino-radar 2.6s var(--arena-ease) infinite; height: 68px; width: 68px; }
+@keyframes bazino-radar {
+  0% { opacity: 0.9; transform: scale(0.3); }
+  70% { opacity: 0; transform: scale(1.55); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+.theme-bazino-arena .bazino-location-pin { color: var(--primary-color); font-size: 1.6rem; z-index: 1; }
+
+
+/* ---------- cinematic depth: pointer-driven neon glow (reference) ----------
+   theme.js normalizes the pointer into --pointer-x/--pointer-y (-1..1) on
+   .bazino-home. Every chapter's ::before glow, the hero grid and section
+   heads follow the cursor like the reference landing. Zero layout cost:
+   backgrounds/transforms only. */
+.theme-bazino-arena .bazino-home { --pointer-x: 0; --pointer-y: 0; }
+.theme-bazino-arena .bazino-chapter::before {
+  background: radial-gradient(560px circle at calc(50% + var(--pointer-x, 0) * 20%) calc(42% + var(--pointer-y, 0) * 18%), var(--bz-info-halo), transparent 60%);
+}
+.theme-bazino-arena .bazino-hero-grid {
+  transform: translate(calc(var(--pointer-x, 0) * 12px), calc(var(--pointer-y, 0) * 8px));
+}
+
+/* ---------- scroll reveal (data-rvl) ----------
+   Hidden state is scoped to .bazino-rvl (class added by theme.js only when
+   IntersectionObserver is live) -> SSR / no-JS fallback keeps everything
+   visible. Transform/opacity only -> zero CLS. */
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] {
+  opacity: 0; transform: translateY(26px);
+  transition: opacity 700ms var(--arena-ease), transform 700ms var(--arena-ease);
+}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible { opacity: 1; transform: none; }
+.theme-bazino-arena .bazino-home.bazino-rvl .bazino-home-grid[data-rvl] .bazino-home-card,
+.theme-bazino-arena .bazino-home.bazino-rvl .bazino-pass-grid[data-rvl] .bazino-pass,
+.theme-bazino-arena .bazino-home.bazino-rvl .bazino-staff-strip[data-rvl] .bazino-staff-card {
+  opacity: 0; transform: translateY(26px) scale(0.985);
+  transition: opacity 640ms var(--arena-ease), transform 640ms var(--arena-ease);
+}
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-home-grid .bazino-home-card,
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-pass-grid .bazino-pass,
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-staff-strip .bazino-staff-card { opacity: 1; transform: none; }
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-home-grid .bazino-home-card:nth-child(2),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-pass-grid .bazino-pass:nth-child(2),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-staff-strip .bazino-staff-card:nth-child(2) { transition-delay: 70ms; }
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-home-grid .bazino-home-card:nth-child(3),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-pass-grid .bazino-pass:nth-child(3),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-staff-strip .bazino-staff-card:nth-child(3) { transition-delay: 140ms; }
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-home-grid .bazino-home-card:nth-child(4),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-pass-grid .bazino-pass:nth-child(4),
+.theme-bazino-arena .bazino-home.bazino-rvl .is-visible.bazino-staff-strip .bazino-staff-card:nth-child(4) { transition-delay: 210ms; }
+/* subtle counter-parallax on section heads (kept after reveal so it wins the cascade) */
+.theme-bazino-arena .bazino-home .bazino-section-head[data-rvl].is-visible {
+  transform: translate(calc(var(--pointer-x, 0) * -5px), calc(var(--pointer-y, 0) * -4px));
+}
+
+/* ---------- footer region (reference design) ---------- */
+.theme-bazino-arena .bazino-footer {
+  border-top: 1px solid var(--bz-border); padding: 54px clamp(22px, 6vw, 92px) 26px; position: relative;
+}
+.theme-bazino-arena .bazino-footer::before {
+  background: radial-gradient(480px circle at calc(50% + var(--pointer-x, 0) * 20%) 0%, var(--bz-info-halo), transparent 60%);
+  content: ''; height: 220px; inset: 0 0 auto 0; pointer-events: none; position: absolute;
+}
+.theme-bazino-arena .bazino-footer-main { align-items: center; display: flex; flex-wrap: wrap; gap: 26px; justify-content: space-between; position: relative; }
+.theme-bazino-arena .bazino-footer-brand { align-items: center; display: flex; gap: 14px; }
+.theme-bazino-arena .bazino-footer-sub { color: var(--bz-muted); font-size: 0.66rem; font-weight: 900; letter-spacing: 0.32em; }
+.theme-bazino-arena .bazino-footer-line { color: var(--bz-text-soft); font-size: 0.9rem; margin: 0; max-width: 420px; }
+.theme-bazino-arena .bazino-footer-location { color: var(--bz-muted); font-size: 0.8rem; text-decoration: none; transition: color 180ms var(--arena-ease); }
+.theme-bazino-arena .bazino-footer-location:hover { color: var(--primary-color); }
+.theme-bazino-arena .bazino-footer-bottom {
+  border-top: 1px solid var(--bz-border); display: flex; flex-wrap: wrap; gap: 18px;
+  justify-content: space-between; margin-top: 36px; padding-top: 22px; position: relative;
+}
+.theme-bazino-arena .bazino-footer-bottom span,
+.theme-bazino-arena .bazino-footer-bottom a,
+.theme-bazino-arena .bazino-footer-bottom button {
+  background: none; border: none; color: var(--bz-muted); cursor: pointer; font-family: inherit;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.18em; padding: 0; text-decoration: none; text-transform: uppercase;
+}
+.theme-bazino-arena .bazino-footer-bottom a:hover,
+.theme-bazino-arena .bazino-footer-bottom button:hover { color: var(--primary-color); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 800px) {
@@ -596,11 +661,10 @@ body[data-theme='bazino-arena'] .app-bg-main {
   .theme-bazino-arena .bazino-score-row { grid-template-columns: 1fr 1fr 1fr; min-width: 470px; }
   .theme-bazino-arena .bazino-scoreboard { overflow-x: auto; }
   .theme-bazino-arena .bazino-genre-filter button { flex: 1 1 calc(50% - 8px); }
-  .theme-bazino-arena .bazino-app-downloads { flex-direction: column; }
+  
   .theme-bazino-arena .bazino-tournament-tools { flex-direction: column; }
   .theme-bazino-arena .bazino-theme-lounge-slider img { height: 56vw; }
-  .theme-bazino-arena .bazino-slider-arrow { display: none; }
-  .theme-bazino-arena .bazino-hero-content h1 { font-size: clamp(2.2rem, 11vw, 3.6rem); }
+    .theme-bazino-arena .bazino-hero-content h1 { font-size: clamp(2.2rem, 11vw, 3.6rem); }
   .theme-bazino-arena .bazino-hero-slide { min-height: calc(clamp(2.2rem, 11vw, 3.6rem) * 2.6 + 3.4rem + 4rem); }
 }
 
@@ -610,4 +674,13 @@ body[data-theme='bazino-arena'] .app-bg-main {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+  /* reveal system: everything shown instantly, no parallax */
+  .theme-bazino-arena .bazino-home.bazino-rvl [data-rvl],
+  .theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] .bazino-home-card,
+  .theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] .bazino-pass,
+  .theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] .bazino-staff-card,
+  .theme-bazino-arena .bazino-section-head[data-rvl].is-visible {
+    opacity: 1 !important; transform: none !important; transition-delay: 0ms !important;
+  }
+  .theme-bazino-arena .bazino-hero-grid { transform: none !important; }
 }

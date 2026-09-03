@@ -152,6 +152,7 @@
     var staff = p.staffTeam || [];
 
     var h = R.createElement;
+    var rootRef = R.useRef(null);
 
     /* ---------- hero slides: admin data first, theme demo last ---------- */
     var adminSlides = Array.isArray(p.slides) ? p.slides : [];
@@ -334,6 +335,63 @@
       startPlayback();
     }
 
+    /* ---------- cinematic pointer depth (reference design) ----------
+       Normalized --pointer-x/--pointer-y on the home root drive the neon
+       background glow of every chapter, the hero grid parallax and a subtle
+       counter-parallax on section heads — exactly like the reference
+       landing. Disabled for reduced-motion users. */
+    R.useEffect(function () {
+      var root = rootRef.current;
+      if (!root || reducedMotion || !window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      var onUpdate = function (e) {
+        var b = root.getBoundingClientRect();
+        if (!b.width || !b.height) return;
+        var x = ((e.clientX - b.left) / b.width) * 2 - 1;
+        var y = ((e.clientY - b.top) / b.height) * 2 - 1;
+        root.style.setProperty('--pointer-x', x.toFixed(3));
+        root.style.setProperty('--pointer-y', y.toFixed(3));
+      };
+      var onLeave = function () {
+        root.style.setProperty('--pointer-x', '0');
+        root.style.setProperty('--pointer-y', '0');
+      };
+      root.addEventListener('pointermove', onUpdate);
+      root.addEventListener('pointerleave', onLeave);
+      return function () {
+        root.removeEventListener('pointermove', onUpdate);
+        root.removeEventListener('pointerleave', onLeave);
+      };
+    }, [reducedMotion]);
+
+    /* ---------- scroll reveal (reference design) ----------
+       Containers marked data-rvl fade/rise in once when they enter the
+       viewport (IntersectionObserver, once, ~15%); grid children stagger
+       via CSS. Layout space is reserved (transform/opacity only → no CLS).
+       Reduced motion → everything visible immediately. */
+    R.useEffect(function () {
+      var root = rootRef.current;
+      if (!root) return;
+      var els = root.querySelectorAll('[data-rvl]');
+      if (!els.length) return;
+      if (reducedMotion || !window.IntersectionObserver) {
+        for (var k = 0; k < els.length; k++) els[k].classList.add('is-visible');
+        return;
+      }
+      /* scope the hidden state via CSS to this class → SSR / no-JS keeps
+         everything visible (progressive enhancement) */
+      root.classList.add('bazino-rvl');
+      var io = new window.IntersectionObserver(function (entries) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) {
+            entries[k].target.classList.add('is-visible');
+            io.unobserve(entries[k].target);
+          }
+        }
+      }, { threshold: 0.15 });
+      for (var j = 0; j < els.length; j++) io.observe(els[j]);
+      return function () { io.disconnect(); };
+    }, []);
+
     /* ---------- tournament discovery state ---------- */
     var genreState = R.useState('all');
     var searchState = R.useState('');
@@ -363,7 +421,7 @@
 
     /* ---------- builders ---------- */
     function sectionHead(chapter, title, meta) {
-      return h('div', { className: 'bazino-section-head' },
+      return h('div', { className: 'bazino-section-head', 'data-rvl': '1' },
         h('span', { className: 'theme-chapter-label' }, T('chapterWord') + ' ' + num(language, chapter)),
         h('h2', null, title),
         h('p', null, meta)
@@ -389,7 +447,7 @@
 
     function cardGrid(items, prefix, fallback) {
       var list = items && items.length ? items.slice(0, 4) : fallback;
-      return h('div', { className: 'bazino-home-grid' }, list.map(function (item, index) { return card(item, index, prefix, true); }));
+      return h('div', { className: 'bazino-home-grid', 'data-rvl': '1' }, list.map(function (item, index) { return card(item, index, prefix, true); }));
     }
 
     function routeLink(title, tab) {
@@ -432,43 +490,15 @@
       tabIndex: -1
     }));
     heroMediaLayers.push(h('div', { key: 'grid', className: 'bazino-hero-grid' }));
-    heroMediaLayers.push(h('div', { key: 'overlay', className: 'bazino-hero-overlay' }));
 
-    var sliderControls = slideCount > 1 ? [
-      h('button', {
-        key: 'prev', type: 'button', className: 'bazino-slider-arrow bazino-slider-arrow-prev',
-        'aria-label': T('slidePrev'),
-        onClick: function (e) { e.stopPropagation(); goToSlide(slideIndex - 1); }
-      }, '‹'),
-      h('button', {
-        key: 'next', type: 'button', className: 'bazino-slider-arrow bazino-slider-arrow-next',
-        'aria-label': T('slideNext'),
-        onClick: function (e) { e.stopPropagation(); goToSlide(slideIndex + 1); }
-      }, '›')
-    ] : null;
+    return h('div', { ref: rootRef, className: 'bazino-home' + (smallScreen ? ' is-small-screen' : ''), dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
 
-    var slideDots = slideCount > 1 ? h('div', { key: 'dots', className: 'bazino-slider-dots', role: 'group', 'aria-label': T('slidesLabel') },
-      slides.map(function (s, idx) {
-        return h('button', {
-          key: s.id, type: 'button',
-          className: 'bazino-slider-dot' + (idx === slideIndex ? ' is-active' : ''),
-          'aria-label': T('slidesLabel') + ' — ' + pad2(language, idx + 1),
-          'aria-current': idx === slideIndex,
-          onClick: function (e) { e.stopPropagation(); goToSlide(idx); }
-        }, pad2(language, idx + 1));
-      })
-    ) : null;
-
-    var sliderStatus = slideCount > 1 ? h('span', { key: 'status', className: 'bazino-slider-status' },
-      pad2(language, slideIndex + 1) + ' / ' + pad2(language, slideCount) +
-      (reducedMotion ? '' : (sliderPaused ? ' / ' + T('pausedWord') : ' / ' + T('autoWord')))
-    ) : null;
-
-    return h('div', { className: 'bazino-home' + (smallScreen ? ' is-small-screen' : ''), dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
-
-      /* ── 01 HERO: poster first, admin slides over it, video deferred ── */
+      /* ── 01 HERO: poster first, admin slide text, video deferred ──
+         No overlay layer (video stays clear) and no slider buttons — clicking
+         the hero replays the video; after it ends it FREEZES on the last
+         frame (is-ended) instead of returning to the first frame. */
       h('section', {
-        className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : ''),
+        className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : '') + (phase === 3 ? ' is-ended' : ''),
         'data-chapter': '01',
         ref: heroRef,
         dir: dir
@@ -486,12 +516,7 @@
           onBlur: function () { setSliderPaused(false); }
         },
           heroMediaLayers,
-          sliderControls,
-          phase < 2 ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null,
-          (phase === 3 || phase === 4) ? h('button', {
-            key: 'replay', className: 'bazino-hero-replay',
-            onClick: function (e) { e.stopPropagation(); onHeroClick(); }
-          }, T('replay')) : null
+          phase < 2 ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null
         ),
         h('div', { className: 'bazino-hero-content theme-frame', dir: dir },
           h('img', { className: 'theme-brand-logo', src: logo, alt: settings.club_name || 'Bazino', width: 160, height: 42 }),
@@ -500,8 +525,7 @@
             h('h1', null, activeSlide.title),
             activeSlide.desc ? h('p', null, activeSlide.desc) : null
           ),
-          h('button', { className: 'btn cta-primary', onClick: function (e) { e.stopPropagation(); navigate(activeSlide.target); } }, T('cta') + '  ↗'),
-          h('div', { className: 'bazino-slider-meta' }, slideDots, sliderStatus)
+          h('button', { className: 'btn cta-primary', onClick: function (e) { e.stopPropagation(); navigate(activeSlide.target); } }, T('cta') + '  ↗')
         )
       ),
 
@@ -545,7 +569,7 @@
       /* ── 04 RESULTS ── */
       h('section', { className: 'bazino-chapter bazino-score-surface', 'data-chapter': '04', dir: dir },
         sectionHead('04', T('results'), T('resultsMeta')),
-        h('div', { className: 'bazino-scoreboard' }, history.length ? history.slice(0, 5).map(function (entry, index) {
+        h('div', { className: 'bazino-scoreboard', 'data-rvl': '1' }, history.length ? history.slice(0, 5).map(function (entry, index) {
           var e = entry || {};
           var score = (e.scoreA !== undefined || e.scoreB !== undefined) ? (e.scoreA + ' : ' + e.scoreB) : (e.score || e.result || '— —');
           return h('div', { className: 'bazino-score-row', key: e.id || index },
@@ -562,7 +586,7 @@
         sectionHead('05', T('lounges'), T('loungesMeta')),
         activeLounge ? h('div', {
           ref: galleryBoxRef,
-          className: 'bazino-theme-lounge-slider',
+          className: 'bazino-theme-lounge-slider', 'data-rvl': '1',
           onMouseEnter: function () { galleryPauseState[1](true); },
           onMouseLeave: function () { galleryPauseState[1](false); },
           onFocus: function () { galleryPauseState[1](true); },
@@ -582,7 +606,7 @@
       /* ── 06 PASSES ── */
       h('section', { className: 'bazino-chapter bazino-passes-surface', 'data-chapter': '06', dir: dir },
         sectionHead('06', T('passes'), T('passesMeta')),
-        h('div', { className: 'bazino-pass-grid' }, (pricing.length ? pricing : [
+        h('div', { className: 'bazino-pass-grid', 'data-rvl': '1' }, (pricing.length ? pricing : [
           { title: T('demoPass1Title'), body: T('demoPass1Body') },
           { title: T('demoPass2Title'), body: T('demoPass2Body') },
           { title: T('demoPass3Title'), body: T('demoPass3Body') }
@@ -609,7 +633,7 @@
       /* ── 06.5 COACHES (optional) ── */
       staff && staff.length ? h('section', { className: 'bazino-chapter', 'data-chapter': '06.5', dir: dir },
         sectionHead('06.5', T('coaches'), T('coachesMeta')),
-        h('div', { className: 'bazino-staff-strip' }, staff.slice(0, 4).map(function (member, index) {
+        h('div', { className: 'bazino-staff-strip', 'data-rvl': '1' }, staff.slice(0, 4).map(function (member, index) {
           var m = member || {};
           return h('div', { key: m.id || index, className: 'bazino-staff-chip' },
             h('div', null,
@@ -620,22 +644,29 @@
         }))
       ) : null,
 
-      /* ── 07 VISIT + APP ── */
+      /* ── 07 VISIT + LOCATION ── (mobile-signal card removed; the game
+         net's location/map takes its place — address from the portal,
+         directions link out to maps, radar visual is pure CSS) */
       h('section', { className: 'bazino-chapter bazino-visit-surface', 'data-chapter': '07', dir: dir },
-        h('div', { className: 'bazino-visit-copy' },
+        h('div', { className: 'bazino-visit-copy', 'data-rvl': '1' },
           h('span', { className: 'theme-chapter-label' }, T('chapterWord') + ' ' + num(language, '07')),
           h('h2', null, T('visit')),
           h('p', null, settings.club_address || T('addressFallback')),
           h('button', { className: 'btn btn-outline', onClick: function () { navigate('reservations'); } }, T('cta') + '  ↗')
         ),
-        h('div', { className: 'bazino-app-card' },
-          h('span', { className: 'theme-chapter-label' }, T('appSignal')),
-          h('h3', null, T('app')),
-          h('p', null, T('appBody')),
-          h('div', { className: 'bazino-app-downloads' },
-            h('button', { className: 'btn btn-outline', onClick: function () { navigate('loyalty'); } }, T('ios') + '  ↗'),
-            h('button', { className: 'btn btn-outline', onClick: function () { navigate('loyalty'); } }, T('android') + '  ↗')
-          )
+        h('div', { className: 'bazino-location-card', 'data-rvl': '1' },
+          h('span', { className: 'theme-chapter-label' }, T('locationTitle')),
+          h('div', { className: 'bazino-location-radar', 'aria-hidden': 'true' },
+            h('span', { className: 'bazino-location-pin' }, '⌖')
+          ),
+          h('p', { className: 'bazino-location-address' }, settings.club_address || T('addressFallback')),
+          settings.club_phone ? h('p', { className: 'bazino-location-phone' }, T('phoneLabel') + ': ' + String(settings.club_phone)) : null,
+          h('a', {
+            className: 'btn btn-outline bazino-location-link',
+            href: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(settings.club_address || 'Vistamare Hotel İskele Cyprus')),
+            target: '_blank',
+            rel: 'noreferrer'
+          }, T('directions') + '  ↗')
         )
       )
     );
@@ -646,6 +677,51 @@
       apiVersion: 2,
       render: function (props) {
         return R.createElement(ArenaHome, props);
+      }
+    };
+  });
+
+  /* ── FOOTER region (SDK v2) — reference-design footer ─────────────
+     The portal's default footer renders nothing (fallback={null}), so
+     registering this region ADDS the reference footer: brand lockup,
+     signal line, location, copyright, official-site link, back-to-top. */
+  function ArenaFooter(props) {
+    var p = props || {};
+    var language = p.language || 'fa';
+    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
+    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
+    function T(key) { return ts(key); }
+    var settings = p.settings || {};
+    var address = settings.club_address || T('addressFallback');
+    var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(address));
+    var year = new Date().getFullYear();
+    var h = R.createElement;
+
+    return h('footer', { className: 'bazino-footer', dir: dir },
+      h('div', { className: 'bazino-footer-main' },
+        h('div', { className: 'bazino-footer-brand' },
+          h('img', { className: 'theme-brand-logo', src: p.logoUrl || '/logo.png', alt: settings.club_name || 'Bazino', height: 42 }),
+          h('span', { className: 'bazino-footer-sub' }, 'GAMING LOUNGE')
+        ),
+        h('p', { className: 'bazino-footer-line' }, T('footerLine')),
+        h('a', { className: 'bazino-footer-location', href: mapsUrl, target: '_blank', rel: 'noreferrer' }, '⌖ ' + address)
+      ),
+      h('div', { className: 'bazino-footer-bottom' },
+        h('span', null, '© ' + num(language, year) + ' BAZINO GAMING LOUNGE'),
+        h('a', { href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, T('officialSite') + '  ↗'),
+        h('button', {
+          className: 'bazino-footer-top',
+          onClick: function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
+        }, '↑ ' + T('backTop'))
+      )
+    );
+  }
+
+  SDK.registerComponent('footer', function () {
+    return {
+      apiVersion: 2,
+      render: function (props) {
+        return R.createElement(ArenaFooter, props);
       }
     };
   });
