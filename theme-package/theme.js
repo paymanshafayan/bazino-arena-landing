@@ -130,38 +130,6 @@
     return 'other';
   }
 
-  function ArenaFooter(props) {
-    var p = props || {};
-    var language = p.language || 'fa';
-    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
-    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
-    function T(key) { return ts(key); }
-    var settings = p.settings || {};
-    var address = settings.club_address || T('addressFallback');
-    var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(address));
-    var year = new Date().getFullYear();
-    var h = R.createElement;
-
-    return h('footer', { className: 'bazino-footer', dir: dir },
-      h('div', { className: 'bazino-footer-main' },
-        h('div', { className: 'bazino-footer-brand' },
-          h('img', { className: 'theme-brand-logo', src: p.logoUrl || '/logo.png', alt: settings.club_name || 'Bazino', height: 42 }),
-          h('span', { className: 'bazino-footer-sub' }, 'GAMING LOUNGE')
-        ),
-        h('p', { className: 'bazino-footer-line' }, T('footerLine')),
-        h('a', { className: 'bazino-footer-location', href: mapsUrl, target: '_blank', rel: 'noreferrer' }, '⌖ ' + address)
-      ),
-      h('div', { className: 'bazino-footer-bottom' },
-        h('span', null, '© ' + num(language, year) + ' BAZINO GAMING LOUNGE'),
-        h('a', { href: 'https://bazino.pro', target: '_blank', rel: 'noreferrer' }, T('officialSite') + '  ↗'),
-        h('button', {
-          className: 'bazino-footer-top',
-          onClick: function () { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
-        }, '↑ ' + T('backTop'))
-      )
-    );
-  }
-
   function ArenaHome(props) {
     var p = props || {};
     var language = p.language || 'fa';
@@ -452,45 +420,36 @@
     var activeLounge = loungeImages[loungeIndex];
 
 
-    /* ---------- chapter 07: real map ----------
-       Location registered in the portal: club_address setting + the lounge's
-       own map coordinates (35.7810, 51.4340 — the same pin the portal's
-       built-in home uses). If the admin registered an explicit maps link
-       (club_map_url / google_map_url / maps_url or a google-maps entry in
-       social_media_links) it wins. */
-    var MAP_COORDS = '35.7810,51.4340';
-    function findRegisteredMapUrl() {
-      var keys = ['club_map_url', 'google_map_url', 'maps_url', 'map_url'];
-      for (var i = 0; i < keys.length; i++) {
-        if (settings[keys[i]]) return String(settings[keys[i]]);
-      }
-      try {
-        var socials = settings.social_media_links ? JSON.parse(settings.social_media_links) : null;
-        if (socials && socials.length) {
-          for (var j = 0; j < socials.length; j++) {
-            var u = String(socials[j] && (socials[j].url || socials[j].link) || '');
-            if (/maps\.google|goo\.gl\/maps|maps\.app\.goo\.gl|google\.[a-z.]+\/maps/i.test(u)) return u;
+    /* ---------- chapter 07: real map (OpenStreetMap) ----------
+       No Google Maps anywhere (sanction-safe choice made by the portal):
+       both the embed and the outbound link point to OpenStreetMap.
+       Coordinates come from portal settings (club_map_lat / club_map_lng
+       — the North Cyprus lounge pin); if the portal SDK exposes
+       locationFrom() it is preferred so the theme stays in sync with the
+       portal's own map. Nothing is hardcoded: without coordinates the map
+       gracefully doesn't render (address card remains). */
+    function osmLink(lat, lng) {
+      return 'https://www.openstreetmap.org/?mlat=' + lat + '&mlon=' + lng + '#map=17/' + lat + '/' + lng;
+    }
+    function mapData() {
+      if (SDK.locationFrom) {
+        try {
+          var loc = SDK.locationFrom(settings);
+          if (loc && loc.embedUrl && isFinite(loc.lat) && isFinite(loc.lng)) {
+            return { embedUrl: String(loc.embedUrl), mapUrl: osmLink(loc.lat, loc.lng) };
           }
-        }
-      } catch (e) { /* not JSON */ }
-      return '';
-    }
-    function mapEmbedSrc() {
-      var reg = findRegisteredMapUrl();
-      if (reg) {
-        if (/output=embed/i.test(reg)) return reg;
-        var at = reg.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-        if (at) return 'https://www.google.com/maps?q=' + encodeURIComponent(at[1] + ',' + at[2]) + '&z=16&output=embed';
-        var q = reg.match(/[?&]q=([^&]+)/);
-        if (q) return 'https://www.google.com/maps?q=' + encodeURIComponent(decodeURIComponent(q[1])) + '&z=16&output=embed';
+        } catch (e) { /* fall through to settings */ }
       }
-      return 'https://www.google.com/maps?q=' + encodeURIComponent(MAP_COORDS) + '&z=16&output=embed';
+      var lat = parseFloat(settings.club_map_lat);
+      var lng = parseFloat(settings.club_map_lng);
+      if (!isFinite(lat) || !isFinite(lng)) return null;
+      var d = 0.005;
+      return {
+        embedUrl: 'https://www.openstreetmap.org/export/embed.html?bbox=' + (lng - d).toFixed(4) + '%2C' + (lat - 0.004).toFixed(4) + '%2C' + (lng + d).toFixed(4) + '%2C' + (lat + 0.004).toFixed(4) + '&layer=mapnik&marker=' + lat + '%2C' + lng,
+        mapUrl: osmLink(lat, lng)
+      };
     }
-    function mapDirectionsUrl() {
-      var reg = findRegisteredMapUrl();
-      if (reg && !/output=embed/i.test(reg)) return reg;
-      return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(MAP_COORDS);
-    }
+    var map = mapData();
 
     /* ---------- builders ---------- */
     function sectionHead(chapter, title, meta) {
@@ -729,31 +688,28 @@
         ),
         h('div', { className: 'bazino-location-card', 'data-rvl': '1' },
           h('span', { className: 'theme-chapter-label' }, T('locationTitle')),
-          h('div', { className: 'bazino-location-map-frame' },
+          map ? h('div', { className: 'bazino-location-map-frame' },
             h('iframe', {
               key: 'map',
               className: 'bazino-location-map',
-              src: mapEmbedSrc(),
+              src: map.embedUrl,
               title: T('locationTitle'),
               loading: 'lazy',
               referrerPolicy: 'no-referrer-when-downgrade',
               allowFullScreen: true
             }),
             h('span', { className: 'bazino-location-map-badge', 'aria-hidden': 'true' }, T('liveLocation'))
-          ),
+          ) : null,
           h('p', { className: 'bazino-location-address' }, settings.club_address || T('addressFallback')),
           settings.club_phone ? h('p', { className: 'bazino-location-phone' }, T('phoneLabel') + ': ' + String(settings.club_phone)) : null,
-          h('a', {
+          map ? h('a', {
             className: 'btn btn-outline bazino-location-link',
-            href: mapDirectionsUrl(),
+            href: map.mapUrl,
             target: '_blank',
             rel: 'noreferrer'
-          }, T('directions') + '  ↗')
+          }, T('directions') + '  ↗') : null
         )
-      ),
-
-      /* footer inline: the portal mounts only the home region */
-      ArenaFooter({ language: language, dir: dir, ts: ts, settings: settings, logoUrl: logo })
+      )
     );
   }
 
@@ -766,16 +722,4 @@
     };
   });
 
-  /* ── FOOTER region (SDK v2) — reference-design footer ─────────────
-     The portal's default footer renders nothing (fallback={null}), so
-     registering this region ADDS the reference footer: brand lockup,
-     signal line, location, copyright, official-site link, back-to-top. */
-  SDK.registerComponent('footer', function () {
-    return {
-      apiVersion: 2,
-      render: function (props) {
-        return R.createElement(ArenaFooter, props);
-      }
-    };
-  });
 })();

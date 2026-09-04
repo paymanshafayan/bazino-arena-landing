@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "Seven-chapter cinematic arena theme for the Bazino portal — SDK v2 package: design tokens (--bz-*), four-language strings (fa/en/ru/tr), admin-slider-driven hero over the official deferred hero video, full-site CSS-variable coverage, logical-property RTL/LTR, zero third-party origins, zero web-font requests.",
@@ -25,8 +25,7 @@
     "violet": "#8E7BFF"
   },
   "regions": [
-    "home",
-    "footer"
+    "home"
   ],
   "strings": {
     "fa": {
@@ -116,9 +115,6 @@
       "locationTitle": "مکان گیم‌نت",
       "directions": "مسیریابی",
       "phoneLabel": "تماس",
-      "footerLine": "راند بعدی‌ات از اینجا شروع می‌شود.",
-      "officialSite": "سایت رسمی",
-      "backTop": "بازگشت به بالا",
       "liveLocation": "لوکیشن زنده"
     },
     "en": {
@@ -208,9 +204,6 @@
       "locationTitle": "FIND THE LOUNGE",
       "directions": "Directions",
       "phoneLabel": "Phone",
-      "footerLine": "Your next match starts here.",
-      "officialSite": "Official site",
-      "backTop": "Back to top",
       "liveLocation": "LIVE LOCATION"
     },
     "ru": {
@@ -300,9 +293,6 @@
       "locationTitle": "КАК НАЙТИ НАС",
       "directions": "Маршрут",
       "phoneLabel": "Телефон",
-      "footerLine": "Твой следующий раунд начинается здесь.",
-      "officialSite": "Официальный сайт",
-      "backTop": "Наверх",
       "liveLocation": "ЖИВАЯ ЛОКАЦИЯ"
     },
     "tr": {
@@ -392,9 +382,6 @@
       "locationTitle": "BİZİ BUL",
       "directions": "Yol tarifi",
       "phoneLabel": "Telefon",
-      "footerLine": "Bir sonraki raundun burada başlar.",
-      "officialSite": "Resmî site",
-      "backTop": "Yukarı dön",
       "liveLocation": "CANLI KONUM"
     }
   },

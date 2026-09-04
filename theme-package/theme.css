@@ -716,33 +716,6 @@ body[data-theme='bazino-arena'] .app-bg-main {
   transform: translate(calc(var(--pointer-x, 0) * -5px), calc(var(--pointer-y, 0) * -4px));
 }
 
-/* ---------- footer region (reference design) ---------- */
-.theme-bazino-arena .bazino-footer {
-  border-top: 1px solid var(--bz-border); padding: 54px clamp(22px, 6vw, 92px) 26px; position: relative;
-}
-.theme-bazino-arena .bazino-footer::before {
-  background: radial-gradient(480px circle at calc(50% + var(--pointer-x, 0) * 20%) 0%, var(--bz-info-halo), transparent 60%);
-  content: ''; height: 220px; inset: 0 0 auto 0; pointer-events: none; position: absolute;
-}
-.theme-bazino-arena .bazino-footer-main { align-items: center; display: flex; flex-wrap: wrap; gap: 26px; justify-content: space-between; position: relative; }
-.theme-bazino-arena .bazino-footer-brand { align-items: center; display: flex; gap: 14px; }
-.theme-bazino-arena .bazino-footer-sub { color: var(--bz-muted); font-size: 0.66rem; font-weight: 900; letter-spacing: 0.32em; }
-.theme-bazino-arena .bazino-footer-line { color: var(--bz-text-soft); font-size: 0.9rem; margin: 0; max-width: 420px; }
-.theme-bazino-arena .bazino-footer-location { color: var(--bz-muted); font-size: 0.8rem; text-decoration: none; transition: color 180ms var(--arena-ease); }
-.theme-bazino-arena .bazino-footer-location:hover { color: var(--primary-color); }
-.theme-bazino-arena .bazino-footer-bottom {
-  border-top: 1px solid var(--bz-border); display: flex; flex-wrap: wrap; gap: 18px;
-  justify-content: space-between; margin-top: 36px; padding-top: 22px; position: relative;
-}
-.theme-bazino-arena .bazino-footer-bottom span,
-.theme-bazino-arena .bazino-footer-bottom a,
-.theme-bazino-arena .bazino-footer-bottom button {
-  background: none; border: none; color: var(--bz-muted); cursor: pointer; font-family: inherit;
-  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.18em; padding: 0; text-decoration: none; text-transform: uppercase;
-}
-.theme-bazino-arena .bazino-footer-bottom a:hover,
-.theme-bazino-arena .bazino-footer-bottom button:hover { color: var(--primary-color); }
-
 /* ---------- responsive ---------- */
 @media (max-width: 800px) {
   .theme-bazino-arena .bazino-home-grid,
