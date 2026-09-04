@@ -722,4 +722,75 @@
     };
   });
 
+
+  /* ── HEADER region (SDK v2) — reference-design header ─────────────
+     Mounted by the portal's <ThemeRegion name="header"> (branch
+     arena/01a067ac+). Contract: logo from props.logoUrl only, tabs via
+     ts('nav.*'), active tab highlighted, user chip from props.user.
+     Language menu / login stay the portal's job (per the theme README).
+     Old portals never mount this region — registration is harmless. */
+  function ArenaHeader(props) {
+    var p = props || {};
+    var language = p.language || 'fa';
+    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
+    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
+    function T(key) { return ts(key); }
+    var user = p.user || null;
+    var activeTab = String(p.activeTab || 'home');
+    var navigate = p.onNavigate || function () {};
+    var h = R.createElement;
+    var headerRef = R.useRef(null);
+    var NAV_TABS = ['home', 'reservations', 'cafe', 'shop', 'tournaments', 'loyalty', 'blog', 'chat'];
+
+    /* reference behaviour: transparent at the top, ink glass + gold
+       hairline once the page scrolls (passive listener, ES5-safe) */
+    R.useEffect(function () {
+      var el = headerRef.current;
+      if (!el || !window.addEventListener) return;
+      var update = function () {
+        if (window.scrollY > 8) el.classList.add('is-scrolled');
+        else el.classList.remove('is-scrolled');
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      return function () { window.removeEventListener('scroll', update); };
+    }, []);
+
+    return h('header', { ref: headerRef, className: 'bazino-header', dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
+      h('div', { className: 'bazino-header-inner' },
+        h('button', {
+          className: 'bazino-header-brand', type: 'button',
+          onClick: function () { navigate('home'); },
+          'aria-label': T('nav.home')
+        },
+          h('img', { src: p.logoUrl || '/logo.png', alt: '', height: 34, width: 34 })
+        ),
+        h('nav', { className: 'bazino-header-nav', 'aria-label': T('navLabel') },
+          NAV_TABS.map(function (tab) {
+            return h('button', {
+              key: tab, type: 'button',
+              className: 'bazino-header-tab' + (tab === activeTab ? ' is-active' : ''),
+              onClick: function () { navigate(tab); }
+            }, T('nav.' + tab));
+          })
+        ),
+        h('div', { className: 'bazino-header-actions' },
+          user ? h('span', { className: 'bazino-header-user' }, '@' + String(user.username || '')) : null,
+          h('button', {
+            className: 'bazino-header-reserve', type: 'button',
+            onClick: function () { navigate('reservations'); }
+          }, T('headerReserve') + '  ↗')
+        )
+      )
+    );
+  }
+
+  SDK.registerComponent('header', function () {
+    return {
+      apiVersion: 2,
+      render: function (props) {
+        return R.createElement(ArenaHeader, props);
+      }
+    };
+  });
 })();

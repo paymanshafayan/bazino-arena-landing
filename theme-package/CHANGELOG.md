@@ -1,5 +1,29 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 4.3.0 — کامپوننت هدر مرجع (region «header») طبق قرارداد جدید پورتال
+- چرا هدر تعویض نمی‌شد: تا 4.2.1 قالب فقط CSS هدرِ خود پورتال را override می‌کرد و کامپوننت
+  هدر ثبت نشده بود؛ پورتالِ جدید (`<ThemeRegion name="header">` در شاخه‌ی فعال ایجنت پورتال)
+  فقط وقتی قالب `registerComponent('header')` داشته باشد هدر را جایگزین می‌کند، وگرنه fallback
+  (هدر قدیمی) را می‌کشد.
+- ArenaHeader طبق قرارداد (README/prompt پورتال): لوگو فقط از `props.logoUrl`، ۸ تب با
+  `ts('nav.*')` (home/reservations/cafe/shop/tournaments/loyalty/blog/chat — همان NAV_TABS
+  پورتال)، تب فعال طلایی + آندرلاین طلایی، چیپ کاربر از `props.user`، دکمه‌ی «رزرو سیستم»
+  با قاب طلایی → `onNavigate('reservations')`. منوی زبان/ورود عمداً ساخته نشد (طبق قرارداد،
+  کار سیستم است).
+- رفتار مرجع: بالای صفحه شفاف، بعد از اسکرول شیشه‌ی تیره + خط مویی طلایی (listener پسیو،
+  حذف در unmount)؛ موبایل: ناوبری مخفی (پورتال نوار موبایل خودش را دارد)، ارتفاع ۶۴px؛
+  فارسی: Vazirmatn.
+- پورتال قدیمی این region را mount نمی‌کند → ثبت بی‌اثر و بی‌خطر؛ استایل fallback هدر
+  (4.1.0) سر جایش ماند.
+- رشته‌ها: ۱۰ کلید جدید ×۴ زبان (nav.* ×8، navLabel، headerReserve) → ۹۷ کلید هم‌ارز؛
+  regions = `["home","header"]`.
+- تست‌شده: پارس ES5، ممیزی نصب پورتال، رندر SSR هدر (تب‌های fa/en، تب فعال، لوگو، چیپ
+  کاربر، دکمه‌ی رزرو) + عدم رگرسیون home.
+- تست‌نشده: رندر بصری روی پورتال دپلوی‌شده (نیازمند: پورتال شاخه‌ی جدید + فعال‌بودن قالب از
+  پنل ادمین + هارد رفرش).
+
+# CHANGELOG — Bazino Arena of Legends
+
 ## 4.2.1 — رفع خطای نصب EEXIST (زیپ بدون entry پوشه‌ای)
 - علامت: نصب روی پورتال با `EEXIST: file already exists, mkdir
   '.../.bazino-arena.installing-…/assets/fonts'` شکست می‌خورد.

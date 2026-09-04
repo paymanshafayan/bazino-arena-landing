@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "Seven-chapter cinematic arena theme for the Bazino portal — SDK v2 package: design tokens (--bz-*), four-language strings (fa/en/ru/tr), admin-slider-driven hero over the official deferred hero video, full-site CSS-variable coverage, logical-property RTL/LTR, zero third-party origins, zero web-font requests.",
@@ -25,7 +25,8 @@
     "violet": "#8E7BFF"
   },
   "regions": [
-    "home"
+    "home",
+    "header"
   ],
   "strings": {
     "fa": {
@@ -115,7 +116,17 @@
       "locationTitle": "مکان گیم‌نت",
       "directions": "مسیریابی",
       "phoneLabel": "تماس",
-      "liveLocation": "لوکیشن زنده"
+      "liveLocation": "لوکیشن زنده",
+      "nav.home": "خانه",
+      "nav.reservations": "رزرو",
+      "nav.cafe": "کافه",
+      "nav.shop": "فروشگاه",
+      "nav.tournaments": "مسابقات",
+      "nav.loyalty": "باشگاه",
+      "nav.blog": "بلاگ",
+      "nav.chat": "گفتگو",
+      "navLabel": "ناوبری اصلی",
+      "headerReserve": "رزرو سیستم"
     },
     "en": {
       "hero": "IF YOU ARE A CHAMP, THIS IS IT.",
@@ -204,7 +215,17 @@
       "locationTitle": "FIND THE LOUNGE",
       "directions": "Directions",
       "phoneLabel": "Phone",
-      "liveLocation": "LIVE LOCATION"
+      "liveLocation": "LIVE LOCATION",
+      "nav.home": "HOME",
+      "nav.reservations": "RESERVE",
+      "nav.cafe": "CAFE",
+      "nav.shop": "SHOP",
+      "nav.tournaments": "ARENA",
+      "nav.loyalty": "CLUB",
+      "nav.blog": "BLOG",
+      "nav.chat": "CHAT",
+      "navLabel": "Main navigation",
+      "headerReserve": "RESERVE"
     },
     "ru": {
       "hero": "ЕСЛИ ТЫ ЧЕМПИОН, ТЕБЕ СЮДА.",
@@ -293,7 +314,17 @@
       "locationTitle": "КАК НАЙТИ НАС",
       "directions": "Маршрут",
       "phoneLabel": "Телефон",
-      "liveLocation": "ЖИВАЯ ЛОКАЦИЯ"
+      "liveLocation": "ЖИВАЯ ЛОКАЦИЯ",
+      "nav.home": "ГЛАВНАЯ",
+      "nav.reservations": "БРОНЬ",
+      "nav.cafe": "КАФЕ",
+      "nav.shop": "МАГАЗИН",
+      "nav.tournaments": "АРЕНА",
+      "nav.loyalty": "КЛУБ",
+      "nav.blog": "БЛОГ",
+      "nav.chat": "ЧАТ",
+      "navLabel": "Основная навигация",
+      "headerReserve": "БРОНИРОВАТЬ"
     },
     "tr": {
       "hero": "ŞAMPİYONSAN, İŞTE BURASI.",
@@ -382,7 +413,17 @@
       "locationTitle": "BİZİ BUL",
       "directions": "Yol tarifi",
       "phoneLabel": "Telefon",
-      "liveLocation": "CANLI KONUM"
+      "liveLocation": "CANLI KONUM",
+      "nav.home": "ANASAYFA",
+      "nav.reservations": "REZERV",
+      "nav.cafe": "KAFE",
+      "nav.shop": "MAĞAZA",
+      "nav.tournaments": "ARENA",
+      "nav.loyalty": "KULÜP",
+      "nav.blog": "BLOG",
+      "nav.chat": "SOHBET",
+      "navLabel": "Ana gezinme",
+      "headerReserve": "REZERVASYON"
     }
   },
   "contentContract": {
