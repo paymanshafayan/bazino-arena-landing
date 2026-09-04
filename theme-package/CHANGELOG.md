@@ -1,5 +1,15 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 4.5.5 — رفع دو باگ واقعی هدر روی پورتال: منوی زبان هرگز باز نمی‌شد + سشن بعد خروج پاک نمی‌شد
+
+- **گزارش کاربر (2026-09-05):** «منوی زبان در هدر هنوز کار نمیکنه یعنی اصلا باز نمیشه. چک کردم اصلا منو نیست فقط یک باتن هست. بعد از خروج کاربر چون سشن پاک نمیشه دوباره با رفرش صفحه لاگین میشه.»
+- **ریشه‌یابی با سورس واقعی پورتال (شاخه `arena/01a067ac`، فقط خوانده شد — هیچ تغییری در پورتال انجام نشد):**
+  1. **باگ منوی زبان:** پورتال `<ThemeRegion name="header">` را مونت می‌کند و کامپوننت `ArenaHeader` قالب (مسیر React، `registerComponent('header')`) رندر می‌شود — نه مسیر IIFE/`site-header`. در این مسیر دراپ‌داون فقط وقتی مونت می‌شود که `langOpen === true`، اما در `theme-package/theme.css` قاعده‌ی `.theme-bazino-arena .bazino-lang-dropdown { … display: none … }` به‌صورت ثابت وجود داشت. برخلاف مسیر vanilla (IIFE) که دراپ‌داون را با `dd.style.display` اینلاین کنترل می‌کرد، نسخه‌ی React هیچ استایل اینلاینی روی `<ul>` نمی‌گذاشت، پس قاعده‌ی CSS آن را برای همیشه مخفی نگه می‌داشت — کلیک فقط state را عوض می‌کرد ولی منو پینت نمی‌شد («فقط یک باتن»).
+     - **فیکس CSS:** `display: none` در `.theme-bazino-arena .bazino-lang-dropdown` به `display: block` تغییر کرد. مسیر React فقط هنگام بازبودن منو این `<ul>` را مونت می‌کند (پس پیش‌فرض بلوک = باز)؛ مسیر vanilla کماکان `dd.style.display='none'/'block'` اینلاین دارد که روی قاعده‌ی CSS غلبه می‌کند، پس رفتار بسته‌شدن آن دست‌نخورده ماند.
+  2. **باگ خروج:** پورتال توکن JWT را در localStorage با کلید **`bazino.authToken`** نگه می‌دارد (`src/services/authToken.ts`: `STORAGE_KEY = 'bazino.authToken'`) و با اینترسپتور fetch خودش آن را روی هر `/api/**` به‌صورت `Authorization: Bearer` می‌فرستد؛ تا وقتی این کلید زنده است `GET /api/user` پروفایل را برمی‌گرداند. قالب در 4.5.x فقط کلیدهای `bazino_token` و `bazino_mock_user` (متعلق به لندینگ mock `client/`) را پاک می‌کرد — کلید واقعی پورتال هرگز حذف نمی‌شد، پس رفرش = ورود مجدد.
+     - **فیکس JS:** هلپر مشترک `performLogout()` / `clearAuthStorage()` / `authStorageKeys()` به ابتدای theme.js اضافه شد: `POST /api/auth/logout` (با `credentials:'include'`)، سپس حذف `bazino.authToken` + همه‌ی کلیدهای localStorage که شامل `bazino` و (`token`/`auth`) هستند + پاک‌سازی تدریجی `sessionStorage`، و در پایان hard navigate به `/` (تا user/token در حافظه‌ی SPA هم دور ریخته شود و پورتال به‌صورت Guest بوت شود). هر سه مسیر logout (دکمه‌ی IIFE ×۲ و `ArenaHeader.handleLogout`) به این هلپر متصل شدند.
+- **نسخه:** `theme.json` 4.5.4 → 4.5.5؛ زیپ بازسازی (`regions home,header`، terser ES5، `zip -D`). فقط همین دو مورد تغییر کرد؛ هدر شفاف (`bazino-header` per اسنیپت کاربر) و بقیه‌ی قالب دست‌نخورده ماند.
+
 ## 4.5.4 — بازنویسی verbatim کلاس `bazino-header` طبق درخواست تکراری
 
 - **درخواست تکراری کاربر:** «تست‌ها واقعی نیست. این نسخه جدید را هم تست کردم همانطور بود. لااقل این کلاس را به همین شکل که تنظیم کردم تغییر بده» — اسنیپت `background:transparent; position:absolute` (همان 4.5.3).
