@@ -1,6 +1,6 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
-> سند تحویل ایجنت بعدی. تاریخ: 2026-09-04 · برنچ: `arena/01a06b23-bazino-arena-landing` · HEAD: `9321a78` · نسخه: **4.5.4** · خروجی: `bazino-arena-theme.zip` (10 فایل، ~2.9MB، بدون entry پوشه‌ای) · شاخه مبدا: `main` @ `3f43e4c` (Merge #2)
+> سند تحویل ایجنت بعدی. تاریخ: 2026-09-04 · برنچ: `arena/01a06b23-bazino-arena-landing` · HEAD: `e77f903` → `NEW` (این به‌روزرسانی) · نسخه: **4.5.4** (template freeze) · خروجی: `bazino-arena-theme.zip` (10 فایل، ~2.9MB، بدون entry پوشه‌ای) · شاخه مبدا: `main` @ `3f43e4c` (Merge #2)
 
 ---
 
@@ -60,6 +60,33 @@
 3. **پرامپت‌های ۱-۶ PSI در `portal-prompts-fa.md`:** کش TTL + لوگو/واریانت‌ها + CLS هدر/فونت + preload پوستر آگاه از قالب + حذف kinesis + robots.txt/هدرهای امنیتی — همه سمت پورتال.
 4. **داده سمپل ناسازگار:** `club_map_lat/lng` = قبرس شمالی (درست) ولی `club_address` سمپل هنوز تهران — به‌روزرسانی شود.
 5. **تصمیم باز 4.5.3:** کاربر شفافیت را برای `bazino-header` خواست؛ اگر پورتال بخواهد parity کامل solid را حفظ کند، باید spec کند کدام هدر شفاف/سالید بماند — فعلا compromise دوگانه (site solid / bazino transparent) پیاده شده و کاربر تایید کرد «هدر شفاف شد».
+6. **CSP — بلاک شدن Cloudflare beacon (خطای مرورگر 2026-09-04):**
+   - **پیام:** `Loading script https://static.cloudflareinsights.com/beacon.min.js/... violates CSP: script-src 'self' 'unsafe-inline' https://www.paytr.com` — مرورگر ۱ بار (و console تکرار) بلاک می‌کند.
+   - **ریشه:** Cloudflare Web Analytics وقتی در داشبورد Cloudflare فعال باشد، اسکریپت `beacon.min.js` را در edge تزریق می‌کند؛ CSP فعلی پورتال (`server.ts:448-452` در `production` → `script-src 'self' 'unsafe-inline'` + paytr روی پروداکشن واقعی) آن دامنه را allow نکرده، پس fallback `script-src-elem` هم بلاک می‌شود.
+   - **راه‌حل (دو گزینه، انتخاب با تیم Ops):**
+     - **A) اگر آنالیتیکس Cloudflare لازم نیست (توصیه):** در داشبورد Cloudflare → Speed → Optimization → Web Analytics → **Disable** — دیگر beacon تزریق نمی‌شود، خطا حذف و یک درخواست third-party کم می‌شود.
+     - **B) اگر آنالیتیکس لازم است:** در `server.ts` هدر CSP را گسترش دهید:
+       ```ts
+       res.setHeader("Content-Security-Policy", [
+         "default-src 'self'",
+         "base-uri 'self'",
+         "object-src 'none'",
+         "script-src 'self' 'unsafe-inline' https://www.paytr.com https://static.cloudflareinsights.com",
+         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+         "font-src 'self' data: https://fonts.gstatic.com",
+         "img-src 'self' data: blob: https:",
+         "connect-src 'self' https: ws: wss: https://cloudflareinsights.com https://static.cloudflareinsights.com",
+         "frame-src 'self' https:"
+       ].join("; "))
+       ```
+       و اگر `connect-src` جداگانه ندارید، `cloudflareinsights.com` را هم اضافه کنید (beacon با `sendBeacon` به همان دامنه POST می‌کند). بعد از تغییر، هارد رفرش + DevTools → Console/Issues را چک کنید که دیگر CSP error نماند. این خطا ربطی به قالب ندارد (قالب هیچ `script` خارجی لود نمی‌کند).
+7. **Preload بی‌استفاده — هشدار «was preloaded but not used» (×5 بار، 2026-09-04):**
+   - **پیام:** `The resource https://bazino.pro/images/home/esports-960.webp?v=a403c2d... was preloaded using link preload but not used within a few seconds` (۲ بار تکراری + ۳ هشدار مشابه `<URL>` — مجموع ۵) — Lighthouse هم همین را به‌عنوان wasted preload گزارش می‌دهد.
+   - **ریشه:** در `index.html:12-14` یک `<link rel="preload" as="image" imagesrcset="/images/home/esports-480/800/960.webp">` استاتیک وجود دارد (برای LCP تم پیش‌فرض). وقتی قالب `bazino-arena` فعال است، هیرو LCP واقعی `assets/hero-poster.webp` (و `hero-poster-small.webp` روی موبایل) است که در `theme.js` با `<img fetchpriority=high>` رندر می‌شود — پس preload استاتیکِ esports هرگز consume نمی‌شود، bandwidth هدر می‌رود و هشدار می‌دهد. وقتی قالب غیرفعال است، preload درست مصرف می‌شود.
+   - **راه‌حل (سمت پورتال، قبلا در `portal-prompts-fa.md` پرامپت ۴/۵ آمده — اینجا bug باز ثبت می‌شود):** preload را **داینامیک** کنید:
+     - در `server.ts` هنگام سرو `index.html` (جایی که `window.__BAZINO_BOOTSTRAP__` تزریق می‌شود)، `activeThemeId` را بخوانید، `theme.json` آن قالب را بخوانید (`media.heroPoster` / `media.heroPosterSmall`). اگر قالب `media.heroPoster` داشت → preload همان poster قالب باشد (با `imagesrcset` موبایل اگر دارد)، نه esports. اگر قالب نداشت/پیش‌فرض بود → همان esports فعلی بماند. URL باید دقیقا همان URLی باشد که قالب رندر می‌کند (`/api/themes/<id>/assets/<poster>?v=<assetVersion>` یا `/images/...?v=...` بسته به rewrite) تا cache hit شود.
+     - جایگزین ساده موقت (اگر داینامیک فوری ممکن نیست): وقتی `activeThemeId === 'bazino-arena'` است، تگ preload استاتیک را حذف/skate کنید — حداقل هشدار و دانلود اضافه حذف می‌شود.
+   - **فایل‌های درگیر پورتال:** `index.html` (تگ ثابت)، `server.ts` (سرو HTML + تزریق `__BAZINO_BOOTSTRAP__` + `ASSET_VERSION` + `readThemeCss`/`getThemeAsset`), `src/themes/themeZipCore.ts` (`rewriteCssAssetUrls`), `portal-prompts-fa.md` پرامپت ۴ (preload آگاه از قالب) و پرامپت ۵ (زنجیره شبکه). این مورد هم ربطی به CSS/JS قالب ندارد.
 
 ### ب) سمت قالب — بسته شد (به دستور کاربر)
 
