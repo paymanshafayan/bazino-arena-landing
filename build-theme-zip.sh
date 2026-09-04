@@ -31,6 +31,9 @@ if (/setInterval\s*\(/.test(js)) throw new Error('setInterval appeared');
 console.log('minified theme.js OK — regions: ' + regions.join(','));
 " "$STAGE/theme.js"
 
-(cd "$STAGE" && rm -f "$ROOT/bazino-arena-theme.zip" && zip -q -r "$ROOT/bazino-arena-theme.zip" theme.json theme.css theme.js CHANGELOG.md assets)
+# -D: no directory entries in the zip — the portal's parser treats folder
+# entries as files, which breaks install (EEXIST on assets subdirs); .gitkeep
+# excluded for the same reason (zero-byte stray file).
+(cd "$STAGE" && rm -f "$ROOT/bazino-arena-theme.zip" && zip -q -r -D "$ROOT/bazino-arena-theme.zip" theme.json theme.css theme.js CHANGELOG.md assets -x "*.gitkeep")
 echo "built bazino-arena-theme.zip v$VER:"
 unzip -l "$ROOT/bazino-arena-theme.zip" | tail -4

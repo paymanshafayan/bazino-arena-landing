@@ -135,17 +135,17 @@ body[data-theme='bazino-arena'] .app-bg-main {
 @font-face {
   font-family: 'Vazirmatn';
   font-style: normal; font-weight: 400; font-display: swap;
-  src: url('assets/fonts/Vazirmatn-Regular.woff2') format('woff2');
+  src: url('assets/Vazirmatn-Regular.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Vazirmatn';
   font-style: normal; font-weight: 700; font-display: swap;
-  src: url('assets/fonts/Vazirmatn-Bold.woff2') format('woff2');
+  src: url('assets/Vazirmatn-Bold.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Vazirmatn';
   font-style: normal; font-weight: 900; font-display: swap;
-  src: url('assets/fonts/Vazirmatn-Black.woff2') format('woff2');
+  src: url('assets/Vazirmatn-Black.woff2') format('woff2');
 }
 
 /* ---------- 4) header / navigation (all pages) ---------- */

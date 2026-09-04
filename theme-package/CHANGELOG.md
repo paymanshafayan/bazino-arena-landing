@@ -1,5 +1,23 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 4.2.1 — رفع خطای نصب EEXIST (زیپ بدون entry پوشه‌ای)
+- علامت: نصب روی پورتال با `EEXIST: file already exists, mkdir
+  '.../.bazino-arena.installing-…/assets/fonts'` شکست می‌خورد.
+- ریشه: پارسر ZIP پورتال (fflate در `themeZipCore.ts`) **entryهای پوشه‌ای را هم مثل فایل**
+  می‌گیرد؛ entry پوشه‌ی `assets/fonts/` بعد از نرمال‌سازی به کلید `fonts` تبدیل و به‌صورت
+  **فایل صفر‌بایتی** نوشته می‌شود؛ سپس برای فایل واقعی `fonts/Vazirmatn-*.woff2` ساختِ
+  پوشه‌ی `assets/fonts` با فایلِ موجود تداخل می‌کند → EEXIST. (زیپ‌های قبلی بدون
+  زیرپوشه بودند، لذا سالم نصب می‌شدند.)
+- رفع از سمت قالب (بدون وابستگی به پورتال): فونت‌ها تخت شدند
+  (`assets/Vazirmatn-*.woff2`)، `.gitkeep` حذف شد و بیلد با `zip -D` زیپ را **بدون هیچ
+  entry پوشه‌ای** می‌سازد → با نصاب فعلی پروداکشن هم سازگار است.
+- اصلاح پیشنهادی برای پورتال (ریشه‌ای، برای قالب‌های آینده با زیرپوشه): در حلقه‌ی
+  `parseThemeZip`، entryهای `endsWith('/')` skip شوند.
+- تست‌شده: ممیزی نصب پورتال canInstall:true، رندر SSR، محتوای زیپ (صفر entry منتهی
+  به `/`، صفر زیرپوشه).
+
+# CHANGELOG — Bazino Arena of Legends
+
 ## 4.2.0 — نقشه OpenStreetMap + حذف کامل فوتر (تصمیم‌های پورتال)
 1. **حذف Google Maps (کامل):** طبق تصمیم پورتال برای dodge کردن مشکلات تحریم گوگل، هیچ ارجاعی به
    Google Maps باقی نیست — نه iframe، نه لینک مسیریابی. نقشه‌ی بخش ۷ حالا **OpenStreetMap** است:
