@@ -13,6 +13,7 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Check,
@@ -20,6 +21,7 @@ import {
   Crown,
   Download,
   Gamepad2,
+  LogOut,
   MapPin,
   Menu,
   Search,
@@ -29,6 +31,30 @@ import {
   Users,
   X,
 } from "lucide-react";
+
+// Flag SVGs — same as portal src/components/LanguageMenu.tsx (no CDN, no emoji)
+const FlagIR: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 3 2" className={className} aria-hidden="true"><rect width="3" height="2" fill="#fff" /><rect width="3" height="0.667" fill="#239f40" /><rect y="1.333" width="3" height="0.667" fill="#da0000" /><circle cx="1.5" cy="1" r="0.26" fill="none" stroke="#da0000" strokeWidth="0.09" /></svg>
+);
+const FlagGB: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 60 30" className={className} aria-hidden="true"><clipPath id="lm-gb"><path d="M0 0v30h60V0z" /></clipPath><path d="M0 0v30h60V0z" fill="#012169" /><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" /><path d="M0 0l60 30m0-30L0 30" clipPath="url(#lm-gb)" stroke="#C8102E" strokeWidth="4" /><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" /><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" /></svg>
+);
+const FlagRU: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 3 2" className={className} aria-hidden="true"><rect width="3" height="2" fill="#fff" /><rect y="0.667" width="3" height="0.667" fill="#0039a6" /><rect y="1.333" width="3" height="0.667" fill="#d52b1e" /></svg>
+);
+const FlagTR: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 30 20" className={className} aria-hidden="true"><rect width="30" height="20" fill="#e30a17" /><circle cx="11.25" cy="10" r="5" fill="#fff" /><circle cx="12.5" cy="10" r="4" fill="#e30a17" /><polygon fill="#fff" points="17.5,10 15.1,10.8 16.6,8.7 16.6,11.3 15.1,9.2" transform="rotate(0 16.3 10)" /></svg>
+);
+const Flag: React.FC<{ country: string; className?: string }> = ({ country, className = "w-5 h-3.5 rounded-[2px] shadow-sm shrink-0" }) => {
+  switch (country) {
+    case "IR": return <FlagIR className={className} />;
+    case "GB": return <FlagGB className={className} />;
+    case "RU": return <FlagRU className={className} />;
+    case "TR": return <FlagTR className={className} />;
+    default: return null;
+  }
+};
+
 
 type Lang = "tr" | "fa" | "en" | "ru";
 
@@ -209,8 +235,65 @@ export default function Home() {
   const [galleryPaused, setGalleryPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const langMenuRef = useRef<HTMLDivElement | null>(null);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ username: string; displayName?: string } | null>(() => {
+    try {
+      const raw = localStorage.getItem("bazino_mock_user");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.username === "string" && parsed.username.trim() && parsed.username !== "Guest") return { username: String(parsed.username).trim(), displayName: parsed.displayName ? String(parsed.displayName).trim() : undefined };
+      }
+    } catch {}
+    return null;
+  });
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authUsername, setAuthUsername] = useState("");
+  const [authError, setAuthError] = useState("");
   const t = copy[lang];
   const ui = uiCopy[lang];
+  const LANGUAGE_OPTIONS: Array<{ id: Lang; code: string; country: string; full: string }> = [
+    { id: "fa", code: "FA", country: "IR", full: "فارسی" },
+    { id: "en", code: "EN", country: "GB", full: "English" },
+    { id: "ru", code: "RU", country: "RU", full: "Русский" },
+    { id: "tr", code: "TR", country: "TR", full: "Türkçe" },
+  ];
+  const currentLang = LANGUAGE_OPTIONS.find((o) => o.id === lang) ?? LANGUAGE_OPTIONS[3];
+  function hashHue(name: string) {
+    let h = 0;
+    const str = String(name || "?");
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360;
+    return h;
+  }
+  function persistUser(next: { username: string; displayName?: string } | null) {
+    setUser(next);
+    try {
+      if (next) localStorage.setItem("bazino_mock_user", JSON.stringify(next));
+      else localStorage.removeItem("bazino_mock_user");
+    } catch {}
+  }
+  function handleLogout() {
+    persistUser(null);
+    try { localStorage.removeItem("bazino_token"); } catch {}
+    setAuthUsername("");
+    setAuthError("");
+    // portal default: no reload, just clear state and go home (like portal setUser(null)+setActiveTab('home'))
+    try { window.history.pushState({}, "", "/"); window.dispatchEvent(new PopStateEvent("popstate")); } catch {}
+  }
+  function handleAuthSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const name = authUsername.trim();
+    if (!name) { setAuthError(lang === "fa" ? "نام کاربری را وارد کنید" : lang === "tr" ? "Kullanıcı adı girin" : lang === "ru" ? "Введите имя" : "Enter username"); return; }
+    if (name.length < 2) { setAuthError(lang === "fa" ? "حداقل ۲ حرف" : "At least 2 characters"); return; }
+    persistUser({ username: name });
+    setAuthOpen(false);
+    setAuthUsername("");
+    setAuthError("");
+  }
+  function openProfile() {
+    // portal default is /profile (standalone page) — not /loyalty (club). Use same as portal.
+    try { window.location.assign("/profile"); } catch { window.location.hash = "profile"; }
+  }
   const visibleGameCards = [...gameCardImages]
     .filter((card) => tournamentFilter === "all" || card.key === tournamentFilter)
     .filter((card) => `${card.key} ${card.alt} ${card.searchTerms ?? ""}`.toLowerCase().includes(tournamentQuery.trim().toLowerCase()))
@@ -259,10 +342,28 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    try { localStorage.setItem("cyber_lang", lang); } catch {}
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
     document.body.dataset.locale = lang;
   }, [lang]);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cyber_lang") as Lang | null;
+      if (saved && (saved === "fa" || saved === "en" || saved === "ru" || saved === "tr") && saved !== lang) setLang(saved);
+    } catch {}
+  }, []);
+  // portal parity: mousedown outside + Escape, with ref containment (like LanguageMenu.tsx)
+  useEffect(() => {
+    if (!langMenuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) setLangMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setLangMenuOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [langMenuOpen]);
 
   return (
     <>
@@ -290,21 +391,82 @@ export default function Home() {
           {portalNav.slice(0, 3).map((item) => <Link key={item.id} href={`/${item.id}`} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
-          <label className="language-switcher">
-            <span className="sr-only">Language</span>
-            <select value={lang} onChange={(event) => setLang(event.target.value as Lang)} aria-label="Language">
-              <option value="tr">TR</option>
-              <option value="fa">FA</option>
-              <option value="en">EN</option>
-              <option value="ru">RU</option>
-            </select>
-          </label>
+          <div ref={langMenuRef} className="bazino-lang-wrap" data-testid="language-menu">
+            <button type="button" className="bazino-lang-btn" aria-haspopup="listbox" aria-expanded={langMenuOpen} aria-label={`Language: ${currentLang.code}`} onClick={() => setLangMenuOpen((o) => !o)}>
+              <Flag country={currentLang.country} />
+              <span dir="ltr">{currentLang.code}</span>
+              <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+            {langMenuOpen ? (
+              <ul role="listbox" aria-label="Language" className="bazino-lang-dropdown">
+                {LANGUAGE_OPTIONS.map((o) => (
+                  <li key={o.id} role="option" aria-selected={o.id === lang}>
+                    <button
+                      type="button"
+                      onClick={() => { setLang(o.id); setLangMenuOpen(false); }}
+                      className={`bazino-lang-opt${o.id === lang ? " is-active" : ""}`}
+                    >
+                      <Flag country={o.country} />
+                      <span dir="ltr">{o.code}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          {user && user.username && String(user.username).trim() ? (
+            <>
+              <button type="button" className="bazino-user-btn" onClick={openProfile} aria-label="Profile" title={String(user.displayName || user.username)} data-header-profile-link="1">
+                <span
+                  className="bazino-avatar"
+                  aria-hidden="true"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(${hashHue(String(user.displayName || user.username))} 65% 32%), hsl(${(hashHue(String(user.displayName || user.username)) + 40) % 360} 65% 22%))`,
+                    color: `hsl(${hashHue(String(user.displayName || user.username))} 90% 88%)`,
+                  }}
+                >
+                  {String(user.displayName || user.username).trim().charAt(0).toUpperCase() || "?"}
+                </span>
+                <span className="bazino-header-user">{user.displayName ? String(user.displayName).trim() : `@${String(user.username).trim()}`}</span>
+              </button>
+              <button type="button" className="bazino-header-icon is-logout" aria-label={lang === "fa" ? "خروج" : lang === "tr" ? "Çıkış" : lang === "ru" ? "Выход" : "Logout"} title={lang === "fa" ? "خروج" : "Logout"} onClick={handleLogout}>
+                <LogOut size={14} />
+              </button>
+            </>
+          ) : (
+            <button type="button" className="button button--gold" style={{ minHeight: 38, padding: "0 16px" }} onClick={() => setAuthOpen(true)}>
+              {lang === "fa" ? "ورود" : lang === "tr" ? "Giriş" : lang === "ru" ? "Вход" : "Login"}
+            </button>
+          )}
           <Link className="header-reserve" href={reservationUrl}>{t.hero.primary}<ArrowUpRight size={15} strokeWidth={2.2} /></Link>
           <button className="menu-toggle" type="button" aria-label={menuOpen ? "Close menu" : t.menu} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </header>
+      {authOpen ? (
+        <div className="bazino-auth-overlay" role="dialog" aria-modal="true" aria-label={lang === "fa" ? "ورود" : "Login"} onClick={() => setAuthOpen(false)}>
+          <div className="bazino-auth-card" onClick={(e) => e.stopPropagation()}>
+            <h3>{lang === "fa" ? "ورود به بازینو" : lang === "tr" ? "Bazino’ya giriş" : lang === "ru" ? "Вход в Bazino" : "Sign in to Bazino"}</h3>
+            <p>{lang === "fa" ? "نام کاربری خود را وارد کنید تا آواتار و دسترسی باشگاه فعال شود. داده در مرورگر ذخیره می‌شود." : lang === "tr" ? "Kullanıcı adını gir, avatar ve kulüp erişimi açılsın. Bilgi tarayıcıda saklanır." : lang === "ru" ? "Введите имя — появится аватар и доступ к клубу. Данные хранятся в браузере." : "Enter your username — avatar and club access will activate. Stored locally in your browser."}</p>
+            <form onSubmit={handleAuthSubmit}>
+              <input
+                autoFocus
+                value={authUsername}
+                onChange={(e) => setAuthUsername(e.target.value)}
+                placeholder={lang === "fa" ? "نام کاربری" : lang === "tr" ? "Kullanıcı adı" : lang === "ru" ? "Имя пользователя" : "Username"}
+                aria-label={lang === "fa" ? "نام کاربری" : "Username"}
+                maxLength={24}
+              />
+              {authError ? <p style={{ color: "var(--gold)", fontSize: 11, marginTop: 8 }}>{authError}</p> : null}
+              <div className="bazino-auth-actions">
+                <button type="button" className="button button--outline" onClick={() => setAuthOpen(false)} style={{ flex: 1 }}>{lang === "fa" ? "انصراف" : lang === "tr" ? "İptal" : lang === "ru" ? "Отмена" : "Cancel"}</button>
+                <button type="submit" className="button button--gold" style={{ flex: 1 }}>{lang === "fa" ? "ورود" : lang === "tr" ? "Giriş" : lang === "ru" ? "Войти" : "Sign in"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <main>
         <section id="top" className="hero mona-hero" onPointerMove={handleDepthMove} onPointerLeave={resetDepth}>
