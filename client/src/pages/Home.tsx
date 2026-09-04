@@ -4,7 +4,7 @@
  * Arena, Active Tournaments, Match History, Lounge Services, Entry Passes, and Visit.
  * Pointer depth is restrained to visual layers/cards; scroll reveals stay accessible.
  */
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "wouter";
@@ -36,9 +36,12 @@ import {
 const FlagIR: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 3 2" className={className} aria-hidden="true"><rect width="3" height="2" fill="#fff" /><rect width="3" height="0.667" fill="#239f40" /><rect y="1.333" width="3" height="0.667" fill="#da0000" /><circle cx="1.5" cy="1" r="0.26" fill="none" stroke="#da0000" strokeWidth="0.09" /></svg>
 );
-const FlagGB: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 60 30" className={className} aria-hidden="true"><clipPath id="lm-gb"><path d="M0 0v30h60V0z" /></clipPath><path d="M0 0v30h60V0z" fill="#012169" /><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" /><path d="M0 0l60 30m0-30L0 30" clipPath="url(#lm-gb)" stroke="#C8102E" strokeWidth="4" /><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" /><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" /></svg>
-);
+const FlagGB: React.FC<{ className?: string }> = ({ className }) => {
+  const clipId = useId().replace(/:/g, '-');
+  return (
+  <svg viewBox="0 0 60 30" className={className} aria-hidden="true"><clipPath id={clipId}><path d="M0 0v30h60V0z" /></clipPath><path d="M0 0v30h60V0z" fill="#012169" /><path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" /><path d="M0 0l60 30m0-30L0 30" clipPath={`url(#${clipId})`} stroke="#C8102E" strokeWidth="4" /><path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" /><path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" /></svg>
+  );
+};
 const FlagRU: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 3 2" className={className} aria-hidden="true"><rect width="3" height="2" fill="#fff" /><rect y="0.667" width="3" height="0.667" fill="#0039a6" /><rect y="1.333" width="3" height="0.667" fill="#d52b1e" /></svg>
 );
@@ -273,11 +276,16 @@ export default function Home() {
     } catch {}
   }
   function handleLogout() {
-    persistUser(null);
+    // portal parity: clear server session + local mock + token, no reload loop
+    try { fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {}); } catch {}
     try { localStorage.removeItem("bazino_token"); } catch {}
+    try { localStorage.removeItem("bazino_mock_user"); } catch {}
+    try { sessionStorage.clear(); } catch {}
+    persistUser(null);
     setAuthUsername("");
     setAuthError("");
-    // portal default: no reload, just clear state and go home (like portal setUser(null)+setActiveTab('home'))
+    try { window.dispatchEvent(new CustomEvent("bazino:enhanceHeader")); } catch {}
+    try { window.dispatchEvent(new CustomEvent("bazino:logout")); } catch {}
     try { window.history.pushState({}, "", "/"); window.dispatchEvent(new PopStateEvent("popstate")); } catch {}
   }
   function handleAuthSubmit(e: React.FormEvent) {
@@ -353,7 +361,7 @@ export default function Home() {
       if (saved && (saved === "fa" || saved === "en" || saved === "ru" || saved === "tr") && saved !== lang) setLang(saved);
     } catch {}
   }, []);
-  // portal parity: mousedown outside + Escape, with ref containment (like LanguageMenu.tsx)
+  // portal parity: mousedown outside + Escape + click outside, with ref containment (like LanguageMenu.tsx)
   useEffect(() => {
     if (!langMenuOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -361,8 +369,9 @@ export default function Home() {
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setLangMenuOpen(false); };
     document.addEventListener("mousedown", onDown);
+    document.addEventListener("click", onDown);
     document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("click", onDown); document.removeEventListener("keydown", onKey); };
   }, [langMenuOpen]);
 
   return (
@@ -391,19 +400,20 @@ export default function Home() {
           {portalNav.slice(0, 3).map((item) => <Link key={item.id} href={`/${item.id}`} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
-          <div ref={langMenuRef} className="bazino-lang-wrap" data-testid="language-menu">
-            <button type="button" className="bazino-lang-btn" aria-haspopup="listbox" aria-expanded={langMenuOpen} aria-label={`Language: ${currentLang.code}`} onClick={() => setLangMenuOpen((o) => !o)}>
+          <div ref={langMenuRef} className="bazino-lang-wrap" data-testid="language-menu" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+            <button type="button" className="bazino-lang-btn" aria-haspopup="listbox" aria-expanded={langMenuOpen} aria-label={`Language: ${currentLang.code}`} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); e.preventDefault(); setLangMenuOpen((o) => !o); }}>
               <Flag country={currentLang.country} />
               <span dir="ltr">{currentLang.code}</span>
-              <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform pointer-events-none ${langMenuOpen ? "rotate-180" : ""}`} />
             </button>
             {langMenuOpen ? (
-              <ul role="listbox" aria-label="Language" className="bazino-lang-dropdown">
+              <ul role="listbox" aria-label="Language" className="bazino-lang-dropdown" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
                 {LANGUAGE_OPTIONS.map((o) => (
                   <li key={o.id} role="option" aria-selected={o.id === lang}>
                     <button
                       type="button"
-                      onClick={() => { setLang(o.id); setLangMenuOpen(false); }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setLang(o.id); setLangMenuOpen(false); }}
                       className={`bazino-lang-opt${o.id === lang ? " is-active" : ""}`}
                     >
                       <Flag country={o.country} />

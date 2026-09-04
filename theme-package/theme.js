@@ -93,8 +93,16 @@
       wrap.style.display = 'inline-flex';
       wrap.style.alignItems = 'center';
       wrap.style.flexShrink = '0';
-      for (var i = 0; i < LANGS.length; i++) if (LANGS[i].country === country) { wrap.innerHTML = LANGS[i].flag; break; }
-      // ensure size
+      for (var i = 0; i < LANGS.length; i++) if (LANGS[i].country === country) {
+        var html = LANGS[i].flag;
+        // make clipPath ids unique to avoid duplicate id when multiple flags on page (landing+portal)
+        if (html.indexOf('clipPath') !== -1) {
+          var uid = 'gb-' + Math.random().toString(36).slice(2,8);
+          html = html.replace(/id="[^"]*"/, 'id="'+uid+'"').replace(/url\(#[^\)]*\)/, 'url(#'+uid+')');
+        }
+        wrap.innerHTML = html;
+        break;
+      }
       try { var svg = wrap.querySelector('svg'); if (svg) { svg.style.width = '20px'; svg.style.height = '13px'; svg.style.borderRadius = '2px'; svg.style.boxShadow = '0 1px 2px rgba(0,0,0,.25)'; svg.style.flexShrink = '0'; } } catch (e) {}
       return wrap;
     }
@@ -188,14 +196,17 @@
       }
       var isOpen = false;
       function toggleOpen(ev) {
-        if (ev) ev.stopPropagation();
+        if (ev) { try { ev.stopPropagation(); ev.preventDefault(); } catch (e2) {} }
         isOpen = !isOpen;
         dd.style.display = isOpen ? 'block' : 'none';
         btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         try { chev.style.transform = isOpen ? 'rotate(180deg)' : ''; } catch (e) {}
       }
       btn.addEventListener('click', toggleOpen);
-      // portal parity: mousedown outside + Escape
+      btn.addEventListener('mousedown', function(e){ try{ e.stopPropagation(); } catch(e2){} });
+      dd.addEventListener('mousedown', function(e){ try{ e.stopPropagation(); } catch(e2){} });
+      dd.addEventListener('click', function(e){ try{ e.stopPropagation(); } catch(e2){} });
+      // portal parity: mousedown outside + Escape + click outside
       function onDown(e) {
         if (!isOpen) return;
         try { if (wrap.contains(e.target)) return; } catch (e2) {}
@@ -213,6 +224,7 @@
         }
       }
       document.addEventListener('mousedown', onDown);
+      document.addEventListener('click', onDown);
       document.addEventListener('keydown', onKey);
       wrap.appendChild(btn);
       wrap.appendChild(dd);
@@ -312,9 +324,10 @@
                 logout2.className = 'bazino-header-icon is-logout';
                 logout2.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
                 logout2.addEventListener('click', function () {
-                  fetch('/api/auth/logout', { method: 'POST' }).then(function () {
+                  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
                     try { localStorage.removeItem('bazino_token'); } catch (e) {}
                     try { localStorage.removeItem('bazino_mock_user'); } catch (e2) {}
+                    try { sessionStorage.clear(); } catch (e3) {}
                     // portal parity: no reload, just update header in place and go home
                     try {
                       var av2 = hdr.querySelector('.bazino-avatar');
@@ -376,9 +389,10 @@
                 lo.style.marginLeft = '6px';
                 lo.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
                 lo.addEventListener('click', function () {
-                  fetch('/api/auth/logout', { method: 'POST' }).then(function () {
+                  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
                     try { localStorage.removeItem('bazino_token'); } catch (e) {}
                     try { localStorage.removeItem('bazino_mock_user'); } catch (e2) {}
+                    try { sessionStorage.clear(); } catch (e3) {}
                     try { var avx = hdr.querySelector('.bazino-avatar'); if (avx) avx.remove(); var lk = hdr.querySelector('a[data-header-profile-link]'); if (lk) lk.remove(); } catch(e3){}
                     try { window.dispatchEvent(new CustomEvent('bazino:enhanceHeader')); } catch(e4){}
                     try { if (window.history && window.history.pushState) { window.history.pushState({}, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); } } catch(e5){}
@@ -429,6 +443,8 @@
     }
     function enhance(hdr) {
       if (!hdr) return;
+      // skip React-managed landing header (already has [data-testid="language-menu"])
+      try { if (hdr.querySelector('[data-testid="language-menu"]')) return; } catch (e) {}
       try {
         hdr.style.setProperty('position', 'sticky', 'important');
         hdr.style.setProperty('top', '0', 'important');
@@ -1394,7 +1410,12 @@
     }
     function flagNode(country) {
       for (var i = 0; i < LANGS.length; i++) if (LANGS[i].country === country) {
-        return h('span', { dangerouslySetInnerHTML: { __html: LANGS[i].flag }, style: { display: 'inline-flex', width: '20px', height: '13px', flexShrink: '0' } });
+        var html = LANGS[i].flag;
+        if (html.indexOf('clipPath') !== -1) {
+          var uid = 'gb-' + Math.random().toString(36).slice(2,8);
+          html = html.replace(/id="[^"]*"/, 'id="'+uid+'"').replace(/url\(#[^\)]*\)/, 'url(#'+uid+')');
+        }
+        return h('span', { dangerouslySetInnerHTML: { __html: html }, style: { display: 'inline-flex', width: '20px', height: '13px', flexShrink: '0' } });
       }
       return null;
     }
@@ -1410,9 +1431,10 @@
     }
     function handleLogout() {
       try {
-        fetch('/api/auth/logout', { method: 'POST' }).then(function () {
+        fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
           try { localStorage.removeItem('bazino_token'); } catch (e2) {}
           try { localStorage.removeItem('bazino_mock_user'); } catch (e3) {}
+          try { sessionStorage.clear(); } catch (e4) {}
           setUser(null);
           // portal parity: no reload, go home
           try { if (window.history && window.history.pushState) { window.history.pushState({}, '', '/'); try { window.dispatchEvent(new PopStateEvent('popstate')); } catch (e4) { try { window.dispatchEvent(new Event('popstate')); } catch (e5) {} } } } catch (e6) {}
@@ -1523,7 +1545,8 @@
               'aria-haspopup': 'listbox',
               'aria-expanded': langOpen ? 'true' : 'false',
               'aria-label': 'Language: ' + curLang.label,
-              onClick: function () { setLangOpen(!langOpen); }
+              onMouseDown: function(e){ try{ e.stopPropagation(); } catch(e2){} },
+              onClick: function (e) { try{ e.stopPropagation(); e.preventDefault(); } catch(e2){} setLangOpen(!langOpen); }
             },
               flagNode(curLang.country),
               h('span', { dir: 'ltr' }, curLang.label),
