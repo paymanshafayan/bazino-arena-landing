@@ -148,10 +148,12 @@ body[data-theme='bazino-arena'] .app-bg-main {
   src: url('assets/Vazirmatn-Black.woff2') format('woff2');
 }
 
-/* ---------- 4) header / navigation (all pages) — 4.5.0 solid arena header ---------- */
-/* 4.5.0: user requested solid header (no transparent overlay). Solid dark ink,
-   sticky (not fixed overlay), gold hairline always visible, nav with gold
-   underline, actions with language selector + avatar + clickable username. */
+/* ---------- 4) header / navigation (all pages) — 4.5.0→4.5.4 ---------- */
+/* 4.5.0 solid arena: header was solid sticky rgba(9,14,28,0.96) — requested by
+   portal parity. 4.5.3/4.5.4: REVERTED per explicit user demand to transparent
+   absolute overlay (see §4b). .site-header (portal chrome) STAYS solid sticky
+   — only .bazino-header (ThemeRegion header) became transparent per snippet.
+   Gold hairline always visible, nav gold underline, lang + avatar actions. */
 .theme-bazino-arena .site-header,
 .theme-bazino-arena .portal-header,
 .theme-bazino-arena .app-header,
@@ -380,7 +382,20 @@ body[data-theme='bazino-arena'] .bazino-home-hero {
 }
 
 
-/* ---------- 4b) header region component — 4.5.0 solid arena header ---------- */
+/* ---------- 4b) header region component — 4.5.3/4.5.4 transparent per user verbatim ---------- */
+/* User snippet (exact, byte-identical):
+   .theme-bazino-arena .bazino-header {
+     align-items:center; background:transparent;
+     border-bottom:1px solid rgba(255,255,255,0.08); color:var(--bz-text);
+     display:flex; height:70px; min-height:70px; position:absolute; top:0;
+     width:100%; z-index:50; backdrop-filter:blur(14px);
+     -webkit-backdrop-filter:blur(14px); box-shadow:0 8px 32px rgba(0,0,0,0.45);
+   }
+   History: 4.5.0 made this solid sticky; 4.5.3 reverted to transparent
+   absolute per user („این کلاس را به همین شکل تغییر بده"); 4.5.4 verbatim
+   rewrite for cache-bust. .is-scrolled stays solid for readability.
+   Dual-header note: .site-header (portal) remains solid sticky — change only
+   affects ThemeRegion header. Do not add !important here — snippet has none. */
 .theme-bazino-arena .bazino-header {
     align-items: center;
     background: transparent;
