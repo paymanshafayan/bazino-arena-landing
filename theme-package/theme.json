@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena of Legends",
   "id": "bazino-arena",
-  "version": "4.3.0",
+  "version": "4.5.4",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "Seven-chapter cinematic arena theme for the Bazino portal — SDK v2 package: design tokens (--bz-*), four-language strings (fa/en/ru/tr), admin-slider-driven hero over the official deferred hero video, full-site CSS-variable coverage, logical-property RTL/LTR, zero third-party origins, zero web-font requests.",
@@ -66,6 +66,7 @@
       "openHub": "مرکز تورنمنت‌ها",
       "openCafe": "کافه را ببین",
       "empty": "در انتظار داده‌ی پورتال.",
+      "noTournaments": "فعلا تورنومنت فعالی وجود ندارد.",
       "chapterWord": "فصل",
       "heroChapter": "فصل ۰۱ / تالار قهرمانان",
       "signalWord": "سیگنال",
@@ -126,7 +127,9 @@
       "nav.blog": "بلاگ",
       "nav.chat": "گفتگو",
       "navLabel": "ناوبری اصلی",
-      "headerReserve": "رزرو سیستم"
+      "headerReserve": "رزرو سیستم",
+      "login": "ورود",
+      "logout": "خروج"
     },
     "en": {
       "hero": "IF YOU ARE A CHAMP, THIS IS IT.",
@@ -165,6 +168,7 @@
       "openHub": "Open tournament hub",
       "openCafe": "Explore café",
       "empty": "Awaiting portal data.",
+      "noTournaments": "No active tournaments at the moment.",
       "chapterWord": "CHAPTER",
       "heroChapter": "CHAPTER 01 / HALL OF LEGENDS",
       "signalWord": "SIGNAL",
@@ -225,7 +229,9 @@
       "nav.blog": "BLOG",
       "nav.chat": "CHAT",
       "navLabel": "Main navigation",
-      "headerReserve": "RESERVE"
+      "headerReserve": "RESERVE",
+      "login": "Login",
+      "logout": "Logout"
     },
     "ru": {
       "hero": "ЕСЛИ ТЫ ЧЕМПИОН, ТЕБЕ СЮДА.",
@@ -264,6 +270,7 @@
       "openHub": "Центр турниров",
       "openCafe": "Смотреть кафе",
       "empty": "Ожидаем данные портала.",
+      "noTournaments": "На данный момент нет активных турниров.",
       "chapterWord": "ГЛАВА",
       "heroChapter": "ГЛАВА 01 / ЗАЛ ЛЕГЕНД",
       "signalWord": "СИГНАЛ",
@@ -324,7 +331,9 @@
       "nav.blog": "БЛОГ",
       "nav.chat": "ЧАТ",
       "navLabel": "Основная навигация",
-      "headerReserve": "БРОНИРОВАТЬ"
+      "headerReserve": "БРОНИРОВАТЬ",
+      "login": "Вход",
+      "logout": "Выход"
     },
     "tr": {
       "hero": "ŞAMPİYONSAN, İŞTE BURASI.",
@@ -363,6 +372,7 @@
       "openHub": "Turnuva merkezini aç",
       "openCafe": "Kafeyi keşfet",
       "empty": "Portal verisi bekleniyor.",
+      "noTournaments": "Şu anda aktif turnuva bulunmuyor.",
       "chapterWord": "BÖLÜM",
       "heroChapter": "BÖLÜM 01 / EFSANELER SALONU",
       "signalWord": "SİNYAL",
@@ -423,7 +433,9 @@
       "nav.blog": "BLOG",
       "nav.chat": "SOHBET",
       "navLabel": "Ana gezinme",
-      "headerReserve": "REZERVASYON"
+      "headerReserve": "REZERVASYON",
+      "login": "Giriş",
+      "logout": "Çıkış"
     }
   },
   "contentContract": {

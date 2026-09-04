@@ -229,6 +229,7 @@ export default defineConfig({
     // HMR to prevent the client from attempting localhost WebSocket connects.
     hmr: false,
     allowedHosts: [
+      ".e2b.app",
       ".manuspre.computer",
       ".manus.computer",
       ".manus-asia.computer",
