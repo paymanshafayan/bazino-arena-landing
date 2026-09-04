@@ -1,5 +1,11 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 4.5.4 — بازنویسی verbatim کلاس `bazino-header` طبق درخواست تکراری
+
+- **درخواست تکراری کاربر:** «تست‌ها واقعی نیست. این نسخه جدید را هم تست کردم همانطور بود. لااقل این کلاس را به همین شکل که تنظیم کردم تغییر بده» — اسنیپت `background:transparent; position:absolute` (همان 4.5.3).
+- **انجام شد:** `theme-package/theme.css` بلوک `.theme-bazino-arena .bazino-header` دوباره byte-identical با اسنیپت ارسالی بازنویسی شد (12 ویژگی با ترتیب یکسان: `align-items:center; background:transparent; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--bz-text); display:flex; height:70px; min-height:70px; position:absolute; top:0; width:100%; z-index:50; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 8px 32px rgba(0,0,0,0.45)`). محتوای 4.5.3 و 4.5.4 از نظر CSS یکسان است؛ بامپ به 4.5.4 فقط برای cache-busting و اطمینان از نصب نسخه تازه است.
+- زیپ بازسازی `regions home,header`, `theme.json` 4.5.3 → 4.5.4.
+
 ## 4.5.3 — هدر transparent/absolute به درخواست کاربر (برگرداندن `bazino-header`)
 
 - **درخواست مستقیم کاربر:** با وجود فیکس‌های 4.5.2 تست بصری کاربر می‌گوید «نصب کردم بازم تغییری نکرده» و صراحتا می‌خواهد کلاس زیر اعمال شود:
