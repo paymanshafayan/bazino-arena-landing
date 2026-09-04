@@ -382,10 +382,20 @@ body[data-theme='bazino-arena'] .bazino-home-hero {
 
 /* ---------- 4b) header region component — 4.5.0 solid arena header ---------- */
 .theme-bazino-arena .bazino-header {
-  align-items: center; background: rgba(9,14,28,0.96); border-bottom: 1px solid rgba(255,255,255,0.08);
-  color: var(--bz-text); display: flex; height: 70px; min-height: 70px; position: sticky; top: 0; width: 100%; z-index: 50;
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    align-items: center;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--bz-text);
+    display: flex;
+    height: 70px;
+    min-height: 70px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 .theme-bazino-arena .bazino-header.is-scrolled {
   background: rgba(9,14,28,0.98);

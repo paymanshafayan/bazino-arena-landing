@@ -1,5 +1,16 @@
 # CHANGELOG — Bazino Arena of Legends
 
+## 4.5.3 — هدر transparent/absolute به درخواست کاربر (برگرداندن `bazino-header`)
+
+- **درخواست مستقیم کاربر:** با وجود فیکس‌های 4.5.2 تست بصری کاربر می‌گوید «نصب کردم بازم تغییری نکرده» و صراحتا می‌خواهد کلاس زیر اعمال شود:
+  ```css
+  .theme-bazino-arena .bazino-header { align-items:center; background:transparent; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--bz-text); display:flex; height:70px; min-height:70px; position:absolute; top:0; width:100%; z-index:50; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 8px 32px rgba(0,0,0,0.45); }
+  ```
+  قبلا در 4.5.0-4.5.2 هدر به `background:rgba(9,14,28,0.96)` و `position:sticky` تبدیل شده بود (solid arena) که خلاف سلیقه کاربر برای هدر شیشه‌ای روی هیرو بود.
+- **اعمال:** `theme-package/theme.css` بلوک `4b) header region` برای `.theme-bazino-arena .bazino-header` دقیقا به `background:transparent` و `position:absolute` برگردانده شد (سایر ویژگی‌ها `height 70px`, `backdrop-filter:blur(14px)`, `box-shadow` و `border` دست‌نخورده). `is-scrolled` همچنان `rgba(9,14,28,0.98)` می‌ماند تا بعد از اسکرول هدر خوانا شود. `site-header` (پورتال) همچنان solid/sticky می‌ماند — تغییر فقط روی `bazino-header` (ThemeRegion header) اعمال شد تا با درخواست کاربر همسو باشد.
+- **سایر فیکس‌های 4.5.2 حفظ شد:** منوی زبان با پرچم و `mousedown+click+Escape`، `useId` یکتا برای `FlagGB`, `handleLogout` با `fetch('/api/auth/logout',credentials:'include')` و پاکسازی `bazino_token`/`bazino_mock_user`/`sessionStorage` و skip کردن IIFE روی هدر ری‌آکتی.
+- **نسخه:** `theme.json` 4.5.2 → 4.5.3، زیپ بازسازی `regions home,header`.
+
 ## 4.5.2 — فیکس باقی‌مانده هدر: منوی زبان همچنان باز نمی‌شد + خروج با رفرش برمی‌گشت
 - **گزارش بعد از 4.5.1:** کلیک روی نام کاربری درست به `/profile` می‌رود اما منوی زبان هنوز باز نمی‌شود؛ با رفرش دوباره وارد حساب می‌شود (logout ماندگار نیست).
 - **ریشه‌یابی لندینگ `client/src/pages/Home.tsx`:** `FlagGB` از `React.useId` استفاده می‌کرد بدون `import React` → `React is not defined` و کل هدر crash می‌کرد (توضیح عدم باز شدن). همچنین `handleLogout` فقط `localStorage` را پاک می‌کرد و `fetch('/api/auth/logout')` نمی‌زد، پس سشن سرور باقی می‌ماند و `theme.js` با `fetch('/api/user')` دوباره کاربر را نمایش می‌داد. `mousedown` خارج بدون `click` و بدون `stopPropagation` باعث تداخل می‌شد و `clipPath id="lm-gb"` تکراری بود.
