@@ -1,7 +1,22 @@
 /*
- * BAZINO THEME — ARENA OF LEGENDS (v2) — home component.
+ * BAZINO THEME — ARENA OF LEGENDS (v3) — home component (Theme SDK v2 props).
  * Registered with the Theme SDK exactly like the system homes:
  *   window.BazinoThemeSDK.registerComponent('home', factory)
+ *
+ * SDK v2 contract implemented here:
+ *   • every visible string comes from theme.json.strings via props.ts('key')
+ *     (fa / en / ru / tr — complete tables, no hard-coded copy, no language
+ *     ternaries anywhere);
+ *   • the hero slider reads the admin-managed props.slides:
+ *       slide.title[language] / slide.desc[language] /
+ *       slide.target -> props.onNavigate(slide.target);
+ *     slide images NEVER replace the background — the official hero video
+ *     (and its first-frame poster) is always the hero media; admin slides
+ *     drive only the text. When the portal has no slides the theme renders
+ *     its own demo slides (built with ts()) over the same video;
+ *   • dir comes from props.dir and logical CSS properties handle RTL/LTR;
+ *   • colors/fonts are CSS variables on body[data-theme='bazino-arena']
+ *     (theme.json tokens are bridged by the portal to --bz-* on <body>).
  *
  * Performance contract kept here:
  *   • hero renders the poster (first frame of the video) immediately;
@@ -9,8 +24,9 @@
  *     after window 'load' + idle time, so it never competes with LCP;
  *   • muted + playsInline autoplay after load; clicking the hero replays;
  *   • playback pauses off-screen / when the tab is hidden (IntersectionObserver,
- *     visibilitychange) — no setInterval anywhere;
- *   • prefers-reduced-motion: poster only, manual replay still allowed;
+ *     visibilitychange) — one shared requestAnimationFrame heartbeat drives the
+ *     hero slider and the lounge gallery (no setInterval anywhere);
+ *   • prefers-reduced-motion: no auto-advance, poster only, manual replay allowed;
  *   • zero third-party origins; all media served from this package's assets.
  */
 (function () {
@@ -19,18 +35,90 @@
   var R = SDK.React;
   if (!R) return;
 
-  var COPY = {
-    tr: { hero: 'ŞAMPİYONSAN, İŞTE BURASI.', sub: 'PS5 ve Xbox Series X deneyimi. VIP salon. 85 inç ekranlar.', cta: 'Rezervasyon yap', genres: 'Oyun arenası', tournaments: 'Aktif turnuvalar', results: 'Maç geçmişi', lounges: 'VIP ve kafe', passes: 'Giriş sinyali', coaches: 'Koç kadrosu', visit: 'İskele’de buluşalım', app: 'Sinyali yanında taşı.', appBody: 'Rezervasyonlar, kulüp bildirimleri ve resmi güncellemeler tek dokunuşta.', cue: 'VİDEOYU OYNAT', replay: 'TEKRAR OYNAT', search: 'Turnuva ara', sort: 'Sırala', sortFeatured: 'Öne çıkan', sortDate: 'Tarihe göre', sortPrize: 'Ödüle göre', all: 'TÜMÜ', openHub: 'Turnuva merkezini aç', openCafe: 'Kafeyi keşfet', official: 'Resmi bilgiler', empty: 'Portal verisi bekleniyor.' },
-    fa: { hero: 'اگر قهرمانی، اینجاست.', sub: 'تجربه‌ی PS5 و Xbox Series X، سالن VIP و نمایشگرهای ۸۵ اینچی.', cta: 'رزرو کن', genres: 'آرنای بازی', tournaments: 'تورنومنت‌های فعال', results: 'نتایج مسابقات', lounges: 'VIP و کافه', passes: 'سیگنال ورود', coaches: 'کادر مربیان', visit: 'در ایسکله ببینمت', app: 'سیگنال را همراهت داشته باش.', appBody: 'رزروها، اعلان‌های باشگاه و به‌روزرسانی‌های رسمی، همه در یک‌جا.', cue: 'پخش ویدئو', replay: 'پخش دوباره', search: 'جستجوی تورنومنت', sort: 'مرتب‌سازی', sortFeatured: 'پیشنهادی', sortDate: 'بر اساس تاریخ', sortPrize: 'بر اساس جایزه', all: 'همه', openHub: 'مرکز تورنمنت‌ها', openCafe: 'کافه را ببین', official: 'اطلاعات رسمی', empty: 'در انتظار داده‌ی پورتال.' },
-    en: { hero: 'IF YOU ARE A CHAMP, THIS IS IT.', sub: 'PS5 and Xbox Series X. A VIP lounge. 85-inch screens.', cta: 'Reserve your round', genres: 'Game arena', tournaments: 'Active tournaments', results: 'Match history', lounges: 'VIP and café', passes: 'Entry signal', coaches: 'Coaching crew', visit: 'Meet us in İskele', app: 'Keep the signal close.', appBody: 'Reservations, club notifications and official updates in one place.', cue: 'PLAY VIDEO', replay: 'REPLAY', search: 'Search tournaments', sort: 'Sort', sortFeatured: 'Featured', sortDate: 'By date', sortPrize: 'By prize', all: 'ALL', openHub: 'Open tournament hub', openCafe: 'Explore café', official: 'Official details', empty: 'Awaiting portal data.' },
-    ru: { hero: 'ЕСЛИ ТЫ ЧЕМПИОН, ТЕБЕ СЮДА.', sub: 'PS5 и Xbox Series X, VIP-зал и экраны 85 дюймов.', cta: 'Забронировать раунд', genres: 'Игровая арена', tournaments: 'Активные турниры', results: 'Результаты матчей', lounges: 'VIP и кафе', passes: 'Сигнал входа', coaches: 'Тренерский состав', visit: 'Встретимся в Искеле', app: 'Держи сигнал рядом.', appBody: 'Брони, уведомления клуба и официальные обновления — в одном месте.', cue: 'СМОТРЕТЬ ВИДЕО', replay: 'ПОВТОРИТЬ', search: 'Поиск турниров', sort: 'Сортировка', sortFeatured: 'Избранное', sortDate: 'По дате', sortPrize: 'По призу', all: 'ВСЕ', openHub: 'Центр турниров', openCafe: 'Смотреть кафе', official: 'Официальные детали', empty: 'Ожидаем данные портала.' }
-  };
+  /* localized digits (Persian) — map-driven, no language ternaries */
+  var DIGIT_MAPS = { fa: '۰۱۲۳۴۵۶۷۸۹' };
+  var PRICE_LOCALES = { fa: 'fa-IR', ru: 'ru-RU', tr: 'tr-TR', en: 'en-US' };
+  var RTL_LANGUAGES = { fa: 'rtl' };
 
+  function num(language, value) {
+    var s = String(value);
+    var map = DIGIT_MAPS[language];
+    if (!map) return s;
+    return s.replace(/[0-9]/g, function (d) { return map.charAt(Number(d)); });
+  }
+
+  function pad2(language, value) {
+    return num(language, (value < 10 ? '0' : '') + value);
+  }
+
+  function formatPrice(language, value) {
+    var locale = PRICE_LOCALES[language];
+    var n = Number(value);
+    return (locale ? n.toLocaleString(locale) : n.toLocaleString());
+  }
+
+  /* portal data objects are multilingual maps — resolve for the active language */
   function loc(value, lang) {
     if (value === null || value === undefined) return '';
     if (typeof value === 'string') return value;
-    if (typeof value === 'object') return value[lang] || value.en || value.fa || value.tr || value.ru || '';
+    if (typeof value === 'object') {
+      return value[lang] || value.en || value.fa || value.tr || value.ru || '';
+    }
     return String(value);
+  }
+
+  function normalizeTarget(target) {
+    var t = String(target || 'reservations');
+    if (t === 'reserve') return 'reservations';
+    return t;
+  }
+
+  /* Responsive first-party images: the portal serves /images/**-<width>.webp
+     variant sets (same convention as its own getResponsiveSrcSet). Build a
+     srcSet from the smaller variants when the URL matches, keep the original
+     as src fallback, and self-heal to the original if a variant 404s. */
+  var IMG_VW_RE = /^(\/images\/.*)-(\d{2,4})\.webp$/;
+  function imgVariants(url) {
+    var s = String(url || '');
+    var qi = s.indexOf('?');
+    var bare = qi === -1 ? s : s.slice(0, qi);
+    var q = qi === -1 ? '' : s.slice(qi);
+    var m = bare.match(IMG_VW_RE);
+    if (!m) return null;
+    var w = Number(m[2]);
+    var stem = m[1];
+    var widths = [];
+    var candidates = [320, 480, 640, w];
+    for (var k = 0; k < candidates.length; k++) {
+      var c = candidates[k];
+      if (c <= w && widths.indexOf(c) === -1) widths.push(c);
+    }
+    widths.sort(function (a, b) { return a - b; });
+    var set = [];
+    for (var j = 0; j < widths.length; j++) set.push(stem + '-' + widths[j] + '.webp' + q + ' ' + widths[j] + 'w');
+    return { srcSet: set.join(', ') };
+  }
+
+  function mediaImg(src, alt, className, sizes, key) {
+    var vr = imgVariants(src);
+    return R.createElement('img', {
+      key: key || 'media',
+      className: className,
+      src: src,
+      srcSet: vr ? vr.srcSet : undefined,
+      sizes: sizes,
+      alt: alt,
+      loading: 'lazy',
+      decoding: 'async',
+      onError: function (e) {
+        var t = e && e.target;
+        if (t && t.getAttribute('data-fallback') !== '1') {
+          t.setAttribute('data-fallback', '1');
+          t.removeAttribute('srcset');
+          t.src = src;
+        }
+      }
+    });
   }
 
   function genreKeyOf(entry) {
@@ -44,9 +132,11 @@
 
   function ArenaHome(props) {
     var p = props || {};
-    var language = p.language || 'tr';
-    var dir = p.dir || (language === 'fa' ? 'rtl' : 'ltr');
-    var text = COPY[language] || COPY.en;
+    var language = p.language || 'fa';
+    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
+    /* theme copy: theme.json.strings through the portal's ts() */
+    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
+    function T(key) { return ts(key); }
     var settings = p.settings || {};
     var navigate = p.onNavigate || function () {};
     var base = String(p.assetsBase || '');
@@ -62,6 +152,49 @@
     var staff = p.staffTeam || [];
 
     var h = R.createElement;
+    var rootRef = R.useRef(null);
+
+    /* ---------- hero slides: admin data first, theme demo last ---------- */
+    var adminSlides = Array.isArray(p.slides) ? p.slides : [];
+    var slides = [];
+    var i;
+    for (i = 0; i < adminSlides.length; i++) {
+      var as = adminSlides[i] || {};
+      var title = loc(as.title, language);
+      var desc = loc(as.desc, language);
+      /* slide images are intentionally ignored: the official hero video is
+         always the hero background; slides carry text + target only */
+      if (!title && !desc) continue;
+      slides.push({
+        id: as.id || ('admin-slide-' + i),
+        title: title || T('hero'),
+        desc: desc,
+        target: normalizeTarget(as.target)
+      });
+    }
+    if (!slides.length && featured.length) {
+      for (i = 0; i < featured.length; i++) {
+        var fg = featured[i] || {};
+        var ftitle = loc(fg.title, language);
+        var fdesc = loc(fg.desc || fg.subtitle || fg.description, language);
+        if (!ftitle && !fdesc) continue;
+        slides.push({
+          id: fg.id || ('featured-' + i),
+          title: ftitle || T('hero'),
+          desc: fdesc,
+          target: normalizeTarget(fg.target || fg.link || 'tournaments')
+        });
+      }
+    }
+    if (!slides.length) {
+      /* theme demo slides — copy from strings, media stays the hero video */
+      slides = [
+        { id: 'demo-hero', title: T('hero'), desc: T('sub'), target: 'reservations' },
+        { id: 'demo-tournaments', title: T('demoSlide2Title'), desc: T('demoSlide2Desc'), target: 'tournaments' },
+        { id: 'demo-lounge', title: T('demoSlide3Title'), desc: T('demoSlide3Desc'), target: 'cafe' }
+      ];
+    }
+    var slideCount = slides.length;
 
     /* ---------- hero media state ---------- */
     var heroRef = R.useRef(null);
@@ -76,9 +209,28 @@
     var reducedMotion = R.useMemo(function () {
       try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; }
     }, []);
+    /* narrow screens (phones) get the 640x360 poster — the LCP paint — instead
+       of the 1280x720 one; the CSS background swaps with the same class */
+    var smallScreen = R.useMemo(function () {
+      try { return !!(window.matchMedia && window.matchMedia('(max-width: 800px)').matches); } catch (e) { return false; }
+    }, []);
+
+    /* ---------- slider + gallery state (one shared rAF heartbeat) ---------- */
+    var slideState = R.useState(0);
+    var slideIndex = slideState[0];
+    var setSlideIndex = slideState[1];
+    var sliderPausedState = R.useState(false);
+    var sliderPaused = sliderPausedState[0];
+    var setSliderPaused = sliderPausedState[1];
+    var galleryState = R.useState(0);
+    var galleryPauseState = R.useState(false);
+    var galleryBoxRef = R.useRef(null);
+    var galleryVisibleRef = R.useRef(true);
+    var loungeImages = lounges.filter(function (l) { return l && (l.imageUrl || l.image); });
+    var activeSlide = slides[Math.min(slideIndex, slideCount - 1)] || slides[0];
 
     var videoUrl = String(settings.hero_video || settings.hero_video_url || '') || (base + 'hero-arena.mp4');
-    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + 'hero-poster.webp');
+    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + (smallScreen ? 'hero-poster-small.webp' : 'hero-poster.webp'));
 
     function startPlayback() {
       var v = videoRef.current;
@@ -89,6 +241,10 @@
         if (pr && pr.catch) pr.catch(function () {});
         setPhase(2);
       } catch (e) { /* poster remains */ }
+    }
+
+    function goToSlide(next) {
+      setSlideIndex(((next % slideCount) + slideCount) % slideCount);
     }
 
     /* Defer the video until the page is fully loaded and the browser is idle. */
@@ -109,11 +265,11 @@
     R.useEffect(function () {
       if (!window.IntersectionObserver || !heroRef.current) return;
       var io = new window.IntersectionObserver(function (entries) {
-        for (var i = 0; i < entries.length; i++) {
-          heroVisibleRef.current = entries[i].isIntersecting;
+        for (var k = 0; k < entries.length; k++) {
+          heroVisibleRef.current = entries[k].isIntersecting;
           var v = videoRef.current;
           if (!v) continue;
-          if (!entries[i].isIntersecting) { try { v.pause(); } catch (e) {} }
+          if (!entries[k].isIntersecting) { try { v.pause(); } catch (e) {} }
           else if (phase === 2 && !reducedMotion) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
         }
       }, { threshold: 0.15 });
@@ -133,17 +289,121 @@
       return function () { document.removeEventListener('visibilitychange', onVis); };
     }, [phase, reducedMotion]);
 
+    /* Lounge gallery visibility. */
+    R.useEffect(function () {
+      if (!window.IntersectionObserver || !galleryBoxRef.current) return;
+      var io2 = new window.IntersectionObserver(function (entries) {
+        for (var k = 0; k < entries.length; k++) galleryVisibleRef.current = entries[k].isIntersecting;
+      }, { threshold: 0.1 });
+      io2.observe(galleryBoxRef.current);
+      return function () { io2.disconnect(); };
+    }, [loungeImages.length]);
+
+    /* Shared heartbeat: hero slider (~7.5s) + lounge gallery (~5.2s), rAF only. */
+    R.useEffect(function () {
+      if (reducedMotion) return;
+      var raf = 0;
+      var last = 0;
+      var accSlide = 0;
+      var accGallery = 0;
+      var SLIDE_STEP = 7500;
+      var GALLERY_STEP = 5200;
+      var loop = function (ts) {
+        if (last) {
+          var dt = Math.min(ts - last, 200);
+          accSlide += dt;
+          accGallery += dt;
+        }
+        last = ts;
+        var awake = !document.hidden && heroVisibleRef.current && !sliderPausedState[0];
+        if (awake && slideCount > 1 && accSlide >= SLIDE_STEP) {
+          accSlide = 0;
+          setSlideIndex(function (idx) { return (idx + 1) % slideCount; });
+        }
+        if (!document.hidden && galleryVisibleRef.current && !galleryPauseState[0] && loungeImages.length > 1 && accGallery >= GALLERY_STEP) {
+          accGallery = 0;
+          galleryState[1](function (idx) { return (idx + 1) % loungeImages.length; });
+        }
+        raf = window.requestAnimationFrame(loop);
+      };
+      raf = window.requestAnimationFrame(loop);
+      return function () { window.cancelAnimationFrame(raf); };
+    }, [reducedMotion, slideCount, sliderPausedState[0], galleryPauseState[0], loungeImages.length]);
+
     function onHeroClick() {
       if (!videoSrc) setVideoSrc(videoUrl);
       startPlayback();
     }
+
+    /* ---------- cinematic pointer depth (reference design) ----------
+       Normalized --pointer-x/--pointer-y on the home root drive the neon
+       background glow of every chapter, the hero grid parallax and a subtle
+       counter-parallax on section heads — exactly like the reference
+       landing. Disabled for reduced-motion users. */
+    R.useEffect(function () {
+      var root = rootRef.current;
+      if (!root || reducedMotion || !window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      var onUpdate = function (e) {
+        var b = root.getBoundingClientRect();
+        if (!b.width || !b.height) return;
+        var x = ((e.clientX - b.left) / b.width) * 2 - 1;
+        var y = ((e.clientY - b.top) / b.height) * 2 - 1;
+        root.style.setProperty('--pointer-x', x.toFixed(3));
+        root.style.setProperty('--pointer-y', y.toFixed(3));
+      };
+      var onLeave = function () {
+        root.style.setProperty('--pointer-x', '0');
+        root.style.setProperty('--pointer-y', '0');
+      };
+      root.addEventListener('pointermove', onUpdate);
+      root.addEventListener('pointerleave', onLeave);
+      return function () {
+        root.removeEventListener('pointermove', onUpdate);
+        root.removeEventListener('pointerleave', onLeave);
+      };
+    }, [reducedMotion]);
+
+    /* ---------- scroll reveal (reference design) ----------
+       Containers marked data-rvl fade/rise in once when they enter the
+       viewport (IntersectionObserver, once, ~15%); grid children stagger
+       via CSS. Layout space is reserved (transform/opacity only → no CLS).
+       Reduced motion → everything visible immediately. */
+    R.useEffect(function () {
+      var root = rootRef.current;
+      if (!root) return;
+      var els = root.querySelectorAll('[data-rvl]');
+      if (!els.length) return;
+      if (reducedMotion || !window.IntersectionObserver) {
+        for (var k = 0; k < els.length; k++) els[k].classList.add('is-visible');
+        return;
+      }
+      /* scope the hidden state via CSS to this class → SSR / no-JS keeps
+         everything visible (progressive enhancement) */
+      root.classList.add('bazino-rvl');
+      var io = new window.IntersectionObserver(function (entries) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) {
+            entries[k].target.classList.add('is-visible');
+            io.unobserve(entries[k].target);
+          }
+        }
+      }, { threshold: 0.15 });
+      for (var j = 0; j < els.length; j++) io.observe(els[j]);
+      return function () { io.disconnect(); };
+    }, []);
 
     /* ---------- tournament discovery state ---------- */
     var genreState = R.useState('all');
     var searchState = R.useState('');
     var sortState = R.useState('featured');
 
-    var genreLabels = { all: text.all, shooter: language === 'fa' ? 'شوتر' : language === 'ru' ? 'ШУТЕРЫ' : language === 'en' ? 'SHOOTERS' : 'NİŞANCI', moba: 'MOBA', sports: language === 'fa' ? 'ورزشی' : language === 'ru' ? 'СПОРТ' : language === 'en' ? 'SPORTS' : 'SPOR', rpg: 'RPG' };
+    var genreLabels = {
+      all: T('all'),
+      shooter: T('genreShooter'),
+      moba: T('genreMoba'),
+      sports: T('genreSports'),
+      rpg: T('genreRpg')
+    };
     var genreKeys = ['all', 'shooter', 'moba', 'sports', 'rpg'];
     var query = searchState[0].trim().toLowerCase();
     var visibleTournaments = tournaments.filter(function (t) {
@@ -156,48 +416,45 @@
       return 0;
     });
 
-    /* ---------- lounge gallery (rAF driven, no setInterval) ---------- */
-    var galleryState = R.useState(0);
-    var galleryPauseState = R.useState(false);
-    var galleryBoxRef = R.useRef(null);
-    var galleryVisibleRef = R.useRef(true);
-    var loungeImages = lounges.filter(function (l) { return l && (l.imageUrl || l.image); });
-
-    R.useEffect(function () {
-      if (!window.IntersectionObserver || !galleryBoxRef.current) return;
-      var io = new window.IntersectionObserver(function (entries) {
-        for (var i = 0; i < entries.length; i++) galleryVisibleRef.current = entries[i].isIntersecting;
-      }, { threshold: 0.1 });
-      io.observe(galleryBoxRef.current);
-      return function () { io.disconnect(); };
-    }, [loungeImages.length]);
-
-    R.useEffect(function () {
-      if (reducedMotion || galleryPauseState[0] || loungeImages.length < 2) return;
-      var raf = 0;
-      var last = 0;
-      var acc = 0;
-      var STEP = 5200;
-      var loop = function (ts) {
-        if (last) acc += Math.min(ts - last, 200);
-        last = ts;
-        if (acc >= STEP && galleryVisibleRef.current && !document.hidden) {
-          acc = 0;
-          galleryState[1](function (i) { return (i + 1) % loungeImages.length; });
-        }
-        raf = window.requestAnimationFrame(loop);
-      };
-      raf = window.requestAnimationFrame(loop);
-      return function () { window.cancelAnimationFrame(raf); };
-    }, [galleryPauseState[0], loungeImages.length, reducedMotion]);
-
     var loungeIndex = loungeImages.length ? galleryState[0] % loungeImages.length : 0;
     var activeLounge = loungeImages[loungeIndex];
 
+
+    /* ---------- chapter 07: real map (OpenStreetMap) ----------
+       No Google Maps anywhere (sanction-safe choice made by the portal):
+       both the embed and the outbound link point to OpenStreetMap.
+       Coordinates come from portal settings (club_map_lat / club_map_lng
+       — the North Cyprus lounge pin); if the portal SDK exposes
+       locationFrom() it is preferred so the theme stays in sync with the
+       portal's own map. Nothing is hardcoded: without coordinates the map
+       gracefully doesn't render (address card remains). */
+    function osmLink(lat, lng) {
+      return 'https://www.openstreetmap.org/?mlat=' + lat + '&mlon=' + lng + '#map=17/' + lat + '/' + lng;
+    }
+    function mapData() {
+      if (SDK.locationFrom) {
+        try {
+          var loc = SDK.locationFrom(settings);
+          if (loc && loc.embedUrl && isFinite(loc.lat) && isFinite(loc.lng)) {
+            return { embedUrl: String(loc.embedUrl), mapUrl: osmLink(loc.lat, loc.lng) };
+          }
+        } catch (e) { /* fall through to settings */ }
+      }
+      var lat = parseFloat(settings.club_map_lat);
+      var lng = parseFloat(settings.club_map_lng);
+      if (!isFinite(lat) || !isFinite(lng)) return null;
+      var d = 0.005;
+      return {
+        embedUrl: 'https://www.openstreetmap.org/export/embed.html?bbox=' + (lng - d).toFixed(4) + '%2C' + (lat - 0.004).toFixed(4) + '%2C' + (lng + d).toFixed(4) + '%2C' + (lat + 0.004).toFixed(4) + '&layer=mapnik&marker=' + lat + '%2C' + lng,
+        mapUrl: osmLink(lat, lng)
+      };
+    }
+    var map = mapData();
+
     /* ---------- builders ---------- */
     function sectionHead(chapter, title, meta) {
-      return h('div', { className: 'bazino-section-head' },
-        h('span', { className: 'theme-chapter-label' }, 'CHAPTER ' + chapter),
+      return h('div', { className: 'bazino-section-head', 'data-rvl': '1' },
+        h('span', { className: 'theme-chapter-label' }, T('chapterWord') + ' ' + num(language, chapter)),
         h('h2', null, title),
         h('p', null, meta)
       );
@@ -206,198 +463,251 @@
     function card(entry, index, prefix, withMedia) {
       entry = entry || {};
       var kids = [
-        h('div', { key: 'top', className: 'bazino-home-card-top' }, h('span', null, prefix + ' / 0' + (index + 1)), h('span', null, 'BAZINO')),
-        h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || 'SIGNAL')
+        h('div', { key: 'top', className: 'bazino-home-card-top' },
+          h('span', null, prefix + ' / ' + pad2(language, index + 1)),
+          h('span', null, 'BAZINO')),
+        h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || T('signalWord'))
       ];
       if (withMedia && (entry.imageUrl || entry.image)) {
-        kids.push(h('img', { key: 'media', className: 'bazino-home-card-media', src: entry.imageUrl || entry.image, alt: loc(entry.title, language) || 'Bazino', loading: 'lazy', decoding: 'async' }));
+        kids.push(mediaImg(entry.imageUrl || entry.image, loc(entry.title, language) || 'Bazino', 'bazino-home-card-media', '(min-width: 801px) 25vw, 100vw', 'media'));
       }
-      kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || 'Next round'));
-      kids.push(h('p', { key: 'p' }, loc(entry.subtitle || entry.desc || entry.description, language) || loc(entry.body, language) || 'Official information is supplied by the Bazino portal.'));
+      kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || T('cardTitleFallback')));
+      kids.push(h('p', { key: 'p' }, loc(entry.subtitle || entry.desc || entry.description, language) || loc(entry.body, language) || T('cardBodyFallback')));
       kids.push(h('span', { key: 'arrow', className: 'bazino-card-arrow' }, '↗'));
       return h('article', { key: entry.id || index, className: 'theme-frame bazino-home-card' }, kids);
     }
 
     function cardGrid(items, prefix, fallback) {
       var list = items && items.length ? items.slice(0, 4) : fallback;
-      return h('div', { className: 'bazino-home-grid' }, list.map(function (item, index) { return card(item, index, prefix, true); }));
+      return h('div', { className: 'bazino-home-grid', 'data-rvl': '1' }, list.map(function (item, index) { return card(item, index, prefix, true); }));
     }
 
     function routeLink(title, tab) {
       return h('button', { className: 'theme-link-button', onClick: function () { navigate(tab); } }, title + '  ↗');
     }
 
-    var genreFallback = [
-      { title: 'PS5 Arena', body: 'Next-gen control and a focused console scene.' },
-      { title: 'Xbox Series X', body: 'Team play on the big screen.' },
-      { title: '85-inch focus', body: 'A cinematic field of view for every move.' },
-      { title: 'VIP between rounds', body: 'More comfort between matches.' }
+    /* ---------- hero sub-render ---------- */
+    var heroMediaLayers = [
+      /* LCP element: a real <img> (NOT a CSS background) so the poster is
+         discoverable as an image, gets fetchpriority=high and is never
+         lazy-loaded (PageSpeed: LCP request discovery). Phones get the
+         640x360 variant via posterUrl (is-small-screen logic). */
+      h('img', {
+        key: 'poster',
+        className: 'bazino-hero-poster-layer',
+        src: posterUrl,
+        alt: '',
+        'aria-hidden': true,
+        fetchPriority: 'high',
+        decoding: 'async',
+        onError: function (e) { var t = e && e.target; if (t) t.style.visibility = 'hidden'; }
+      })
     ];
+    heroMediaLayers.push(h('video', {
+      key: 'video',
+      ref: videoRef,
+      className: 'bazino-hero-video',
+      src: videoSrc || undefined,
+      poster: posterUrl,
+      muted: true,
+      autoPlay: false,
+      loop: false,
+      playsInline: true,
+      preload: videoSrc ? 'auto' : 'none',
+      onCanPlay: function () { if (phase < 2 && !reducedMotion && heroVisibleRef.current && !document.hidden) startPlayback(); else if (phase < 2) setPhase(1); },
+      onPlay: function () { setPhase(2); },
+      onEnded: function () { setPhase(3); },
+      onError: function () { setPhase(4); },
+      'aria-hidden': true,
+      tabIndex: -1
+    }));
+    heroMediaLayers.push(h('div', { key: 'grid', className: 'bazino-hero-grid' }));
 
-    var heroTitle = text.hero;
-    var heroImage = featured[0] && (featured[0].imageUrl || featured[0].image);
+    return h('div', { ref: rootRef, className: 'bazino-home' + (smallScreen ? ' is-small-screen' : ''), dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
 
-    return h('div', { className: 'bazino-home', dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
-
-      /* ── 01 HERO: poster first, video deferred ── */
-      h('section', { className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : ''), 'data-chapter': '01', ref: heroRef },
-        h('div', { className: 'bazino-hero-media', onClick: onHeroClick, role: 'button', tabIndex: 0, 'aria-label': text.cue, onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHeroClick(); } } },
-          h('div', { className: 'bazino-hero-poster-layer', style: heroImage ? { backgroundImage: 'url(' + heroImage + ')' } : null }),
-          h('video', {
-            ref: videoRef,
-            className: 'bazino-hero-video',
-            src: videoSrc || undefined,
-            poster: posterUrl,
-            muted: true,
-            autoPlay: false,
-            loop: false,
-            playsInline: true,
-            preload: videoSrc ? 'auto' : 'none',
-            onCanPlay: function () { if (phase < 2 && !reducedMotion && heroVisibleRef.current && !document.hidden) startPlayback(); else if (phase < 2) setPhase(1); },
-            onPlay: function () { setPhase(2); },
-            onEnded: function () { setPhase(3); },
-            onError: function () { setPhase(4); },
-            'aria-hidden': true,
-            tabIndex: -1
-          }),
-          h('div', { className: 'bazino-hero-grid' }),
-          h('div', { className: 'bazino-hero-overlay' }),
-          phase < 2 ? h('span', { className: 'bazino-hero-cue' }, text.cue) : null,
-          phase === 3 || phase === 4 ? h('button', { className: 'bazino-hero-replay', onClick: function (e) { e.stopPropagation(); onHeroClick(); } }, text.replay) : null
+      /* ── 01 HERO: poster first, admin slide text, video deferred ──
+         No overlay layer (video stays clear) and no slider buttons — clicking
+         the hero replays the video; after it ends it FREEZES on the last
+         frame (is-ended) instead of returning to the first frame. */
+      h('section', {
+        className: 'bazino-chapter bazino-home-hero' + (phase === 2 ? ' is-playing' : '') + (phase === 3 ? ' is-ended' : ''),
+        'data-chapter': '01',
+        ref: heroRef,
+        dir: dir
+      },
+        h('div', {
+          className: 'bazino-hero-media',
+          onClick: onHeroClick,
+          role: 'button',
+          tabIndex: 0,
+          'aria-label': T('cue'),
+          onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHeroClick(); } },
+          onMouseEnter: function () { setSliderPaused(true); },
+          onMouseLeave: function () { setSliderPaused(false); },
+          onFocus: function () { setSliderPaused(true); },
+          onBlur: function () { setSliderPaused(false); }
+        },
+          heroMediaLayers,
+          phase < 2 ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null
         ),
-        h('div', { className: 'bazino-hero-content theme-frame' },
+        h('div', { className: 'bazino-hero-content theme-frame', dir: dir },
           h('img', { className: 'theme-brand-logo', src: logo, alt: settings.club_name || 'Bazino', width: 160, height: 42 }),
-          h('span', { className: 'theme-chapter-label' }, 'CHAPTER 01 / HALL OF LEGENDS'),
-          h('h1', null, heroTitle),
-          h('p', null, text.sub),
-          h('button', { className: 'btn cta-primary', onClick: function (e) { e.stopPropagation(); navigate('reservations'); } }, text.cta + '  ↗')
+          h('span', { className: 'theme-chapter-label' }, T('heroChapter')),
+          h('div', { key: 'slide-' + slideIndex + '-' + language, className: 'bazino-hero-slide' },
+            h('h1', null, activeSlide.title),
+            activeSlide.desc ? h('p', null, activeSlide.desc) : null
+          ),
+          h('button', { className: 'btn cta-primary', onClick: function (e) { e.stopPropagation(); navigate(activeSlide.target); } }, T('cta') + '  ↗')
         )
       ),
 
       /* ── 02 GENRES ── */
-      h('section', { className: 'bazino-chapter', 'data-chapter': '02' },
-        sectionHead('02', text.genres, 'PS5 / XBOX SERIES X / 85 INCH / VIP'),
-        cardGrid(genres, 'LOADOUT', genreFallback)
+      h('section', { className: 'bazino-chapter', 'data-chapter': '02', dir: dir },
+        sectionHead('02', T('genres'), T('genresMeta')),
+        cardGrid(genres, T('loadout'), [
+          { title: T('demoGenre1Title'), body: T('demoGenre1Body') },
+          { title: T('demoGenre2Title'), body: T('demoGenre2Body') },
+          { title: T('demoGenre3Title'), body: T('demoGenre3Body') },
+          { title: T('demoGenre4Title'), body: T('demoGenre4Body') }
+        ])
       ),
 
       /* ── 03 TOURNAMENTS ── */
-      h('section', { className: 'bazino-chapter bazino-tournament-surface', 'data-chapter': '03' },
-        sectionHead('03', text.tournaments, 'STATUS / DATE / PRIZE INFORMATION'),
-        h('div', { className: 'bazino-genre-filter', role: 'group', 'aria-label': text.sort }, genreKeys.map(function (key) {
+      h('section', { className: 'bazino-chapter bazino-tournament-surface', 'data-chapter': '03', dir: dir },
+        sectionHead('03', T('tournaments'), T('tournamentsMeta')),
+        h('div', { className: 'bazino-genre-filter', role: 'group', 'aria-label': T('sort') }, genreKeys.map(function (key) {
           return h('button', { key: key, type: 'button', className: genreState[0] === key ? 'is-active' : '', 'aria-pressed': genreState[0] === key, onClick: function () { genreState[1](key); } }, genreLabels[key]);
         })),
         h('div', { className: 'bazino-tournament-tools' },
           h('label', { className: 'bazino-tournament-search' },
-            h('span', { className: 'sr-only' }, text.search),
-            h('input', { type: 'search', value: searchState[0], placeholder: text.search, onChange: function (e) { searchState[1](e.target.value); } })
+            h('span', { className: 'sr-only' }, T('search')),
+            h('input', { type: 'search', value: searchState[0], placeholder: T('search'), onChange: function (e) { searchState[1](e.target.value); } })
           ),
           h('label', { className: 'bazino-tournament-sort' },
-            h('span', null, text.sort),
+            h('span', null, T('sort')),
             h('select', { value: sortState[0], onChange: function (e) { sortState[1](e.target.value); } },
-              h('option', { value: 'featured' }, text.sortFeatured),
-              h('option', { value: 'date' }, text.sortDate),
-              h('option', { value: 'prize' }, text.sortPrize)
+              h('option', { value: 'featured' }, T('sortFeatured')),
+              h('option', { value: 'date' }, T('sortDate')),
+              h('option', { value: 'prize' }, T('sortPrize'))
             )
           )
         ),
-        cardGrid(visibleTournaments, 'TOURNAMENT', [{ title: 'Next tournament', status: 'OPEN', body: 'Dates, entry conditions and official prizes.' }]),
-        routeLink(text.openHub, 'tournaments')
+        cardGrid(visibleTournaments, T('tournamentWord'), [
+          { title: T('demoTournamentTitle'), status: T('demoTournamentStatus'), body: T('demoTournamentBody') }
+        ]),
+        routeLink(T('openHub'), 'tournaments')
       ),
 
       /* ── 04 RESULTS ── */
-      h('section', { className: 'bazino-chapter bazino-score-surface', 'data-chapter': '04' },
-        sectionHead('04', text.results, 'VERIFIED / PORTAL DATA'),
-        h('div', { className: 'bazino-scoreboard' }, history.length ? history.slice(0, 5).map(function (entry, index) {
+      h('section', { className: 'bazino-chapter bazino-score-surface', 'data-chapter': '04', dir: dir },
+        sectionHead('04', T('results'), T('resultsMeta')),
+        h('div', { className: 'bazino-scoreboard', 'data-rvl': '1' }, history.length ? history.slice(0, 5).map(function (entry, index) {
           var e = entry || {};
           var score = (e.scoreA !== undefined || e.scoreB !== undefined) ? (e.scoreA + ' : ' + e.scoreB) : (e.score || e.result || '— —');
           return h('div', { className: 'bazino-score-row', key: e.id || index },
-            h('span', null, (e.teamA || 'TEAM A') + '  vs  ' + (e.teamB || 'TEAM B')),
+            h('span', null, (e.teamA || T('teamA')) + '  vs  ' + (e.teamB || T('teamB'))),
             h('strong', null, String(score)),
-            h('span', null, (e.status || 'FINAL') + ' / ' + (e.game || loc(e.title, language) || 'MATCH'))
+            h('span', null, (e.status || T('scoreFinal')) + ' / ' + (e.game || loc(e.title, language) || T('matchWord')))
           );
-        }) : h('div', { className: 'bazino-empty-signal' }, text.empty)),
-        routeLink(text.results, 'tournaments')
+        }) : h('div', { className: 'bazino-empty-signal' }, T('empty'))),
+        routeLink(T('results'), 'tournaments')
       ),
 
       /* ── 05 LOUNGES ── */
-      h('section', { className: 'bazino-chapter bazino-lounge-surface', 'data-chapter': '05' },
-        sectionHead('05', text.lounges, 'VIP / CAFÉ / BETWEEN ROUNDS'),
+      h('section', { className: 'bazino-chapter bazino-lounge-surface', 'data-chapter': '05', dir: dir },
+        sectionHead('05', T('lounges'), T('loungesMeta')),
         activeLounge ? h('div', {
           ref: galleryBoxRef,
-          className: 'bazino-theme-lounge-slider',
+          className: 'bazino-theme-lounge-slider', 'data-rvl': '1',
           onMouseEnter: function () { galleryPauseState[1](true); },
           onMouseLeave: function () { galleryPauseState[1](false); },
           onFocus: function () { galleryPauseState[1](true); },
           onBlur: function () { galleryPauseState[1](false); },
           tabIndex: 0
         },
-          h('img', { src: activeLounge.imageUrl || activeLounge.image, alt: loc(activeLounge.title, language) || 'Bazino lounge', loading: 'lazy', decoding: 'async' }),
-          h('div', { className: 'bazino-theme-slider-status' }, String(loungeIndex + 1).padStart(2, '0') + ' / ' + String(loungeImages.length).padStart(2, '0') + (reducedMotion ? '' : (galleryPauseState[0] ? ' / PAUSED' : ' / AUTO')))
+          mediaImg(activeLounge.imageUrl || activeLounge.image, loc(activeLounge.title, language) || 'Bazino lounge', '', '(min-width: 801px) 1120px, 100vw', 'lounge-img'),
+          h('div', { className: 'bazino-theme-slider-status' }, pad2(language, loungeIndex + 1) + ' / ' + pad2(language, loungeImages.length) + (reducedMotion ? '' : (galleryPauseState[0] ? ' / ' + T('pausedWord') : ' / ' + T('autoWord'))))
         ) : null,
-        cardGrid(lounges, 'LOUNGE', [
-          { title: 'VIP Lounge', body: 'More room, more comfort, a quieter pace.' },
-          { title: 'Gaming Café', body: 'A social pause without leaving the night.' }
+        cardGrid(lounges, T('loungeWord'), [
+          { title: T('demoLoungeVipTitle'), body: T('demoLoungeVipBody') },
+          { title: T('demoLoungeCafeTitle'), body: T('demoLoungeCafeBody') }
         ]),
-        routeLink(text.openCafe, 'cafe')
+        routeLink(T('openCafe'), 'cafe')
       ),
 
       /* ── 06 PASSES ── */
-      h('section', { className: 'bazino-chapter bazino-passes-surface', 'data-chapter': '06' },
-        sectionHead('06', text.passes, 'CHOOSE / RESERVE / PLAY'),
-        h('div', { className: 'bazino-pass-grid' }, (pricing.length ? pricing : [
-          { title: 'Console round', body: 'Choose your PS5 or Xbox Series X scene.' },
-          { title: 'VIP pace', body: 'Reserve the lounge experience.' },
-          { title: 'Tournament night', body: 'Check official event availability.' }
+      h('section', { className: 'bazino-chapter bazino-passes-surface', 'data-chapter': '06', dir: dir },
+        sectionHead('06', T('passes'), T('passesMeta')),
+        h('div', { className: 'bazino-pass-grid', 'data-rvl': '1' }, (pricing.length ? pricing : [
+          { title: T('demoPass1Title'), body: T('demoPass1Body') },
+          { title: T('demoPass2Title'), body: T('demoPass2Body') },
+          { title: T('demoPass3Title'), body: T('demoPass3Body') }
         ]).slice(0, 3).map(function (entry, index) {
           var e = entry || {};
           var kids = [
-            h('span', { key: 'l', className: 'theme-chapter-label' }, 'PASS / 0' + (index + 1) + (e.popular ? ' ★' : '')),
-            h('h3', { key: 'h' }, loc(e.title || e.name, language) || 'Bazino pass')
+            h('span', { key: 'l', className: 'theme-chapter-label' }, T('passWord') + ' / ' + pad2(language, index + 1) + (e.popular ? ' ★' : '')),
+            h('h3', { key: 'h' }, loc(e.title || e.name, language) || T('passTitleFallback'))
           ];
           if (e.price !== undefined && e.price !== null) {
-            kids.push(h('span', { key: 'price', className: 'bazino-pass-price' }, Number(e.price).toLocaleString(language === 'fa' ? 'fa-IR' : undefined) + (language === 'fa' ? ' تومان' : ' T')));
+            kids.push(h('span', { key: 'price', className: 'bazino-pass-price' }, formatPrice(language, e.price) + ' ' + T('currency')));
           }
           if (e.duration) kids.push(h('p', { key: 'd' }, loc(e.duration, language)));
           if (e.features && e.features.length) {
-            kids.push(h('ul', { key: 'f', className: 'bazino-pass-features' }, e.features.slice(0, 4).map(function (f, i) { return h('li', { key: i }, loc(f, language)); })));
+            kids.push(h('ul', { key: 'f', className: 'bazino-pass-features' }, e.features.slice(0, 4).map(function (f, fi) { return h('li', { key: fi }, loc(f, language)); })));
           }
           kids.push(h('p', { key: 'p' }, loc(e.body || e.description, language)));
           kids.push(h('span', { key: 'line', className: 'bazino-pass-line' }));
           return h('article', { key: e.id || index, className: 'bazino-pass' + (e.popular ? ' is-popular' : '') }, kids);
         })),
-        routeLink(text.cta, 'reservations')
+        routeLink(T('cta'), 'reservations')
       ),
 
       /* ── 06.5 COACHES (optional) ── */
-      staff && staff.length ? h('section', { className: 'bazino-chapter', 'data-chapter': '06.5' },
-        sectionHead('06.5', text.coaches, 'BAZINO CREW'),
-        h('div', { className: 'bazino-staff-strip' }, staff.slice(0, 4).map(function (member, index) {
+      staff && staff.length ? h('section', { className: 'bazino-chapter', 'data-chapter': '06.5', dir: dir },
+        sectionHead('06.5', T('coaches'), T('coachesMeta')),
+        h('div', { className: 'bazino-staff-strip', 'data-rvl': '1' }, staff.slice(0, 4).map(function (member, index) {
           var m = member || {};
           return h('div', { key: m.id || index, className: 'bazino-staff-chip' },
             h('div', null,
-              h('strong', null, loc(m.name, language) || (m.gamerTag || 'COACH')),
+              h('strong', null, loc(m.name, language) || (m.gamerTag || T('coachDefault'))),
               h('span', null, (m.gamerTag ? m.gamerTag + ' — ' : '') + loc(m.role, language))
             )
           );
         }))
       ) : null,
 
-      /* ── 07 VISIT + APP ── */
-      h('section', { className: 'bazino-chapter bazino-visit-surface', 'data-chapter': '07' },
-        h('div', { className: 'bazino-visit-copy' },
-          h('span', { className: 'theme-chapter-label' }, 'CHAPTER 07'),
-          h('h2', null, text.visit),
-          h('p', null, settings.club_address || 'Vistamare Hotel • İskele, Cyprus'),
-          h('button', { className: 'btn btn-outline', onClick: function () { navigate('reservations'); } }, text.cta + '  ↗')
+      /* ── 07 VISIT + LOCATION ── (mobile-signal card removed; the game
+         net's location/map takes its place — address from the portal,
+         directions link out to maps, radar visual is pure CSS) */
+      h('section', { className: 'bazino-chapter bazino-visit-surface', 'data-chapter': '07', dir: dir },
+        h('div', { className: 'bazino-visit-copy', 'data-rvl': '1' },
+          h('span', { className: 'theme-chapter-label' }, T('chapterWord') + ' ' + num(language, '07')),
+          h('h2', null, T('visit')),
+          h('p', null, settings.club_address || T('addressFallback')),
+          h('button', { className: 'btn btn-outline', onClick: function () { navigate('reservations'); } }, T('cta') + '  ↗')
         ),
-        h('div', { className: 'bazino-app-card' },
-          h('span', { className: 'theme-chapter-label' }, 'BAZINO MOBILE SIGNAL'),
-          h('h3', null, text.app),
-          h('p', null, text.appBody),
-          h('div', { className: 'bazino-app-downloads' },
-            h('button', { className: 'btn btn-outline', onClick: function () { navigate('loyalty'); } }, 'iOS  ↗'),
-            h('button', { className: 'btn btn-outline', onClick: function () { navigate('loyalty'); } }, 'ANDROID  ↗')
-          )
+        h('div', { className: 'bazino-location-card', 'data-rvl': '1' },
+          h('span', { className: 'theme-chapter-label' }, T('locationTitle')),
+          map ? h('div', { className: 'bazino-location-map-frame' },
+            h('iframe', {
+              key: 'map',
+              className: 'bazino-location-map',
+              src: map.embedUrl,
+              title: T('locationTitle'),
+              loading: 'lazy',
+              referrerPolicy: 'no-referrer-when-downgrade',
+              allowFullScreen: true
+            }),
+            h('span', { className: 'bazino-location-map-badge', 'aria-hidden': 'true' }, T('liveLocation'))
+          ) : null,
+          h('p', { className: 'bazino-location-address' }, settings.club_address || T('addressFallback')),
+          settings.club_phone ? h('p', { className: 'bazino-location-phone' }, T('phoneLabel') + ': ' + String(settings.club_phone)) : null,
+          map ? h('a', {
+            className: 'btn btn-outline bazino-location-link',
+            href: map.mapUrl,
+            target: '_blank',
+            rel: 'noreferrer'
+          }, T('directions') + '  ↗') : null
         )
       )
     );
@@ -405,9 +715,81 @@
 
   SDK.registerComponent('home', function () {
     return {
-      apiVersion: 1,
+      apiVersion: 2,
       render: function (props) {
         return R.createElement(ArenaHome, props);
+      }
+    };
+  });
+
+
+  /* ── HEADER region (SDK v2) — reference-design header ─────────────
+     Mounted by the portal's <ThemeRegion name="header"> (branch
+     arena/01a067ac+). Contract: logo from props.logoUrl only, tabs via
+     ts('nav.*'), active tab highlighted, user chip from props.user.
+     Language menu / login stay the portal's job (per the theme README).
+     Old portals never mount this region — registration is harmless. */
+  function ArenaHeader(props) {
+    var p = props || {};
+    var language = p.language || 'fa';
+    var dir = (p.dir === 'rtl' || p.dir === 'ltr') ? p.dir : (RTL_LANGUAGES[language] || 'ltr');
+    var ts = (typeof p.ts === 'function') ? p.ts : function (key) { return key; };
+    function T(key) { return ts(key); }
+    var user = p.user || null;
+    var activeTab = String(p.activeTab || 'home');
+    var navigate = p.onNavigate || function () {};
+    var h = R.createElement;
+    var headerRef = R.useRef(null);
+    var NAV_TABS = ['home', 'reservations', 'cafe', 'shop', 'tournaments', 'loyalty', 'blog', 'chat'];
+
+    /* reference behaviour: transparent at the top, ink glass + gold
+       hairline once the page scrolls (passive listener, ES5-safe) */
+    R.useEffect(function () {
+      var el = headerRef.current;
+      if (!el || !window.addEventListener) return;
+      var update = function () {
+        if (window.scrollY > 8) el.classList.add('is-scrolled');
+        else el.classList.remove('is-scrolled');
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      return function () { window.removeEventListener('scroll', update); };
+    }, []);
+
+    return h('header', { ref: headerRef, className: 'bazino-header', dir: dir, 'data-theme-id': p.themeId || 'bazino-arena' },
+      h('div', { className: 'bazino-header-inner' },
+        h('button', {
+          className: 'bazino-header-brand', type: 'button',
+          onClick: function () { navigate('home'); },
+          'aria-label': T('nav.home')
+        },
+          h('img', { src: p.logoUrl || '/logo.png', alt: '', height: 34, width: 34 })
+        ),
+        h('nav', { className: 'bazino-header-nav', 'aria-label': T('navLabel') },
+          NAV_TABS.map(function (tab) {
+            return h('button', {
+              key: tab, type: 'button',
+              className: 'bazino-header-tab' + (tab === activeTab ? ' is-active' : ''),
+              onClick: function () { navigate(tab); }
+            }, T('nav.' + tab));
+          })
+        ),
+        h('div', { className: 'bazino-header-actions' },
+          user ? h('span', { className: 'bazino-header-user' }, '@' + String(user.username || '')) : null,
+          h('button', {
+            className: 'bazino-header-reserve', type: 'button',
+            onClick: function () { navigate('reservations'); }
+          }, T('headerReserve') + '  ↗')
+        )
+      )
+    );
+  }
+
+  SDK.registerComponent('header', function () {
+    return {
+      apiVersion: 2,
+      render: function (props) {
+        return R.createElement(ArenaHeader, props);
       }
     };
   });
