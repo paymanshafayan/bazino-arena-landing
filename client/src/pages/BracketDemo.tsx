@@ -64,8 +64,8 @@ const Icon = {
   Crown2: I(<><path d="M3 7l4 5 5-7 5 7 4-5-2 12H5L3 7z" /><path d="M5 19h14" /></>),
 };
 
-function Avatar({ name, size = 20 }: { name: string; size?: number }) {
-  return <span className="bk-av" style={{ width: size, height: size, fontSize: size * 0.5, background: `linear-gradient(135deg,hsl(${hue(name)} 65% 38%),hsl(${(hue(name)+45)%360} 65% 22%))`, boxShadow: `0 0 8px hsl(${hue(name)} 90% 60% / .55)` }}>{name.charAt(0)}</span>;
+function Avatar({ name, size = 16 }: { name: string; size?: number }) {
+  return <span className="bk-av" style={{ width: size, height: size, fontSize: size * 0.5, background: `linear-gradient(135deg,hsl(${hue(name)} 65% 38%),hsl(${(hue(name)+45)%360} 65% 22%))`, boxShadow: `0 0 5px hsl(${hue(name)} 80% 60% / .30)` }}>{name.charAt(0)}</span>;
 }
 
 function MatchCard({ m, seeds }: { m: P; seeds?: [number, number] }) {
@@ -150,15 +150,15 @@ export default function BracketDemo() {
         <div className="bk-neon-sign s1">Play<br />Compete<br />Win</div>
         <div className="bk-neon-sign s2">Good Games<br />Good People</div>
         <div className="bk-hero-inner">
-          <div className="bk-hero-title"><span className="bk-trophy"><Icon.Trophy size={48} /></span><h1>TOURNAMENT <em>BRACKETS</em></h1></div>
+          <div className="bk-hero-title"><span className="bk-trophy"><Icon.Trophy size={40} /></span><h1>TOURNAMENT <em>BRACKETS</em></h1></div>
           <p className="bk-hero-sub">LIVE &amp; PAST TOURNAMENT <em>RESULTS</em></p>
           <p className="bk-hero-line">REAL PLAYERS &nbsp;•&nbsp; REAL MATCHES &nbsp;•&nbsp; REAL COMPETITION &nbsp;•&nbsp; LASTING LEGENDS</p>
           <div className="bk-tabs">
             <button className={`bk-tab weekly ${tab === "weekly" ? "on" : ""}`} onClick={() => setTab("weekly")}>
-              <span className="bk-tab-ic"><Icon.Calendar size={26} /></span><span className="bk-tab-tx"><b>WEEKLY TOURNAMENTS</b><small>Regular weekly competitions</small></span>
+              <span className="bk-tab-ic"><Icon.Calendar size={22} /></span><span className="bk-tab-tx"><b>WEEKLY TOURNAMENTS</b><small>Regular weekly competitions</small></span>
             </button>
             <button className={`bk-tab special ${tab === "special" ? "on" : ""}`} onClick={() => setTab("special")}>
-              <span className="bk-tab-ic star"><Icon.Star size={26} /></span><span className="bk-tab-tx"><b>SPECIAL EVENTS</b><small>Big tournaments &amp; unique events</small></span>
+              <span className="bk-tab-ic star"><Icon.Star size={22} /></span><span className="bk-tab-tx"><b>SPECIAL EVENTS</b><small>Big tournaments &amp; unique events</small></span>
             </button>
           </div>
         </div>
@@ -210,9 +210,9 @@ export default function BracketDemo() {
               <div className="bk-center">
                 <div className="bk-final"><MatchCard m={FINAL} /></div>
                 <div className="bk-champ">
-                  <div className="bk-champ-trophy"><Icon.Trophy size={42} /></div>
+                  <div className="bk-champ-trophy"><Icon.Trophy size={40} /></div>
                   <div className="bk-champ-word">CHAMPION</div>
-                  <div className="bk-champ-av"><Avatar name="ArmanK" size={72} /></div>
+                  <div className="bk-champ-av"><Avatar name="ArmanK" size={68} /></div>
                   <b>ArmanK</b><small>#BZN1024</small>
                 </div>
               </div>
