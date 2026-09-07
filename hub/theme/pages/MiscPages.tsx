@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { HubAvatar, HubIcon } from "../../design-system";
 import { HubPage } from "../../design-system/chrome";
-import { BLOG_POSTS, CHAT_THREADS, OSM, PROFILE_TABS } from "../data";
+import { BLOG_POSTS, CHAT_THREADS, GOOGLE_MAPS, PROFILE_TABS } from "../data";
 import { useHub } from "../HubContext";
 import shop from "../assets/shop-soon.jpg";
 import food from "../assets/food-soon.jpg";
@@ -242,6 +242,7 @@ export function ProfilePage() {
 }
 
 export function ContactPage() {
+  const { setHoursOpen } = useHub();
   return (
     <HubPage>
       <section className="hub-page-hero" style={{ backgroundImage: `url(${hero})` }}>
@@ -249,13 +250,22 @@ export function ContactPage() {
         <p>İSKELE · LONG BEACH · HOTEL VISTAMARE</p>
       </section>
       <section className="hub-contact">
-        <iframe className="hub-map hub-neon-box" title="Bazino map" src={OSM} />
+        <a className="hub-loc-card hub-neon-box hub-neon-box--purple" href={GOOGLE_MAPS} target="_blank" rel="noreferrer">
+          <span className="hub-loc-pin"><HubIcon.Pin size={34} /></span>
+          <span className="hub-loc-tx">
+            <small>LOCATION</small>
+            <b>İskele, Long Beach</b>
+            <p>Hotel VistaMare</p>
+          </span>
+          <span className="hub-loc-cta">OPEN IN GOOGLE MAPS →</span>
+        </a>
         <aside className="hub-box hub-neon-box">
-          <h3>LOCATION</h3>
-          <p>Iskele, Long Beach<br />Hotel VistaMare</p>
+          <h3>OPENING HOURS</h3>
           <p><HubIcon.Clock size={14} /> Open everyday 11:00 – 23:50</p>
-          <p><a href="https://wa.me/905391123747" target="_blank" rel="noreferrer">WhatsApp +90 539 112 37 47</a></p>
-          <p><a href="https://maps.google.com/?q=Hotel+VistaMare+Iskele+Long+Beach" target="_blank" rel="noreferrer">Open in Google Maps →</a></p>
+          <button type="button" className="hub-loc-sub" onClick={() => setHoursOpen(true)}>See all days →</button>
+          <h3>CONTACT</h3>
+          <p><HubIcon.Chat size={14} /> <a href="https://wa.me/905391123747" target="_blank" rel="noreferrer">WhatsApp +90 539 112 37 47</a></p>
+          <p><HubIcon.Gram size={14} /> <a href="https://instagram.com/bazinopro" target="_blank" rel="noreferrer">Instagram @bazinopro</a></p>
         </aside>
       </section>
     </HubPage>

@@ -28,7 +28,7 @@ export function EventsHubPage() {
     <HubPage activeNav="EVENTS">
       <Hero title="EVENTS" line="PLAY · COMPETE · EARN CREDITS · BE A LEGEND" />
       <section className="hub-evgrid">
-        <article className="hub-evcard hub-neon-box hub-neon-box--magenta is-magenta">
+        <article className="hub-evcard hub-neon-box hub-neon-box--purple is-purple">
           <header><HubIcon.Calendar size={22} /><span><b>WEEKLY TOURNAMENTS</b><small>Regular weekly competition</small></span></header>
           <div className="hub-evart"><img src={fc26} alt="" /></div>
           <div className="hub-evlist">
@@ -36,7 +36,7 @@ export function EventsHubPage() {
           </div>
           <Link href="/hub/events/weekly" className="hub-evcta">VIEW TOURNAMENTS →</Link>
         </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--cyan is-cyan">
+        <article className="hub-evcard hub-neon-box hub-neon-box--magenta is-magenta">
           <header><HubIcon.Star size={22} /><span><b>SPECIAL EVENTS</b><small>Big competitions & showcases</small></span></header>
           <div className="hub-evart"><img src={ufc5} alt="" /></div>
           <div className="hub-evlist">
@@ -62,7 +62,7 @@ export function EventsHubPage() {
           </div>
           <Link href="/hub/events/brackets" className="hub-evcta">VIEW BRACKETS →</Link>
         </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--purple is-purple">
+        <article className="hub-evcard hub-neon-box hub-neon-box--cyan is-cyan">
           <header><HubIcon.Gamepad size={22} /><span><b>REGISTER</b><small>Join the next weekly</small></span></header>
           <div className="hub-evart" style={{ backgroundImage: `url(${mk1})` }} />
           <div className="hub-evlist">
@@ -92,7 +92,6 @@ export function WeeklyPage() {
               <div className="hub-stat"><HubIcon.Calendar size={16} /><b>{w.when}</b><small>SCHEDULE</small></div>
               <div className="hub-stat"><HubIcon.Users size={16} /><b>MAX {w.max}</b><small>PLAYERS</small></div>
               <div className="hub-stat"><HubIcon.Trophy size={16} /><b>{w.prize}</b><small>PRIZE</small></div>
-              <Link href="/hub/events/brackets" className="hub-row-cta hub-neon-box hub-neon-box--magenta">VIEW DETAIL →</Link>
             </div>
           </article>
         ))}
@@ -107,7 +106,7 @@ export function SpecialPage() {
       <Hero title="SPECIAL" em="EVENTS" line="BIGGER GAMES · HIGHER PRIZES · RARE MOMENTS" back />
       <section className="hub-rows">
         {SPECIAL.map((w) => (
-          <article key={w.title} className="hub-row hub-neon-box hub-neon-box--cyan">
+          <article key={w.title} className="hub-row hub-neon-box hub-neon-box--magenta">
             <img src={COVERS[w.cover]} alt="" />
             <div>
               <h3>{w.title}</h3>

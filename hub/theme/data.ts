@@ -23,9 +23,9 @@ export const SYSTEMS = [
 ];
 
 export const WEEKLY = [
-  { game: "FC 26", title: "FC 26 WEEKLY TOURNAMENT", blurb: "Show your skills, compete with other players and become this week's champion.", tags: ["Football", "Sports", "1v1"], when: "EVERY SATURDAY", max: 32, prize: "300 BC", tone: "magenta" as const, cover: "fc26" },
-  { game: "UFC 5", title: "UFC 5 WEEKLY TOURNAMENT", blurb: "Step into the octagon and prove you are the best.", tags: ["Fighting", "Sports", "1v1"], when: "EVERY TUESDAY", max: 16, prize: "250 BC", tone: "cyan" as const, cover: "ufc5" },
-  { game: "MORTAL KOMBAT 1", title: "MORTAL KOMBAT 1 WEEKLY TOURNAMENT", blurb: "Choose your fighter, finish your rivals and claim victory.", tags: ["Fighting", "Action", "1v1"], when: "EVERY THURSDAY", max: 16, prize: "250 BC", tone: "gold" as const, cover: "mk1" },
+  { game: "FC 26", title: "FC 26 WEEKLY TOURNAMENT", blurb: "Show your skills, compete with other players and become this week's champion.", tags: ["Football", "Sports", "1v1"], when: "EVERY SATURDAY", max: 32, prize: "300 BC", tone: "purple" as const, cover: "fc26" },
+  { game: "UFC 5", title: "UFC 5 WEEKLY TOURNAMENT", blurb: "Step into the octagon and prove you are the best.", tags: ["Fighting", "Sports", "1v1"], when: "EVERY TUESDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "ufc5" },
+  { game: "MORTAL KOMBAT 1", title: "MORTAL KOMBAT 1 WEEKLY TOURNAMENT", blurb: "Choose your fighter, finish your rivals and claim victory.", tags: ["Fighting", "Action", "1v1"], when: "EVERY THURSDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "mk1" },
   { game: "TEKKEN 8", title: "TEKKEN 8 WEEKLY TOURNAMENT", blurb: "Fast fights, high skills and iron-clad action are guaranteed.", tags: ["Fighting", "Action", "1v1"], when: "EVERY FRIDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "tekken8" },
 ];
 
@@ -75,5 +75,5 @@ export const PROFILE_TABS = [
   { id: "security", en: "Security" },
 ] as const;
 
-export const OSM =
-  "https://www.openstreetmap.org/export/embed.html?bbox=33.88%2C35.275%2C33.93%2C35.31&layer=mapnik&marker=35.292%2C33.905";
+export const GOOGLE_MAPS =
+  "https://www.google.com/maps/search/?api=1&query=Hotel%20VistaMare%2C%20%C4%B0skele%2C%20Long%20Beach%2C%20Cyprus";

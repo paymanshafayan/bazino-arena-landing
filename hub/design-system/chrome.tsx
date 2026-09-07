@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { HubAvatar } from "./Avatar";
 import { HubIcon } from "./icons";
-import { NAV } from "../theme/data";
+import { GOOGLE_MAPS, NAV } from "../theme/data";
 import { tx, useHub, type Lang } from "../theme/HubContext";
 import { AuthModal, HoursModal } from "../theme/Modals";
 import "./hub.css";
@@ -103,10 +103,10 @@ export function HubFooter() {
     <footer className="hub-footer">
       <Link href="/hub" className="hub-foot-logo"><b>BAZINO</b><small>GAMING CLUB</small></Link>
       <div className="hub-vdiv" />
-      <Link href="/hub/contact" className="hub-foot-item">
+      <a href={GOOGLE_MAPS} target="_blank" rel="noreferrer" className="hub-foot-item">
         <span className="hub-fic pink"><HubIcon.Pin size={16} /></span>
         <span>Iskele, Long Beach<br /><b>Hotel VistaMare</b></span>
-      </Link>
+      </a>
       <button className="hub-foot-item" type="button" onClick={() => setHoursOpen(true)}>
         <span className="hub-fic red"><HubIcon.Clock size={16} /></span>
         <span>{tx(lang, "OPEN")}<br /><b>11:00 – 23:50</b></span>

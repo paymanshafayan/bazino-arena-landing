@@ -52,7 +52,7 @@ hub/
 | `/hub/shop` `/hub/food` | Coming Soon (صف ادمین در یادداشت) |
 | `/hub/club` `/hub/blog` `/hub/chat` | قابلیت پورتال در ناو |
 | `/hub/profile` | ۹ تب پورتال |
-| `/hub/contact` | OSM embed |
+| `/hub/contact` | کارت موقعیت (بدون نقشه) + لینک Google Maps |
 | فوتر ساعت | پاپ‌آپ روزبه‌روز |
 | ورود | OTP دمو (`123456`) + تب رمز |
 
