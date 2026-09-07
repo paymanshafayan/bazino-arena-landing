@@ -11,6 +11,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import PortalPage from "./pages/PortalPage";
 import BracketDemo from "../../hub/bracket-demo/BracketDemo";
+import HubKit from "../../hub/design-system/KitPage";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];

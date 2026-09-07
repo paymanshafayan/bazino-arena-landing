@@ -11,6 +11,9 @@
 ```
 hub/
 ├── README.md                 ← همین فایل
+├── design-system/            ← ⭐ زبان بصری مشترک همهٔ صفحات Hub (توکن، NeonWire، هدر/فوتر/کارت)
+│   └── README.md             ← نحوهٔ فراخوانی NeonWire و بقیهٔ primitives
+├── DESIGN-PLAN-brackets.md   ← پلن تشابه ساختاری صفحه براکت
 ├── bracket-demo/             ← دموی صفحه براکت (React/TSX) — مسیر live: /brackets
 │   ├── BracketDemo.tsx
 │   ├── bracket-demo.css      ← سیستم طراحی نئونی (پالت استخراج‌شده از پیکسل‌های مرجع)
