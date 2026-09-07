@@ -10,7 +10,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import PortalPage from "./pages/PortalPage";
-import BracketDemo from "./pages/BracketDemo";
+import BracketDemo from "../../hub/bracket-demo/BracketDemo";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];

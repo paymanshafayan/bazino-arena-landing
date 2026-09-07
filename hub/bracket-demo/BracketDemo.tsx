@@ -1,5 +1,12 @@
 import { useState } from "react";
+import fc26 from "./covers/fc26.png";
+import ufc5 from "./covers/ufc5.png";
+import mk1 from "./covers/mk1.png";
+import tekken8 from "./covers/tekken8.png";
 import "./bracket-demo.css";
+
+/* game cover key-art (demo quality — real files supplied by admin in production) */
+const COVERS: Record<string, string> = { fc26, ufc5, mk1, tekken8 };
 
 /* ─────────────────────────────────────────────────────────────────────────
    BAZINO — TOURNAMENT BRACKETS (frontend fidelity demo)
@@ -175,7 +182,7 @@ export default function BracketDemo() {
           <div className="bk-game-list">
             {GAMES.map((g, i) => (
               <button key={i} className={`bk-game ${sel === i ? "sel" : ""}`} onClick={() => setSel(i)}>
-                <img src={`/src/demo/covers/${g.cover}.png`} alt={g.name} />
+                <img src={COVERS[g.cover]} alt={g.name} />
                 <span className="bk-game-meta">
                   <b>{g.name}</b>
                   <small>{g.title}</small>
@@ -190,7 +197,7 @@ export default function BracketDemo() {
 
         <section className="bk-panel">
           <div className="bk-panel-head">
-            <img src="/src/demo/covers/fc26.png" alt="FC26" className="bk-panel-cover" />
+            <img src={fc26} alt="FC26" className="bk-panel-cover" />
             <div className="bk-panel-title">
               <h2>FC26 <em>WEEKLY TOURNAMENT #13</em></h2>
               <div className="bk-panel-info">
