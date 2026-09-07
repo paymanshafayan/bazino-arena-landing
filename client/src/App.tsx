@@ -10,6 +10,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import PortalPage from "./pages/PortalPage";
+import BracketDemo from "./pages/BracketDemo";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
@@ -17,6 +18,7 @@ const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournamen
 function Router() {
   return (
     <Switch>
+      <Route path="/brackets" component={BracketDemo} />
       <Route path="/" component={Home} />
       {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
       <Route path="/404" component={NotFound} />

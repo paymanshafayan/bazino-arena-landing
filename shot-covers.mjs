@@ -1,0 +1,12 @@
+import { createRequire } from 'module';
+const require = createRequire('/home/user/bazino-arena-landing/');
+const puppeteer = require('puppeteer-core');
+const chromium = (await import('@sparticuz/chromium')).default;
+const exe = await chromium.executablePath();
+const b = await puppeteer.launch({ executablePath: exe, args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--allow-file-access-from-files'], headless: true, defaultViewport: { width: 1400, height: 320 } });
+const p = await b.newPage();
+await p.goto('file:///home/user/bazino-arena-landing/previews-src/covers.html', { waitUntil: 'networkidle0', timeout: 30000 });
+await new Promise(r => setTimeout(r, 1000));
+await p.screenshot({ path: '/home/user/bazino-arena-landing/previews/game-covers.png' });
+console.log('covers done');
+await b.close();
