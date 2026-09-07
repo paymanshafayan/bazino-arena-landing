@@ -11,6 +11,9 @@
 ```
 hub/
 ├── README.md                 ← همین فایل
+├── design-system/            ← ⭐ زبان بصری مشترک همهٔ صفحات Hub (توکن، NeonWire، هدر/فوتر/کارت)
+│   └── README.md             ← نحوهٔ فراخوانی NeonWire و بقیهٔ primitives
+├── DESIGN-PLAN-brackets.md   ← پلن تشابه ساختاری صفحه براکت
 ├── bracket-demo/             ← دموی صفحه براکت (React/TSX) — مسیر live: /brackets
 │   ├── BracketDemo.tsx
 │   ├── bracket-demo.css      ← سیستم طراحی نئونی (پالت استخراج‌شده از پیکسل‌های مرجع)
@@ -32,6 +35,29 @@ hub/
     └── compare-side-by-side.png    ← مرجع بالا / ما پایین
 ```
 
+## قالب کامل Hub (دمو)
+
+مسیر زنده: **`/hub`** — پوستهٔ Hasti + تصمیم‌های ۱۶گانه.
+
+| مسیر | صفحه |
+|---|---|
+| `/hub` | هوم هاب: اسلایدر + کاشی ماژول‌ها |
+| `/hub/games` | KIDS / ADULTS / REQUESTS + رزرو تو در تو |
+| `/hub/events` | ۵ بخش: Weekly / Special / Season / Brackets / Register |
+| `/hub/events/weekly` | کارت‌های افقی هفتگی |
+| `/hub/events/special` | رویداد ویژه (اطلاعات) |
+| `/hub/events/season` | ۴ فصل، امتیاز ۵/۲/۱ و ۱۰/۴/۲ |
+| `/hub/events/brackets` | براکت ۳۲ نفره |
+| `/hub/events/register` | ثبت‌نام تورنمنت + PayTR دمو |
+| `/hub/shop` `/hub/food` | Coming Soon (صف ادمین در یادداشت) |
+| `/hub/club` `/hub/blog` `/hub/chat` | قابلیت پورتال در ناو |
+| `/hub/profile` | ۹ تب پورتال |
+| `/hub/contact` | کارت موقعیت (بدون نقشه) + لینک Google Maps |
+| فوتر ساعت | پاپ‌آپ روزبه‌روز |
+| ورود | OTP دمو (`123456`) + تب رمز |
+
+بدون Gallery / Prices / About. زبان EN/TR/FA/RU.
+
 ## اجرا
 
 ```bash
@@ -52,12 +78,10 @@ python3 hub/analysis/compare.py hub/reference/brackets-ref-crop.png hub/previews
 
 ## وضعیت (2026-09-07)
 
-- نسخه v2 براکت ساخته و ۵ دور با متریک پیکسلی تیون شد (جزئیات در reference-notes.md).
-- **حکم کاربر: تشابه ۵۰-۶۰٪. مشکل اصلی «ساختار صفحه و شکل اجزاء» است، نه رنگ‌بندی** (پالت الان نزدیک است).
-- ادامه طراحی نیازمند جلسه‌ای با **قابلیت دید تصویر** است — مقایسه چشمی `brackets-ref-crop.png` با خروجی،
-  و بازسازی آناتومی کامپوننت‌ها (شکل کارت‌ها، تایتل، تب‌ها، ریتم فاصله‌ها) تا حد ≥۹۰٪.
-- صفحاتی که هنوز ساخته نشده: Home، Events hub، Season Ranking، Weekly/Special لیست‌ها،
-  Profile، Gallery، Prices، Games، Shop/Food (coming soon)، About، مودال‌های ورود/ثبت‌نام.
-- بعد از تأیید بصری: تبدیل به **قالب نصبی پورتال** — اما توجه: `THEME_REGIONS` فعلی پورتال فقط
-  `home/header/hero/home.*/footer/mobileNav` را دارد؛ صفحات جدید (براکت/رنکینگ/گالری...) نیازمند
-  تغییرات سمت پورتال (ریجن/بک‌اند) هستند که خارج از اختیار ماست و باید با صاحب پورتال هماهنگ شود.
+- دموی قالب کامل Hub روی `/hub` مطابق PDF + تصمیم‌های ۱۶گانه ساخته شد (`hub/theme/`).
+- براکت زنده روی `/brackets` و `/hub/events/brackets`.
+- فیکس‌های سشن ۰۱a07c28: خطای tsc (NeonWire)، sticky footer (حذف باند خالی زیر فوتر)،
+  **حذف نقشه OSM از Contact** (PDF §6/تصمیم #11 → کارت موقعیت + لینک Google Maps، بدون هیچ iframe)،
+  رنگ کارت‌های Events مطابق §22 PDF، حذف «VIEW DETAIL» از Weekly.
+- تبدیل به قالب نصبی پورتال و اتصال به `layoutMode: 'hub'` کار بعدی سمت پورتال است —
+  پرامپت کامل: `portal-prompt-hub-theme-fa.md` در ریشه‌ی ریپو.
