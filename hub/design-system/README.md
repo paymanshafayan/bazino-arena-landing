@@ -20,6 +20,20 @@ hub/design-system/
 
 ---
 
+## Neon box — بوردر گرادیان نئون کارت‌ها
+
+کلاس استاندارد همهٔ کارت/باکس/چیپ:
+
+```html
+<div class="hub-neon-box hub-neon-box--cyan">…</div>
+```
+
+تون‌ها: `--cyan` `--magenta` `--gold` `--green` `--purple`
+
+`.hub-mcard` / `.hub-game` / `.hub-panel` / `.hub-side` / `.hub-tab` این بوردر را خودکار می‌گیرند. صفحهٔ جدید فقط `hub-neon-box` بگذارد.
+
+---
+
 ## NeonWire — خطوط اتصال نئونی
 
 سه شکل:

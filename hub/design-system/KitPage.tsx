@@ -3,10 +3,10 @@ import { HubPage, MatchCard, NeonLink, NeonWireLayer, WirePort } from "./index";
 function Box({ id, label, tone }: { id: string; label: string; tone: string }) {
   return (
     <WirePort id={id}>
-      <div style={{
+      <div className="hub-neon-box" style={{
         width: 120, height: 52, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center",
-        border: `1.5px solid ${tone}`, color: "#e7ecff", fontFamily: "Orbitron, sans-serif", fontSize: 11,
-        background: "rgba(12,18,36,0.9)", boxShadow: `0 0 16px ${tone}55`,
+        color: "#e7ecff", fontFamily: "Orbitron, sans-serif", fontSize: 11,
+        background: "rgba(12,18,36,0.9)",
       }}>{label}</div>
     </WirePort>
   );

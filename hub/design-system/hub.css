@@ -1,5 +1,6 @@
 @import "./tokens.css";
 @import "./neon-wire.css";
+@import "./neon-box.css";
 
 /* ═══════════════════════════════════════════════════════════════════
    HUB COMPONENT STYLES — header, hero, tabs, cards, champion, footer.
@@ -49,10 +50,8 @@
 .hub-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(8, 16, 36, 0.7);
-  border: 1px solid rgba(60, 202, 245, 0.45);
   color: #cdd8ff; border-radius: var(--hub-radius-pill);
   padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer;
-  box-shadow: 0 0 12px rgba(60, 202, 245, 0.12);
 }
 .hub-chip svg { color: var(--hub-cyan); }
 .hub-bell { position: relative; background: none; border: 0; cursor: pointer; color: var(--hub-cyan); }
@@ -63,7 +62,6 @@
 .hub-user {
   display: flex; align-items: center; gap: 8px; cursor: pointer;
   padding: 4px 10px 4px 4px; border-radius: var(--hub-radius-pill);
-  border: 1px solid rgba(60, 202, 245, 0.4);
   background: rgba(8, 16, 36, 0.7);
 }
 .hub-user i { color: var(--hub-cyan); font-style: normal; font-size: 11px; }
@@ -141,8 +139,6 @@
   display: flex; align-items: center; gap: 12px; min-width: 340px; text-align: left;
   padding: 10px 18px; border-radius: 14px; cursor: pointer;
   background: rgba(10, 16, 36, 0.82); color: #cdd8ff;
-  border: 1.5px solid rgba(90, 140, 230, 0.4);
-  box-shadow: 0 0 18px rgba(60, 90, 220, 0.12) inset;
   transition: all 0.18s;
 }
 .hub-tab-ic {
@@ -154,16 +150,12 @@
 .hub-tab-tx b { font-size: 13px; letter-spacing: 0.14em; }
 .hub-tab-tx small { font-size: 11px; color: #7f8fc0; font-family: var(--hub-font-body); font-weight: 600; }
 .hub-tab.is-magenta.is-on {
-  border-color: transparent;
   background: linear-gradient(90deg, #c44ad8, #8b3adf);
-  box-shadow: 0 0 22px rgba(218, 106, 210, 0.45);
   color: #fff;
 }
 .hub-tab.is-magenta.is-on .hub-tab-tx small { color: rgba(255, 255, 255, 0.78); }
 .hub-tab.is-magenta .hub-tab-ic { color: #fff; background: rgba(255, 255, 255, 0.12); }
 .hub-tab.is-cyan.is-on {
-  border-color: var(--hub-cyan);
-  box-shadow: 0 0 22px rgba(60, 202, 245, 0.35);
   background: linear-gradient(90deg, rgba(60, 202, 245, 0.18), rgba(40, 90, 255, 0.08));
 }
 .hub-tab.is-cyan .hub-tab-ic { color: var(--hub-cyan); }
@@ -172,9 +164,7 @@
 .hub-body { display: flex; gap: 14px; padding: 16px 14px 14px; align-items: stretch; }
 .hub-side {
   width: 268px; flex-shrink: 0; background: var(--hub-panel);
-  border: 1px solid rgba(120, 80, 255, 0.35); border-left: 3px solid rgba(60, 202, 245, 0.55);
   border-radius: var(--hub-radius-lg); padding: 14px 12px;
-  box-shadow: 0 0 22px rgba(110, 50, 255, 0.14);
 }
 .hub-side h3 { margin: 0; font-size: 14px; letter-spacing: 0.12em; color: #fff; }
 .hub-side-note { font-size: 11px; color: var(--hub-muted); margin: 3px 0 10px; }
@@ -182,19 +172,24 @@
 .hub-filters button {
   font-family: var(--hub-font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
   padding: 6px 10px; border-radius: 8px; cursor: pointer; white-space: nowrap;
-  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(120, 140, 255, 0.3); color: #aab8ee;
+  background: rgba(255, 255, 255, 0.05); color: #aab8ee;
 }
-.hub-filters button.is-on { border-color: var(--hub-purple); color: #fff; box-shadow: 0 0 12px rgba(180, 56, 255, 0.45); background: rgba(180, 56, 255, 0.18); }
-.hub-filters button.is-on.is-green { border-color: var(--hub-green); color: #04140b; background: var(--hub-green); box-shadow: 0 0 14px rgba(34, 255, 136, 0.55); }
+.hub-filters button.is-on { color: #fff; background: rgba(180, 56, 255, 0.18); }
+.hub-filters button.is-on.is-green { color: #04140b; background: var(--hub-green); }
 
 .hub-game-list { display: flex; flex-direction: column; gap: 8px; max-height: 520px; overflow-y: auto; padding-right: 2px; }
 .hub-game {
   position: relative; display: flex; align-items: center; gap: 10px; text-align: left;
   background: linear-gradient(90deg, rgba(20, 28, 52, 0.9), rgba(13, 20, 40, 0.7));
-  border: 1px solid rgba(90, 120, 220, 0.28); border-radius: 10px; padding: 7px 8px; cursor: pointer;
+  border-radius: 10px; padding: 7px 8px; cursor: pointer;
 }
-.hub-game:hover { border-color: rgba(180, 120, 255, 0.5); }
-.hub-game.is-on { border-color: var(--hub-magenta); box-shadow: 0 0 16px rgba(218, 106, 210, 0.4); background: linear-gradient(90deg, rgba(180, 56, 255, 0.22), rgba(60, 40, 140, 0.2)); }
+.hub-game:hover {
+  --hub-box-from: #ffe1fb;
+  --hub-box-mid: #da6ad2;
+  --hub-box-to: #7a3adf;
+  --hub-box-glow: #da6ad2;
+}
+.hub-game.is-on { background: linear-gradient(90deg, rgba(180, 56, 255, 0.22), rgba(60, 40, 140, 0.2)); }
 .hub-game img { width: 86px; height: 48px; object-fit: cover; border-radius: 6px; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.12); }
 .hub-game-meta { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; flex: 1; padding-right: 14px; }
 .hub-game-meta b { font-size: 12px; color: #fff; }
@@ -210,8 +205,8 @@
 /* ── PANEL ───────────────────────────────────────────────────────── */
 .hub-panel {
   flex: 1; min-width: 0; background: var(--hub-panel);
-  border: 1px solid rgba(60, 180, 255, 0.4); border-radius: var(--hub-radius-lg);
-  padding: 8px; box-shadow: 0 0 26px rgba(40, 120, 255, 0.16);
+  border-radius: var(--hub-radius-lg);
+  padding: 8px;
   display: flex; flex-direction: column;
 }
 .hub-panel-banner {
