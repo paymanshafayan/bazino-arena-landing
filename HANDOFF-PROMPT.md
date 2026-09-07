@@ -1,5 +1,18 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
+> **به‌روزرسانی 2026-09-07 (پایان فاز Hub — دموی کامل + فیکس‌ها + پرامپت پورتال):** در چت قبلی
+> (برنچ `arena/01a07aac`) قالب کامل Hub طبق PDF + ۱۶ تصمیم ساخته شده بود (design-system + ۱۷ صفحه +
+> ۹ اسکرین‌شات). در این سشن (`arena/01a07c28-bazino-arena-landing`) آن کار merge شد و: (۱) خطای tsc
+> (TS2802 در `NeonWire.tsx`) فیکس شد؛ (۲) باگ باند خالی زیر فوتر در صفحه‌های کوتاه فیکس شد (sticky
+> footer)؛ (۳) **نقشه OSM از صفحه Contact حذف شد طبق PDF §6 و تصمیم #11** — جای آن کارت موقعیت (پین +
+> آدرس + دکمه‌ی OPEN IN GOOGLE MAPS) و فوتر موقعیت مستقیم گوگل‌مپس را باز می‌کند؛ (۴) رنگ کارت‌های
+> Events مطابق §22 PDF تنظیم شد (weekly=بنفش، special=صورتی، season=سبز، bracket=طلایی/نارنجی) و
+> دکمه‌ی «VIEW DETAIL» از کارت‌های Weekly حذف شد (PDF: بدون صفحه‌ی جزئیات)؛ (۵) همه‌ی ۱۶ تصمیم روی کد
+> cross-check شد و پرامپت کامل ایجنت پورتال برای نصب قالب نوشت: **`portal-prompt-hub-theme-fa.md`**.
+> جزئیات کامل در بخش ۸ همین سند. ⚠️ نکته‌ی عملیاتی: ساندباکس یک‌بار بین چت‌ها re-clone شد و
+> node_modules/تاریخچه پاک شد — همه‌چیز بازیابی و روی همین برنچ دوباره کامیت/پوش شد؛ **برنچ فعلی
+> منبع حقیقت است.**
+>
 > **به‌روزرسانی 2026-09-07 (فاز جدید: طراحی «Hub» بر اساس مرجع Hasti):** کاربر فایل PDF مرجع
 > «راهنمای-قالب-هاب.pdf» (از ریپو پورتال، برنچ `arena/01a07603`، ۲۱ صفحه، UI انگلیسی دارک/نئون) را داد و
 > پرسید آیا می‌توانیم قالب را با ≥۹۰٪ تشابه بسازیم. برای اثبات، مهم‌ترین صفحه — **Tournament Brackets** —
@@ -285,3 +298,41 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
   محیط را با دستورهای `hub/README.md` بالا بیاورید، و **فقط با قابلیت ویژن** ادامه دهید.
 - تصاویر برای مقایسه چشمی: مرجع = `hub/reference/brackets-ref-crop.png` · خروجی ما = `hub/previews/bracket-full.png` ·
   مقایسه کنار‌هم = `hub/previews/compare-side-by-side.png`.
+
+---
+
+## ۸) فاز Hub — وضعیت نهایی دموی کامل (2026-09-07، برنچ `arena/01a07c28-bazino-arena-landing`)
+
+### ۸-۱) چه کارهایی انجام شد
+
+1. **دموی کامل Hub** (چت قبلی، برنچ `arena/01a07aac` @ `0e1f60a` — در این سشن merge شد):
+   - `hub/design-system/`: زبان بصری مشترک (توکن‌های CSS، NeonWire SVG، هدر/فوتر/کارت‌ها، آیکن‌ها، Avatar، ویجت‌ها، KitPage روی `/hub/kit`)
+   - `hub/theme/`: ۱۷ صفحه — هوم (اسلایدر+۷ کاشی)، Games (KIDS/ADULTS/REQUESTS + رزرو داخل صفحه + PayTR دمو)، Events hub (۵ بخش)، Weekly/Special/Season/Register، Braکت ۳۲نفره، Shop/Food (Coming Soon)، Club/Blog/Chat، Profile (۹ تب)، Contact، Rules، 404
+   - `hub/theme/HubContext.tsx`: سوییچ ۴ زبان (EN/TR/FA/RU)، مودال‌های ورود (OTP دمو `123456` + تب رمز) و پاپ‌آپ ساعات روزبه‌روز
+   - روتینگ در `client/src/App.tsx`: `/hub` و زیرمسیرها + `/hub/kit`؛ **پورتال/لندینگ اصلی دست‌نخورده**
+   - ۹ اسکرین‌شات مرجع خروجی: `hub/previews/theme-*.png`
+   - سند تصمیم‌ها: `hub/PORTAL-PDF-DECISIONS.md` (۱۶ تصمیم) — همه‌ی ۱۶ مورد روی کد cross-check شد
+2. **فیکس‌های این سشن:**
+   - `NeonWire.tsx`: خطای TS2802 (اسپرید روی Map iterator) → `Array.from(...)` — `npm run check` سبز
+   - `tokens.css` + `hub.css`: **sticky footer** — فوتر به پایین ۱۰۰vh می‌چسبد و باند خالی زیر فوتر در صفحه‌های کوتاه (home/contact) حذف شد
+   - **حذف نقشه (PDF §6 + تصمیم #11):** iframe OSM از `/hub/contact` حذف شد → کارت موقعیت (پین نئونی + «İskele, Long Beach / Hotel VistaMare» + دکمه‌ی OPEN IN GOOGLE MAPS)؛ آیتم لوکیشن فوتر مستقیم `google.com/maps/search/?api=1&query=…` را باز می‌کند؛ `OSM` از `data.ts` حذف و با `GOOGLE_MAPS` جایگزین شد — **هیچ iframe در قالب Hub نیست**
+   - **رنگ کارت‌های Events (PDF §22):** weekly=بنفش (was magenta)، special=صورتی (was cyan)، season=سبز (ثبت)، bracket=طلایی/نارنجی (ثبت)، register=فیروزه‌ای (جابه‌جا تا تکرار نشود)
+   - **Weekly:** دکمه‌ی «VIEW DETAIL →» حذف شد (PDF: «هیچ دکمه‌ی View Details و هیچ صفحه‌ی جزئیات دیگری بعد از کارت وجود ندارد»)
+   - ممیزی: HALL OF FAME جایی نیست؛ کارت‌های Special فقط اطلاع‌رسانی؛ متن Shop «Something exciting is coming to BAZINO» مطابق PDF
+3. **خویشایندانه‌ها (عمدا طبق ۱۶ تصمیم، خلاف PDF باقی ماندند):** پروفایل ۹تبه (تصمیم #9)، Events ۵بخشی با Register (#3)، ورود OTP (#10)، چهارزبان (#14)، PayTR (#15)
+4. **مستندسازی:** `hub/README.md` (جدول مسیرها + وضعیت)، همین سند، و **`portal-prompt-hub-theme-fa.md`** — پرامپت کامل ایجنت پورتال (فاز A: قابلیت layout:hub + regionهای صفحه‌ای + باگ پارسر ZIP + props واقعی؛ فاز B: تبدیل hub/ به `bazino-hub-theme.zip` با ES5/فونت باندل/صفر درخواست خارجی/۴زبان + ۸ معیار پذیرش QA)
+
+### ۸-۲) وضعیت فعلی
+
+- **برنچ:** `arena/01a07c28-bazino-arena-landing` — همه‌چیز commit و push شده (آخرین: `810e73b`)
+- **تست:** `tsc --noEmit` سبز · `vite build` سبز · dev server روی پورت 3000 (نصب deps: `npm i --legacy-peer-deps` — ERESOLVE موجود از main برای `@builder.io/vite-plugin-jsx-loc`)
+- **دمو زنده:** `/hub` (و `/brackets`)
+- **محدودیت ساندباکس:** عکس‌برداری headless ممکن نیست (CDNهای دانلود مرورگر + OSM/Google مسدودند) — QA بصری با اسکرین‌شات‌های کاربر یا روی محیطی با مرورگر واقعی
+
+### ۸-۳) چه کارهایی باقی مانده (به ترتیب)
+
+1. **اجرای پرامپت پورتال** (`portal-prompt-hub-theme-fa.md`): فاز A (تغییرات پورتال: regionهای hub.* + layout:hub + props واقعی + فیکس پارسر ZIP) و فاز B (بیلد `bazino-hub-theme.zip` v1.0.0) — **تماماً سمت پورتال** طبق قانون پروژه
+2. **QA بصری با ویژن:** مقایسه‌ی تم نصب‌شده روی پورتال با `hub/previews/theme-*.png` و PDF (به‌ویژه براکت ≥۹۰٪ ساختاری — درس بخش ۷-۳)
+3. **اتصال داده‌های واقعی:** براکت SSE، لیدربرورد فصل، رزرو/PayTR، چت/بلاگ/کلاب — در جریان فاز B
+4. **مرج برنچ به main** (وقتی کاربر تأیید کرد): PR از `arena/01a07c28-bazino-arena-landing`
+5. اختیاری: اگر تیم پورتال خواست ZIP از همین ریپو بیلد شود → اسکریپت `build-hub-zip.sh` (منطق `build-theme-zip.sh`: minify ES5 + sanity regions + `zip -D`)

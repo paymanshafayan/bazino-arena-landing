@@ -80,4 +80,8 @@ python3 hub/analysis/compare.py hub/reference/brackets-ref-crop.png hub/previews
 
 - دموی قالب کامل Hub روی `/hub` مطابق PDF + تصمیم‌های ۱۶گانه ساخته شد (`hub/theme/`).
 - براکت زنده روی `/brackets` و `/hub/events/brackets`.
-- تبدیل به قالب نصبی پورتال و اتصال به `layoutMode: 'hub'` کار بعدی سمت پورتال است.
+- فیکس‌های سشن ۰۱a07c28: خطای tsc (NeonWire)، sticky footer (حذف باند خالی زیر فوتر)،
+  **حذف نقشه OSM از Contact** (PDF §6/تصمیم #11 → کارت موقعیت + لینک Google Maps، بدون هیچ iframe)،
+  رنگ کارت‌های Events مطابق §22 PDF، حذف «VIEW DETAIL» از Weekly.
+- تبدیل به قالب نصبی پورتال و اتصال به `layoutMode: 'hub'` کار بعدی سمت پورتال است —
+  پرامپت کامل: `portal-prompt-hub-theme-fa.md` در ریشه‌ی ریپو.
