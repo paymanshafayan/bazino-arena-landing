@@ -14,7 +14,7 @@ function Box({ id, label, tone }: { id: string; label: string; tone: string }) {
 
 export default function KitPage() {
   return (
-    <HubPage activeNav="ABOUT">
+    <HubPage activeNav="HOME">
       <div style={{ padding: "28px 32px 48px", maxWidth: 1100, margin: "0 auto" }}>
         <h1 className="hub-display" style={{ fontSize: 22, margin: "0 0 8px" }}>HUB DESIGN KIT</h1>
         <p style={{ color: "#7f8fc0", marginBottom: 28 }}>

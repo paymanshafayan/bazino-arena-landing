@@ -12,19 +12,28 @@ import Home from "./pages/Home";
 import PortalPage from "./pages/PortalPage";
 import BracketDemo from "../../hub/bracket-demo/BracketDemo";
 import HubKit from "../../hub/design-system/KitPage";
+import HubTheme from "../../hub/theme/HubTheme";
+import { HubProvider } from "../../hub/theme/HubContext";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/brackets" component={BracketDemo} />
-      <Route path="/" component={Home} />
-      {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
-    </Switch>
+    <HubProvider>
+      <Switch>
+        <Route path="/brackets" component={BracketDemo} />
+        <Route path="/hub/kit" component={HubKit} />
+        <Route path="/hub/events/brackets" component={BracketDemo} />
+        <Route path="/hub/:a/:b" component={HubTheme} />
+        <Route path="/hub/:a" component={HubTheme} />
+        <Route path="/hub" component={HubTheme} />
+        <Route path="/" component={Home} />
+        {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </HubProvider>
   );
 }
 

@@ -1,11 +1,16 @@
 import type { ReactNode } from "react";
+import { Link, useLocation } from "wouter";
 import { HubAvatar } from "./Avatar";
-import { HubIcon, NAV } from "./icons";
+import { HubIcon } from "./icons";
+import { NAV } from "../theme/data";
+import { tx, useHub, type Lang } from "../theme/HubContext";
+import { AuthModal, HoursModal } from "../theme/Modals";
 import "./hub.css";
+import "../theme/theme.css";
 
 export function HubLogo({ size = 28 }: { size?: number }) {
   return (
-    <div className="hub-logo">
+    <Link href="/hub" className="hub-logo">
       <svg viewBox="0 0 48 32" width={size + 14} height={size} className="hub-logo-pad" aria-hidden="true">
         <defs>
           <linearGradient id="hub-logo-g" x1="0" y1="0" x2="1" y2="1">
@@ -19,53 +24,101 @@ export function HubLogo({ size = 28 }: { size?: number }) {
         </g>
       </svg>
       <span className="hub-logo-word"><b>BAZINO</b><small>GAMING CLUB</small></span>
-    </div>
+    </Link>
   );
 }
 
-export function HubHeader({ active = "EVENTS" }: { active?: string }) {
+function activeFromPath(path: string) {
+  if (path.startsWith("/hub/games")) return "GAMES";
+  if (path.startsWith("/hub/events") || path.startsWith("/brackets")) return "EVENTS";
+  if (path.startsWith("/hub/shop")) return "SHOP";
+  if (path.startsWith("/hub/food")) return "FOOD & DRINKS";
+  if (path.startsWith("/hub/club")) return "CLUB";
+  if (path.startsWith("/hub/blog")) return "BLOG";
+  if (path.startsWith("/hub/chat")) return "CHAT";
+  if (path === "/hub" || path === "/hub/") return "HOME";
+  return "";
+}
+
+export function HubHeader({ active }: { active?: string }) {
+  const [loc] = useLocation();
+  const { lang, setLang, user, setAuthOpen, mobileNav, setMobileNav } = useHub();
+  const on = active ?? activeFromPath(loc);
+  const langs: Lang[] = ["en", "tr", "fa", "ru"];
+
   return (
-    <header className="hub-header">
-      <HubLogo />
-      <nav className="hub-nav">
-        {NAV.map((n, i) => (
-          <a key={`${n}-${i}`} className={n === active ? "is-on" : ""}>{n}</a>
+    <>
+      <header className="hub-header">
+        <HubLogo />
+        <nav className="hub-nav">
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href} className={n.id === on ? "is-on" : ""}>
+              {tx(lang, n.key)}
+            </Link>
+          ))}
+        </nav>
+        <div className="hub-head-right">
+          <div className="hub-chip">
+            <HubIcon.Globe size={14} /> {lang.toUpperCase()} <HubIcon.Chevron size={12} />
+            <div className="hub-lang-menu" role="list">
+              {langs.map((l) => (
+                <button key={l} type="button" className={l === lang ? "is-on" : ""} onClick={() => setLang(l)}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button className="hub-bell" type="button" aria-label="notifications">
+            <HubIcon.Bell size={18} /><span className="hub-dot" />
+          </button>
+          {user ? (
+            <Link href="/hub/profile" className="hub-user">
+              <HubAvatar name={user.displayName} size={32} ring="cyan" />
+              <span className="hub-user-meta"><b>{user.displayName}</b><small>{user.tag}</small></span>
+              <i>▾</i>
+            </Link>
+          ) : (
+            <>
+              <button className="hub-join hub-neon-box hub-neon-box--magenta" type="button" onClick={() => setAuthOpen(true, "otp")}>{tx(lang, "JOIN")}</button>
+              <button className="hub-login-btn hub-neon-box" type="button" onClick={() => setAuthOpen(true, "otp")}>{tx(lang, "LOGIN")}</button>
+            </>
+          )}
+          <button className="hub-burger" type="button" onClick={() => setMobileNav(!mobileNav)} aria-label="menu">☰</button>
+        </div>
+      </header>
+      <nav className={`hub-mobile-nav ${mobileNav ? "is-on" : ""}`}>
+        {NAV.map((n) => (
+          <Link key={n.href} href={n.href} className={n.id === on ? "is-on" : ""} onClick={() => setMobileNav(false)}>
+            {tx(lang, n.key)}
+          </Link>
         ))}
       </nav>
-      <div className="hub-head-right">
-        <button className="hub-chip" type="button"><HubIcon.Globe size={14} /> TR <HubIcon.Chevron size={12} /></button>
-        <button className="hub-bell" type="button"><HubIcon.Bell size={18} /><span className="hub-dot" /></button>
-        <div className="hub-user">
-          <HubAvatar name="ArmanK" size={32} ring="cyan" />
-          <span className="hub-user-meta"><b>ArmanK</b><small>#BZN1024</small></span>
-          <i>▾</i>
-        </div>
-      </div>
-    </header>
+    </>
   );
 }
 
 export function HubFooter() {
+  const { lang, setHoursOpen } = useHub();
   return (
     <footer className="hub-footer">
-      <div className="hub-foot-logo"><b>BAZINO</b><small>GAMING CLUB</small></div>
+      <Link href="/hub" className="hub-foot-logo"><b>BAZINO</b><small>GAMING CLUB</small></Link>
       <div className="hub-vdiv" />
-      <div className="hub-foot-item">
+      <Link href="/hub/contact" className="hub-foot-item">
         <span className="hub-fic pink"><HubIcon.Pin size={16} /></span>
         <span>Iskele, Long Beach<br /><b>Hotel VistaMare</b></span>
-      </div>
-      <div className="hub-foot-item">
+      </Link>
+      <button className="hub-foot-item" type="button" onClick={() => setHoursOpen(true)}>
         <span className="hub-fic red"><HubIcon.Clock size={16} /></span>
-        <span>OPEN EVERYDAY<br /><b>11:00 – 23:50</b></span>
-      </div>
-      <div className="hub-foot-item">
+        <span>{tx(lang, "OPEN")}<br /><b>11:00 – 23:50</b></span>
+      </button>
+      <a className="hub-foot-item" href="https://wa.me/905391123747" target="_blank" rel="noreferrer">
         <span className="hub-fic green"><HubIcon.Chat size={16} /></span>
-        <span>WHATSAPP<br /><b>+90 539 112 37 47</b></span>
-      </div>
-      <div className="hub-foot-item">
+        <span>{tx(lang, "WHATSAPP")}<br /><b>+90 539 112 37 47</b></span>
+      </a>
+      <a className="hub-foot-item" href="https://instagram.com/bazinopro" target="_blank" rel="noreferrer">
         <span className="hub-fic ig"><HubIcon.Gram size={16} /></span>
-        <span>INSTAGRAM<br /><b>@bazinopro</b></span>
-      </div>
+        <span>{tx(lang, "INSTAGRAM")}<br /><b>@bazinopro</b></span>
+      </a>
       <div className="hub-foot-sign">
         <HubIcon.Crown size={20} />
         More Than a Game
@@ -75,12 +128,16 @@ export function HubFooter() {
   );
 }
 
-export function HubPage({ children, activeNav = "EVENTS" }: { children: ReactNode; activeNav?: string }) {
+export function HubPage({ children, activeNav }: { children: ReactNode; activeNav?: string }) {
+  const { notify } = useHub();
   return (
     <div className="hub-page" dir="ltr">
       <HubHeader active={activeNav} />
       {children}
       <HubFooter />
+      <HoursModal />
+      <AuthModal />
+      {notify && <div className="hub-toast hub-neon-box">{notify}</div>}
     </div>
   );
 }

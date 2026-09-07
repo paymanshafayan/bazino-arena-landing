@@ -61,4 +61,4 @@ export function LaurelTrophy({ size = 56 }: { size?: number }) {
   );
 }
 
-export const NAV = ["HOME", "GAMES", "EVENTS", "GALLERY", "PRICES", "SHOP", "SHOP", "FOOD & DRINKS", "ABOUT", "CONTACT"];
+export const NAV = ["HOME", "GAMES", "EVENTS", "SHOP", "FOOD & DRINKS", "CLUB", "BLOG", "CHAT"];
