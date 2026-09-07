@@ -35,6 +35,54 @@
   var R = SDK.React;
   if (!R) return;
 
+  /* 4.5.5 — shared logout/session helpers.
+     The portal (src/services/authToken.ts) keeps its JWT in localStorage key
+     'bazino.authToken' and attaches it as Authorization: Bearer on every
+     /api/** request; GET /api/user returns the profile while the token lives.
+     4.5.4 only removed 'bazino_token'/'bazino_mock_user' (landing mock keys),
+     so the portal token survived and a refresh logged the user straight back
+     in ("بعد از خروج چون سشن پاک نمیشه دوباره با رفرش لاگین میشه").
+     authStorageKeys() covers every known key; hard navigation to '/' then
+     makes the portal boot as a Guest and the in-memory React user can never
+     resurrect the session (in-memory authToken in the old page is discarded). */
+  function authStorageKeys() {
+    var keys = [
+      'bazino.authToken',
+      'bazino_token',
+      'bazino_mock_user',
+      'bazinoToken',
+      'token',
+      'authToken'
+    ];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (!k) continue;
+        var lk = k.toLowerCase();
+        if (lk.indexOf('bazino') !== -1 && (lk.indexOf('token') !== -1 || lk.indexOf('auth') !== -1)) {
+          if (keys.indexOf(k) === -1) keys.push(k);
+        }
+      }
+    } catch (e) {}
+    return keys;
+  }
+  function clearAuthStorage() {
+    var keys = authStorageKeys();
+    for (var i = 0; i < keys.length; i++) {
+      try { localStorage.removeItem(keys[i]); } catch (e) {}
+    }
+    try { sessionStorage.clear(); } catch (e) {}
+  }
+  function performLogout(redirectHome) {
+    try {
+      fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {}
+    clearAuthStorage();
+    if (redirectHome !== false) {
+      try { window.location.assign('/'); } catch (e2) {}
+    }
+  }
+
   /* 4.5.0 — site-header redesign: solid arena header + language + avatar + profile (portal parity)
      Portal default (branch arena/01a067ac): header sticky h-[70px] bg-dark-card/90 backdrop-blur-xl,
      center NAV_TABS, right: login btn OR avatar+displayName/@username (InitialAvatar hash hue + /profile)
@@ -323,23 +371,7 @@
                 logout2.setAttribute('aria-label', 'Logout');
                 logout2.className = 'bazino-header-icon is-logout';
                 logout2.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-                logout2.addEventListener('click', function () {
-                  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
-                    try { localStorage.removeItem('bazino_token'); } catch (e) {}
-                    try { localStorage.removeItem('bazino_mock_user'); } catch (e2) {}
-                    try { sessionStorage.clear(); } catch (e3) {}
-                    // portal parity: no reload, just update header in place and go home
-                    try {
-                      var av2 = hdr.querySelector('.bazino-avatar');
-                      if (av2) av2.remove();
-                      var link2 = hdr.querySelector('a[data-header-profile-link]');
-                      if (link2) link2.remove();
-                    } catch(e3){}
-                    // trigger re-enhance to show login button
-                    try { window.dispatchEvent(new CustomEvent('bazino:enhanceHeader')); } catch(e4){}
-                    try { if (window.history && window.history.pushState) { window.history.pushState({}, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); } } catch(e5){}
-                  });
-                });
+                logout2.addEventListener('click', function () { performLogout(); });
                 container.appendChild(logout2);
                 return;
               }
@@ -388,16 +420,7 @@
                 lo.className = 'bazino-header-icon is-logout';
                 lo.style.marginLeft = '6px';
                 lo.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-                lo.addEventListener('click', function () {
-                  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
-                    try { localStorage.removeItem('bazino_token'); } catch (e) {}
-                    try { localStorage.removeItem('bazino_mock_user'); } catch (e2) {}
-                    try { sessionStorage.clear(); } catch (e3) {}
-                    try { var avx = hdr.querySelector('.bazino-avatar'); if (avx) avx.remove(); var lk = hdr.querySelector('a[data-header-profile-link]'); if (lk) lk.remove(); } catch(e3){}
-                    try { window.dispatchEvent(new CustomEvent('bazino:enhanceHeader')); } catch(e4){}
-                    try { if (window.history && window.history.pushState) { window.history.pushState({}, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); } } catch(e5){}
-                  });
-                });
+                lo.addEventListener('click', function () { performLogout(); });
                 parent.appendChild(lo);
               }
               link.addEventListener('click', function (ev) { if (ev) ev.preventDefault(); navigateToProfile(); });
@@ -1430,22 +1453,13 @@
       try { window.location.reload(); } catch (e) {}
     }
     function handleLogout() {
-      try {
-        fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).then(function () {
-          try { localStorage.removeItem('bazino_token'); } catch (e2) {}
-          try { localStorage.removeItem('bazino_mock_user'); } catch (e3) {}
-          try { sessionStorage.clear(); } catch (e4) {}
-          setUser(null);
-          // portal parity: no reload, go home
-          try { if (window.history && window.history.pushState) { window.history.pushState({}, '', '/'); try { window.dispatchEvent(new PopStateEvent('popstate')); } catch (e4) { try { window.dispatchEvent(new Event('popstate')); } catch (e5) {} } } } catch (e6) {}
-        }).catch(function () {
-          try { localStorage.removeItem('bazino_token'); } catch (e2) {}
-          setUser(null);
-        });
-      } catch (e) {
-        try { localStorage.removeItem('bazino_token'); } catch (e2) {}
-        setUser(null);
-      }
+      // 4.5.5: clear the real portal JWT ('bazino.authToken' — see
+      // src/services/authToken.ts), not only the landing mock keys, and hard
+      // navigate home so the SPA's in-memory user/token are discarded.
+      // In 4.5.4 the token survived, so a refresh restored the session.
+      setUser(null);
+      try { window.dispatchEvent(new CustomEvent('bazino:logout')); } catch (e) {}
+      performLogout();
     }
     function handleLogin() {
       if (typeof p.onOpenAuth === 'function') { try { p.onOpenAuth(); return; } catch (e) {} }
