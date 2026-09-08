@@ -1,5 +1,18 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
+> **به‌روزرسانی 2026-09-08 (بازبینی PDF × کد با ویژن + دو دور فیکس — برنچ `arena/01a07f75`، تأیید و مرج در
+> `arena/01a080c8`):** در سشن `01a07f75` (ایجنت با قابلیت دید تصویر) کل قالب Hub با PDF مقایسه و اسکرین‌شات‌های
+> قبل/بعد گرفته شد (`hub/REVIEW-2026-09-08-fa.md` + `hub/previews/2026-09-08/{before,after}/`). دور اول: همه‌ی
+> نقص‌های 🔴/🟠 (ناو موبایل، سرریز براکت، فضای مرده، حالت‌های Loading/Empty/Error در `design-system/states.tsx`،
+> داده‌های کارت Weekly طبق §11، شمارش روزهای فصل §13، مهمان به‌صورت پیش‌فرض logout، صفحه‌ی Privacy). دور دوم
+> (دستور کارفرما): (۱) آرت‌ورک سه کارت Games بازطراحی شد (کلاب تاریک/نئون، هماهنگ با قاب سبز/مجنتا/سایان)؛
+> (۲) **PayTR به‌طور کامل از قالب Hub حذف شد** (رزرو Games → `HOLD MY BAY`، Register → `HOLD MY SEAT` + «150 ₺ at the
+> desk»، Wallet، Club، کارت REGISTER) — بند ۱۵ `PORTAL-PDF-DECISIONS.md` یادداشت‌گذاری شد؛ درگاه پورتال دست‌نخورده؛
+> (۳) باگ specificity ریست دکمه‌ها با `:where()`؛ Profile مهمان → «MEMBERS ONLY»؛ وسط‌چین‌شدن رزرو/Register.
+> آن چت قطع شد؛ در این سشن (`01a080c8`) کار روی برنچ `01a07f75` **مستقل بازبینی شد** (diff کد، `grep paytr` = ۰،
+> `npm run check` سبز، بازرسی چشمی اسکرین‌شات‌های after) و بدون تغییر کد fast-forward و مرج شد. جزئیات: بخش ۹.
+> 🟡 باز: بلوری کاورهای ۲۸۸×۱۰۰ (منبع کم‌کیفیت) و کارت چهارم SYSTEMS که در PDF نیست.
+>
 > **به‌روزرسانی 2026-09-07 (پایان فاز Hub — دموی کامل + فیکس‌ها + پرامپت پورتال):** در چت قبلی
 > (برنچ `arena/01a07aac`) قالب کامل Hub طبق PDF + ۱۶ تصمیم ساخته شده بود (design-system + ۱۷ صفحه +
 > ۹ اسکرین‌شات). در این سشن (`arena/01a07c28-bazino-arena-landing`) آن کار merge شد و: (۱) خطای tsc
@@ -336,3 +349,37 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 3. **اتصال داده‌های واقعی:** براکت SSE، لیدربرورد فصل، رزرو/PayTR، چت/بلاگ/کلاب — در جریان فاز B
 4. **مرج برنچ به main** (وقتی کاربر تأیید کرد): PR از `arena/01a07c28-bazino-arena-landing`
 5. اختیاری: اگر تیم پورتال خواست ZIP از همین ریپو بیلد شود → اسکریپت `build-hub-zip.sh` (منطق `build-theme-zip.sh`: minify ES5 + sanity regions + `zip -D`)
+
+---
+
+## ۹) بازبینی PDF × کد با ویژن + فیکس‌ها (2026-09-08، برنچ `arena/01a07f75` → مرج در `arena/01a080c8`)
+
+### ۹-۱) چه شد
+
+سشن `arena/01a07f75-bazino-arena-landing` (ایجنت با قابلیت ویژن) دو کامیت روی `main@f1a318a` گذاشت:
+
+| کامیت | محتوا |
+|---|---|
+| `ab3f64a` | رفع همه‌ی نقص‌های 🔴/🟠 گزارش بازبینی: ناو موبایل، سرریز براکت (`BracketDemo.tsx`)، فضای مرده‌ی زیر محتوا، حالت‌های Loading/Empty/Error (`hub/design-system/states.tsx` → `HubEmpty`/`HubLoading`/…)، کارت Weekly با تاریخ/ساعت/ورودی/جوایز ۱-۲-۳ (`data.ts`، §11)، `SEASON_WINDOWS` + `daysLeft()` (§13)، مهمان پیش‌فرض logout (`HubContext`، §2)، مسیر `/hub/privacy`، اسلاید FC26 با asset جدید `slide-fc26.jpg` |
+| `6cec8ce` | آرت‌ورک سه کارت Games (`games-kids/adults/requests.jpg` + `backgroundPosition` جداگانه `54% 45%` / `30% 50%` / `86% 48%`)؛ حذف کامل PayTR از قالب (۶ نقطه)؛ `.hub-page :where(button)` برای ریست بدون specificity؛ Profile مهمان = `HubEmpty("MEMBERS ONLY")`؛ وسط‌چین رزرو Games و فرم Register |
+
+اسناد آن سشن: **`hub/REVIEW-2026-09-08-fa.md`** (۸ بخش: خلاصه PDF، ماتریس انطباق، نقص‌های بصری، مقایسه براکت با ماکاپ
+`hub/reference/pdf-p14-brackets-mockup.jpg`، قبل/بعد با اندازه‌گیری، دور دوم) · شواهد: `hub/previews/2026-09-08/before/` (۵ شات)
+و `after/` (۱۶ شات) · `hub/previews/theme-*.png` بازتولید شد.
+
+### ۹-۲) تأیید مستقل در این سشن (`arena/01a080c8`)
+
+- `git diff f1a318a..6cec8ce` بررسی شد (۵۶ فایل، +۸۳۶/−۱۵۹) — تغییرات فقط داخل `hub/`؛ پورتال و لندینگ اصلی دست‌نخورده.
+- `grep -rni paytr hub/theme hub/design-system hub/bracket-demo` → **۰ نتیجه** ✅
+- `npm run check` (tsc) سبز ✅
+- بازرسی چشمی (ویژن) `after/desktop-games-cards.png`, `desktop-games-reserve.png`, `desktop-profile-guest.png`:
+  سه کارت با صحنه‌های کلاب و قاب نئونی هماهنگ، دکمه‌ی `HOLD MY BAY` با گرادیان (باگ ریست دکمه واقعاً رفع شده)،
+  متن «Cash or card at the desk — no online payment»، Profile مهمان وسط‌چین با «MEMBERS ONLY» ✅
+- برنچ `01a07f75` روی `01a080c8` **fast-forward** شد (بدون کامیت مرج) و سپس به `main` مرج می‌شود.
+
+### ۹-۳) باقی‌مانده (به ترتیب)
+
+1. 🟡 کاورهای بازی ۲۸۸×۱۰۰ بلوری‌اند (`hub/bracket-demo/covers/`) — منبع PDF است؛ فایل باکیفیت باید از ادمین گرفته شود یا بازتولید شود.
+2. 🟡 کارت چهارم `SYSTEMS` در `data.ts` («EXTRA CONTROLLER») در PDF نیست — تصمیم کارفرما لازم است (حذف یا نگه‌داشتن).
+3. همان ۳ مورد بخش ۸-۳: اجرای `portal-prompt-hub-theme-fa.md` (فاز A/B سمت پورتال)، QA بصری تم نصب‌شده، اتصال داده‌های واقعی.
+   ⚠️ در پرامپت پورتال هرجا «PayTR در قالب Hub» آمده باید با «پرداخت حضوری؛ درگاه پورتال فقط خارج از قالب» خوانده شود (بند ۱۵ اصلاح‌شده).
