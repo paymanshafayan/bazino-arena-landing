@@ -1,6 +1,15 @@
 /* Hub theme pages — sits on design-system/hub.css */
 
 .hub-page a { color: inherit; text-decoration: none; }
+
+/* Content region grows so short pages never leave a dead band above the
+   footer — the last section stretches into the free space instead. */
+.hub-main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.hub-main > :last-child { flex: 1 0 auto; }
+/* On Home the hero slider takes the free height; the tiles keep their size. */
+.hub-main > .hub-slider { flex: 1 1 auto; max-height: 620px; }
+.hub-main > .hub-quick:last-child { flex: 0 0 auto; }
+
 .hub-toast {
   position: fixed; top: 80px; right: 18px; z-index: 80;
   background: rgba(10,16,36,0.95); color: #e7ecff; padding: 10px 16px;
@@ -41,7 +50,7 @@
 
 /* ── HOME SLIDER ───────────────────────────────────────────────── */
 .hub-slider {
-  position: relative; height: 420px; overflow: hidden; background: #050814;
+  position: relative; height: clamp(360px, 48vh, 520px); overflow: hidden; background: #050814;
 }
 .hub-slide {
   position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s;
@@ -72,7 +81,7 @@
   background: linear-gradient(90deg, #22d3ff, #7a5cff); color: #041018; font-weight: 800;
   font-family: var(--hub-font-display); letter-spacing: 0.08em; font-size: 12px; cursor: pointer;
 }
-.hub-sarrow {
+.hub-page .hub-sarrow {
   position: absolute; bottom: 22px; z-index: 5;
   width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #fff;
   background: rgba(8,12,28,0.82); font-size: 22px; line-height: 1;
@@ -85,12 +94,13 @@
 
 .hub-quick {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px;
-  padding: 18px 22px 8px;
+  padding: 18px 22px 22px;
 }
 .hub-qcard {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  gap: 8px; padding: 16px 8px 14px; border-radius: 16px; cursor: pointer;
-  background: rgba(10,16,32,0.88); min-height: 132px;
+  gap: 8px; padding: 18px 10px 16px; border-radius: 16px; cursor: pointer;
+  background: rgba(10,16,32,0.88); min-height: 148px;
+  justify-content: center;
 }
 .hub-qcard .hub-qic { width: 48px; height: 48px; display: grid; place-items: center; }
 .hub-qcard b { font-size: 12px; letter-spacing: 0.1em; }
@@ -157,11 +167,13 @@
 .hub-evcard header b { font-size: 13px; letter-spacing: 0.08em; display: block; }
 .hub-evcard header small { color: var(--hub-muted); font-size: 11px; }
 .hub-evart {
-  height: 150px; border-radius: 12px; background: #0b1528 center/cover no-repeat;
+  /* fixed height on purpose: the cover art is only 288x100, upscaling shows the blur */
+  height: 150px; flex: 0 0 150px;
+  border-radius: 12px; background: #0b1528 center/cover no-repeat;
   display: grid; place-items: center; overflow: hidden;
 }
 .hub-evart img { width: 100%; height: 100%; object-fit: cover; }
-.hub-evlist { display: flex; flex-direction: column; gap: 6px; flex: 1; font-size: 12px; color: #c5ceee; }
+.hub-evlist { display: flex; flex-direction: column; gap: 6px; flex: 0 1 auto; justify-content: center; font-size: 12px; color: #c5ceee; }
 .hub-evlist span { display: flex; gap: 8px; align-items: center; }
 .hub-evcta {
   margin-top: auto; width: 100%; padding: 10px 12px; border-radius: 10px; cursor: pointer;
@@ -178,20 +190,30 @@
 .hub-row {
   display: grid; grid-template-columns: 220px 1fr auto; gap: 16px; align-items: center;
   padding: 10px; border-radius: 14px; background: rgba(10,16,32,0.9);
+  flex: 1 1 auto; max-height: 210px;
 }
 .hub-row img { width: 220px; height: 92px; object-fit: cover; border-radius: 10px; }
 .hub-row h3 { margin: 0 0 4px; font-size: 16px; }
 .hub-row p { margin: 0 0 8px; color: var(--hub-muted); font-size: 13px; }
+/* PDF §11 — schedule / time / capacity strip inside the card. */
+.hub-row-facts {
+  display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px;
+  font-family: var(--hub-font-display); font-size: 10px; letter-spacing: 0.08em; color: #c5d0f0;
+}
+.hub-row-facts span { display: inline-flex; align-items: center; gap: 6px; }
+.hub-row-facts svg { color: var(--hub-cyan); }
 .hub-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .hub-tags i {
   font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
   padding: 3px 8px; border-radius: 6px; color: var(--hub-cyan); background: rgba(60,202,245,0.1);
   font-family: var(--hub-font-display);
 }
-.hub-row-meta { display: flex; gap: 18px; align-items: center; padding-right: 8px; }
-.hub-stat { text-align: center; min-width: 88px; }
-.hub-stat b { display: block; font-size: 12px; }
+.hub-row-meta { display: flex; gap: 14px; align-items: center; padding-right: 8px; flex-wrap: wrap; }
+.hub-stat { text-align: center; min-width: 84px; }
+.hub-stat b { display: block; font-size: 13px; }
 .hub-stat small { color: var(--hub-muted); font-size: 10px; letter-spacing: 0.08em; }
+.hub-stat.is-fee b { color: var(--hub-cyan); }
+.hub-stat.is-gold b { color: var(--hub-gold); text-shadow: 0 0 10px rgba(253, 207, 28, 0.45); }
 .hub-row-cta {
   padding: 10px 16px; border-radius: 10px; font-size: 11px; font-weight: 800;
   letter-spacing: 0.08em; font-family: var(--hub-font-display); cursor: pointer; white-space: nowrap;
@@ -211,6 +233,18 @@
   font-family: var(--hub-font-display);
 }
 .hub-season-tabs button.is-on { color: #04140b; background: var(--hub-green); }
+/* PDF §13 — season window + days-left counter. */
+.hub-season-clock {
+  display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; justify-content: center;
+  margin: 12px 18px 0; padding: 12px 18px; border-radius: 14px;
+  background: rgba(10,16,32,0.9);
+}
+.hub-season-clock span { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.hub-season-clock small { font-size: 9px; letter-spacing: 0.18em; color: var(--hub-muted); font-family: var(--hub-font-display); }
+.hub-season-clock b { font-family: var(--hub-font-display); font-size: 14px; color: #e7ecff; }
+.hub-season-clock .is-count b {
+  font-size: 30px; color: var(--hub-gold); text-shadow: 0 0 18px rgba(253, 207, 28, 0.55); line-height: 1;
+}
 .hub-lb { width: 100%; border-collapse: collapse; font-size: 13px; }
 .hub-lb th { text-align: left; color: var(--hub-muted); font-size: 10px; letter-spacing: 0.12em; padding: 6px; }
 .hub-lb td { padding: 8px 6px; border-top: 1px solid rgba(90,120,220,0.16); }
@@ -251,7 +285,8 @@
 .hub-admin-note { margin-top: 18px; font-size: 11px; color: #5f6da6; }
 
 /* ── GAMES RESERVE ─────────────────────────────────────────────── */
-.hub-reserve { padding: 8px 18px 28px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+.hub-reserve { padding: 8px 18px 28px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; align-content: center; }
+.hub-reserve > * { align-self: center; }
 .hub-sys { display: grid; gap: 10px; }
 .hub-sys button {
   text-align: left; padding: 14px; border-radius: 14px; cursor: pointer;
@@ -372,6 +407,8 @@
 .hub-hours-list div { display: flex; justify-content: space-between; font-size: 13px; color: #c5ceee; padding: 4px 2px; border-bottom: 1px solid rgba(90,120,220,0.12); }
 
 .hub-form { max-width: 560px; margin: 0 auto; padding: 8px 18px 32px; display: flex; flex-direction: column; gap: 10px; }
+.hub-main > .hub-form { justify-content: center; }
+.hub-form-note { margin: 4px 0 0; font-size: 12px; color: var(--hub-muted); text-align: center; }
 .hub-form textarea, .hub-form select {
   background: rgba(0,0,0,0.35); border: 1px solid rgba(90,120,220,0.28);
   border-radius: 10px; padding: 10px 12px; color: #fff; font: inherit;
@@ -379,6 +416,78 @@
 
 .hub-404 { min-height: 50vh; display: grid; place-items: center; text-align: center; padding: 48px 16px; }
 .hub-404 h1 { font-size: 72px; margin: 0; background: linear-gradient(90deg, #3ccaf5, #ff2db0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ── LOADING / EMPTY / ERROR (PDF §21) ─────────────────────────── */
+.hub-state-wrap { display: flex; padding: 24px 18px 30px; }
+.hub-state-wrap > .hub-state { flex: 1; }
+.hub-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; text-align: center; padding: 26px 18px; margin: 6px 0;
+  border-radius: 14px; border: 1px dashed rgba(90, 120, 220, 0.34);
+  background: rgba(10, 16, 32, 0.55); color: #c5ceee; flex: 1;
+}
+.hub-state b { font-family: var(--hub-font-display); font-size: 13px; letter-spacing: 0.12em; color: #e7ecff; }
+.hub-state p { margin: 0; font-size: 12px; color: var(--hub-muted); max-width: 380px; }
+.hub-state-ic {
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--hub-cyan); background: rgba(60, 202, 245, 0.1);
+  box-shadow: 0 0 0 1px rgba(60, 202, 245, 0.35), 0 0 22px rgba(60, 202, 245, 0.22);
+}
+.hub-state-ic.is-error {
+  color: var(--hub-red); background: rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.4), 0 0 22px rgba(255, 107, 107, 0.22);
+}
+.hub-state-btn {
+  display: inline-block; margin-top: 4px; padding: 8px 16px; border-radius: 10px; cursor: pointer;
+  font-family: var(--hub-font-display); font-size: 10px; font-weight: 800; letter-spacing: 0.1em;
+  color: #041018; background: linear-gradient(90deg, #3ccaf5, #7a5cff);
+}
+.hub-state-label {
+  font-family: var(--hub-font-display); font-size: 10px; letter-spacing: 0.22em; color: var(--hub-muted);
+}
+.hub-skel {
+  display: block; border-radius: 8px; height: 14px; width: 100%;
+  background: linear-gradient(90deg, rgba(90,120,220,0.10) 25%, rgba(120,150,255,0.26) 37%, rgba(90,120,220,0.10) 63%);
+  background-size: 400% 100%; animation: hub-shimmer 1.3s ease-in-out infinite;
+}
+.hub-skel-rows { display: flex; flex-direction: column; gap: 10px; width: min(420px, 100%); }
+.hub-skel-rows .hub-skel:nth-child(2) { width: 78%; }
+.hub-skel-rows .hub-skel:nth-child(3) { width: 56%; }
+.hub-state--bracket { padding: 18px 12px; }
+.hub-skel-bracket {
+  display: flex; gap: 14px; align-items: center; justify-content: center;
+  width: 100%; max-width: 900px; margin: 0 auto;
+}
+.hub-skel-col { display: flex; flex-direction: column; gap: 10px; flex: 1; max-width: 150px; }
+.hub-skel-card { height: 44px; }
+@keyframes hub-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-skel { animation: none; }
+}
+
+/* Horizontal-scroll affordance for the bracket on narrow screens. */
+.hub-scroll-hint {
+  display: none; margin: 0 0 8px; font-family: var(--hub-font-display);
+  font-size: 10px; letter-spacing: 0.14em; color: var(--hub-muted);
+}
+@media (max-width: 1620px) {
+  .hub-scroll-hint { display: block; }
+}
+
+/* ── LEGAL PAGES ───────────────────────────────────────────────── */
+.hub-legal { max-width: 720px; color: #c5ceee; line-height: 1.7; }
+.hub-legal h3 {
+  margin: 18px 0 4px; font-size: 12px; letter-spacing: 0.14em; color: var(--hub-cyan);
+  font-family: var(--hub-font-display);
+}
+.hub-legal p { margin: 0; font-size: 14px; }
+.hub-legal a { color: var(--hub-cyan); font-weight: 700; }
+.hub-legal-foot { margin-top: 22px !important; color: var(--hub-muted) !important; font-size: 12px !important; }
+ol.hub-legal { padding-left: 20px; }
+ol.hub-legal li { margin-bottom: 6px; }
 
 .hub-foot-item { cursor: pointer; }
 .hub-foot-item a { display: flex; align-items: center; gap: 10px; }
@@ -394,12 +503,22 @@
   .hub-modal-art { min-height: 180px; }
 }
 @media (max-width: 900px) {
-  .hub-burger { display: inline-flex; align-items: center; justify-content: center; }
+  .hub-burger { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .hub-mobile-nav.is-on { display: flex; }
   .hub-quick { grid-template-columns: repeat(2, 1fr); }
-  .hub-slider { height: 320px; }
+  .hub-slider { height: clamp(300px, 42vh, 380px); }
   .hub-slide-body { padding: 24px; }
   .hub-slide-body h2 { font-size: 28px; }
+  .hub-sarrow { width: 34px; height: 34px; bottom: 14px; }
+  .hub-sarrow-l { left: 12px; }
+  .hub-sarrow-r { right: 12px; }
   .hub-loc-card { flex-direction: column; text-align: center; min-height: 0; padding: 24px; }
   .hub-loc-cta { margin-left: 0; }
+  .hub-row { max-height: none; }
+  .hub-row-meta { gap: 10px; justify-content: space-between; width: 100%; }
+  .hub-stat { min-width: 66px; }
+  .hub-season-clock { gap: 10px 18px; margin: 12px 14px 0; }
+  .hub-season-clock .is-count b { font-size: 24px; }
+  .hub-page-hero h1 { font-size: 26px; }
+  .hub-main > :last-child { flex: 0 0 auto; }
 }

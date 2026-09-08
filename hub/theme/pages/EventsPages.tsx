@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { HubAvatar, HubIcon, LaurelTrophy } from "../../design-system";
 import { HubPage } from "../../design-system/chrome";
-import { LEADERBOARD, SEASONS, SPECIAL, WEEKLY } from "../data";
+import { daysLeft, LEADERBOARD, SEASON_WINDOWS, SEASONS, SPECIAL, WEEKLY } from "../data";
 import { useHub } from "../HubContext";
 import fc26 from "../../bracket-demo/covers/fc26.png";
 import ufc5 from "../../bracket-demo/covers/ufc5.png";
 import mk1 from "../../bracket-demo/covers/mk1.png";
 import tekken8 from "../../bracket-demo/covers/tekken8.png";
-import banner from "../../bracket-demo/covers/banner-fc26.png";
+import banner from "../../bracket-demo/covers/banner-bracket.jpg";
 import hero from "../../design-system/assets/hero-setup.jpg";
 
 const COVERS: Record<string, string> = { fc26, ufc5, mk1, tekken8 };
@@ -66,7 +66,7 @@ export function EventsHubPage() {
           <header><HubIcon.Gamepad size={22} /><span><b>REGISTER</b><small>Join the next weekly</small></span></header>
           <div className="hub-evart" style={{ backgroundImage: `url(${mk1})` }} />
           <div className="hub-evlist">
-            <span>Pick a title</span><span>Pay entry via PayTR</span><span>Name on the bracket</span><span>Show up, play, advance</span>
+            <span>Pick a title</span><span>Pay 150 ₺ entry at the desk</span><span>Name on the bracket</span><span>Show up, play, advance</span>
           </div>
           <Link href="/hub/events/register" className="hub-evcta">REGISTER →</Link>
         </article>
@@ -87,11 +87,19 @@ export function WeeklyPage() {
               <h3>{w.title}</h3>
               <p>{w.blurb}</p>
               <div className="hub-tags">{w.tags.map((t) => <i key={t}>{t}</i>)}</div>
+              {/* PDF §11 — schedule, time, entry fee and prizes all live on the card. */}
+              <div className="hub-row-facts">
+                <span><HubIcon.Calendar size={13} /> {w.when} · {w.date}</span>
+                <span><HubIcon.Clock size={13} /> {w.time}</span>
+                <span><HubIcon.Users size={13} /> MAX {w.max} PLAYERS</span>
+              </div>
             </div>
             <div className="hub-row-meta">
-              <div className="hub-stat"><HubIcon.Calendar size={16} /><b>{w.when}</b><small>SCHEDULE</small></div>
-              <div className="hub-stat"><HubIcon.Users size={16} /><b>MAX {w.max}</b><small>PLAYERS</small></div>
-              <div className="hub-stat"><HubIcon.Trophy size={16} /><b>{w.prize}</b><small>PRIZE</small></div>
+              <div className="hub-stat is-fee"><b>{w.fee}</b><small>ENTRY FEE</small></div>
+              <div className="hub-stat is-gold"><b>{w.first}</b><small>1ST PRIZE</small></div>
+              <div className="hub-stat"><b>{w.second}</b><small>2ND</small></div>
+              <div className="hub-stat"><b>{w.third}</b><small>3RD</small></div>
+              <div className="hub-stat"><HubIcon.Trophy size={16} /><b>{w.prize}</b><small>CREDITS</small></div>
             </div>
           </article>
         ))}
@@ -129,7 +137,9 @@ export function SpecialPage() {
 }
 
 export function SeasonPage() {
-  const [season, setSeason] = useState<(typeof SEASONS)[number]>("SPRING");
+  const [season, setSeason] = useState<(typeof SEASONS)[number]>("SUMMER");
+  const window = SEASON_WINDOWS[season];
+  const left = daysLeft(window.end);
   return (
     <HubPage activeNav="EVENTS">
       <Hero title="SEASON" em="RANKING" line="EARN POINTS · CLIMB THE LEADERBOARD · BECOME THE SEASON CHAMPION" back />
@@ -137,6 +147,13 @@ export function SeasonPage() {
         {SEASONS.map((s) => (
           <button key={s} type="button" className={s === season ? "is-on" : ""} onClick={() => setSeason(s)}>{s}</button>
         ))}
+      </div>
+      {/* PDF §13 — countdown of the days left in the running season. */}
+      <div className="hub-season-clock hub-neon-box hub-neon-box--gold">
+        <span><small>SEASON</small><b>{season}</b></span>
+        <span><small>WINDOW</small><b>{window.from} – {window.to}</b></span>
+        <span className="is-count"><small>DAYS LEFT</small><b>{left}</b></span>
+        <span><small>POINTS RESET</small><b>AT SEASON END</b></span>
       </div>
       <section className="hub-season">
         <aside className="hub-box hub-neon-box hub-neon-box--purple hub-pts">
@@ -186,13 +203,13 @@ export function RegisterEventPage() {
   const [game, setGame] = useState("FC 26");
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="REGISTER" em="TO PLAY" line="NAME ON THE BRACKET · PAYTR ENTRY · SHOW UP" back />
+      <Hero title="REGISTER" em="TO PLAY" line="NAME ON THE BRACKET · 150 ₺ AT THE DESK · SHOW UP" back />
       <form
         className="hub-form"
         onSubmit={(e) => {
           e.preventDefault();
           if (!user) { setAuthOpen(true, "otp"); return; }
-          flash(`Registered ${user.displayName} for ${game} (PayTR demo)`);
+          flash(`Seat held for ${user.displayName} · ${game} · pay 150 ₺ at the desk (demo)`);
         }}
       >
         <div className="hub-field">
@@ -205,7 +222,9 @@ export function RegisterEventPage() {
           <label>GAMERTAG ON BRACKET</label>
           <input defaultValue={user?.displayName ?? ""} placeholder="ArmanK" />
         </div>
-        <button className="hub-cta" type="submit">PAY ENTRY & REGISTER</button>
+        <button className="hub-cta" type="submit">HOLD MY SEAT</button>
+        {/* PDF §23 — payments are cash / card machine at the club, never online. */}
+        <p className="hub-form-note">Entry fee 150 ₺ — paid in cash or by card at the desk when you check in.</p>
       </form>
     </HubPage>
   );

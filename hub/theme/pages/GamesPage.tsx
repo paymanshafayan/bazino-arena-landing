@@ -28,7 +28,7 @@ export default function GamesPage() {
       flash("Login with OTP to pay");
       return;
     }
-    flash(`PayTR checkout · ${total} ₺ · ${selected.name} · ${hours}h (demo)`);
+    flash(`Bay held · ${total} ₺ · ${selected.name} · ${hours}h · pay cash or card at the desk (demo)`);
   };
 
   return (
@@ -43,17 +43,17 @@ export default function GamesPage() {
 
       {view === "pick" && (
         <section className="hub-tri">
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--green" style={{ backgroundImage: `url(${kids})` }} onClick={() => { setView("kids"); setSys("kids"); }}>
+          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--green" style={{ backgroundImage: `url(${kids})`, backgroundPosition: "54% 45%" }} onClick={() => { setView("kids"); setSys("kids"); }}>
             <h2>KIDS</h2>
             <p>Fun & safe games for younger players. Stations with family-friendly titles.</p>
             <span className="hub-tri-cta hub-neon-box hub-neon-box--green">RESERVE →</span>
           </button>
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--magenta" style={{ backgroundImage: `url(${adults})` }} onClick={() => { setView("adults"); setSys("tv85"); }}>
+          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--magenta" style={{ backgroundImage: `url(${adults})`, backgroundPosition: "30% 50%" }} onClick={() => { setView("adults"); setSys("tv85"); }}>
             <h2>ADULTS</h2>
             <p>Action, sports, racing and more. 85" and 65" bays with two pads included.</p>
             <span className="hub-tri-cta hub-neon-box hub-neon-box--magenta">RESERVE →</span>
           </button>
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--cyan" style={{ backgroundImage: `url(${requests})` }} onClick={() => setView("requests")}>
+          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--cyan" style={{ backgroundImage: `url(${requests})`, backgroundPosition: "86% 48%" }} onClick={() => setView("requests")}>
             <h2>GAME REQUESTS</h2>
             <p>Suggest new games and join the community library.</p>
             <span className="hub-tri-cta hub-neon-box">SUGGEST →</span>
@@ -83,9 +83,9 @@ export default function GamesPage() {
               ))}
             </div>
             <div className="hub-pay-total">{total} ₺</div>
-            <p style={{ color: "#7f8fc0", fontSize: 12 }}>Paid online with PayTR / wallet. Extra pad +25 ₺ per hour.</p>
-            <button className="hub-pay-go" type="button" onClick={pay}>PAY & BOOK</button>
-            <p style={{ fontSize: 11, color: "#5f6da6" }}>QR check-in at the desk after payment.</p>
+            <p style={{ color: "#7f8fc0", fontSize: 12 }}>Cash or card at the desk — no online payment. Extra pad +25 ₺ per hour.</p>
+            <button className="hub-pay-go" type="button" onClick={pay}>HOLD MY BAY</button>
+            <p style={{ fontSize: 11, color: "#5f6da6" }}>Show your booking code at the desk and pay there.</p>
           </aside>
         </section>
       )}

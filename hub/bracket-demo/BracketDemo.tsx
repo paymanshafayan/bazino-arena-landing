@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChampionBlock,
   FilterPills,
   GameListCard,
+  HubBracketSkeleton,
+  HubEmpty,
   HubHero,
   HubPage,
   HubTabs,
@@ -12,7 +14,7 @@ import {
   type MatchPair,
   type NeonLinkDef,
 } from "../design-system";
-import bannerFc26 from "./covers/banner-fc26.png";
+import bannerBracket from "./covers/banner-bracket.jpg";
 import fc26 from "./covers/fc26.png";
 import mk1 from "./covers/mk1.png";
 import tekken8 from "./covers/tekken8.png";
@@ -20,14 +22,23 @@ import ufc5 from "./covers/ufc5.png";
 
 const COVERS: Record<string, string> = { fc26, ufc5, mk1, tekken8 };
 
-const GAMES = [
-  { name: "FC 26", title: "Weekly Tournament #13", date: "29 Aug 2026", players: 32, cover: "fc26" },
-  { name: "UFC 5", title: "Weekly Tournament #12", date: "22 Aug 2026", players: 32, cover: "ufc5" },
-  { name: "MORTAL KOMBAT 1", title: "Weekly Tournament #11", date: "15 Aug 2026", players: 32, cover: "mk1" },
-  { name: "TEKKEN 8", title: "Weekly Tournament #10", date: "08 Aug 2026", players: 32, cover: "tekken8" },
-  { name: "FC 26", title: "Weekly Tournament #9", date: "01 Aug 2026", players: 32, cover: "fc26" },
-  { name: "UFC 5", title: "Weekly Tournament #8", date: "25 Jul 2026", players: 32, cover: "ufc5" },
-  { name: "MORTAL KOMBAT 1", title: "Weekly Tournament #7", date: "18 Jul 2026", players: 32, cover: "mk1" },
+type Status = "CURRENT" | "UPCOMING" | "COMPLETED";
+
+const GAMES: { name: string; title: string; date: string; players: number; cover: string; status: Status }[] = [
+  { name: "FC 26", title: "Weekly Tournament #14", date: "12 Sep 2026", players: 32, cover: "fc26", status: "CURRENT" },
+  { name: "UFC 5", title: "Weekly Tournament #15", date: "19 Sep 2026", players: 32, cover: "ufc5", status: "UPCOMING" },
+  { name: "FC 26", title: "Weekly Tournament #13", date: "29 Aug 2026", players: 32, cover: "fc26", status: "COMPLETED" },
+  { name: "UFC 5", title: "Weekly Tournament #12", date: "22 Aug 2026", players: 32, cover: "ufc5", status: "COMPLETED" },
+  { name: "MORTAL KOMBAT 1", title: "Weekly Tournament #11", date: "15 Aug 2026", players: 32, cover: "mk1", status: "COMPLETED" },
+  { name: "TEKKEN 8", title: "Weekly Tournament #10", date: "08 Aug 2026", players: 32, cover: "tekken8", status: "COMPLETED" },
+  { name: "FC 26", title: "Weekly Tournament #9", date: "01 Aug 2026", players: 32, cover: "fc26", status: "COMPLETED" },
+  { name: "MORTAL KOMBAT 1", title: "Weekly Tournament #7", date: "18 Jul 2026", players: 32, cover: "mk1", status: "COMPLETED" },
+];
+
+const SPECIAL_GAMES: typeof GAMES = [
+  { name: "FC 26", title: "Champions Cup", date: "12 Jul 2026", players: 64, cover: "fc26", status: "COMPLETED" },
+  { name: "UFC 5", title: "Bazino Fight Night", date: "02 Aug 2026", players: 32, cover: "ufc5", status: "COMPLETED" },
+  { name: "TEKKEN 8", title: "Championship", date: "09 Sep 2026", players: 32, cover: "tekken8", status: "UPCOMING" },
 ];
 
 const L32: MatchPair[] = [
@@ -103,6 +114,24 @@ export default function BracketDemo() {
   const [tab, setTab] = useState("weekly");
   const [filter, setFilter] = useState("ALL");
   const [sel, setSel] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const source = tab === "weekly" ? GAMES : SPECIAL_GAMES;
+  const list = useMemo(
+    () => source.filter((g) => filter === "ALL" || g.status === filter),
+    [source, filter],
+  );
+  const current = list[sel] ?? list[0];
+
+  // Reset the selection whenever the tab / filter changes and show the loading
+  // state while the bracket of the freshly selected tournament is fetched (PDF §21).
+  useEffect(() => { setSel(0); }, [tab, filter]);
+  useEffect(() => {
+    if (!current) return;
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 380);
+    return () => clearTimeout(t);
+  }, [current?.title, tab]);
 
   const links = useMemo<NeonLinkDef[]>(() => [
     ...fan("L32", 8, "L16", false, "cyan"),
@@ -128,63 +157,92 @@ export default function BracketDemo() {
         <HubTabs items={TABS} value={tab} onChange={setTab} />
       </HubHero>
 
-      <main className="hub-body">
+      <div className="hub-body">
         <aside className="hub-side">
           <h3>TOURNAMENTS</h3>
           <p className="hub-side-note">Select a tournament to view the bracket</p>
           <FilterPills items={["ALL", "CURRENT", "UPCOMING", "COMPLETED"]} value={filter} onChange={setFilter} />
-          <div className="hub-game-list">
-            {GAMES.map((g, i) => (
-              <GameListCard
-                key={i}
-                cover={COVERS[g.cover]}
-                name={g.name}
-                subtitle={g.title}
-                date={g.date}
-                players={g.players}
-                selected={sel === i}
-                onClick={() => setSel(i)}
-              />
-            ))}
-          </div>
+          {list.length === 0 ? (
+            <HubEmpty
+              title="NO TOURNAMENT HERE"
+              body={`No ${filter.toLowerCase()} tournament in this tab yet.`}
+              action={<button type="button" className="hub-state-btn" onClick={() => setFilter("ALL")}>SHOW ALL</button>}
+            />
+          ) : (
+            <div className="hub-game-list">
+              {list.map((g, i) => (
+                <GameListCard
+                  key={`${g.title}-${i}`}
+                  cover={COVERS[g.cover]}
+                  name={g.name}
+                  subtitle={g.title}
+                  date={g.date}
+                  players={g.players}
+                  status={g.status}
+                  selected={sel === i}
+                  onClick={() => setSel(i)}
+                />
+              ))}
+            </div>
+          )}
         </aside>
 
         <section className="hub-panel">
-          <PanelBanner
-            image={bannerFc26}
-            title="FC26"
-            em="WEEKLY TOURNAMENT #13"
-            date="29 AUGUST 2026"
-            players={32}
-            slogan="PLAY COMPETE BE A LEGEND"
-          />
+          {!current ? (
+            <HubEmpty
+              title="NOTHING TO SHOW"
+              body="Pick another filter to load a bracket."
+            />
+          ) : (
+            <>
+              <PanelBanner
+                image={bannerBracket}
+                title={current.name}
+                em={current.title.toUpperCase()}
+                date={current.date.toUpperCase()}
+                players={current.players}
+                status={current.status}
+                slogan="PLAY COMPETE BE A LEGEND"
+              />
 
-          <div className="hub-bracket-scroll">
-            <div className="hub-round-labels">
-              {LABELS.map((l, i) => (
-                <span key={i} className={`hub-lbl ${l === "FINAL" ? "is-final" : ""}`}>{l}</span>
-              ))}
-            </div>
+              {loading ? (
+                <HubBracketSkeleton />
+              ) : current.status === "UPCOMING" ? (
+                <HubEmpty
+                  title="DRAW NOT PUBLISHED YET"
+                  body={<>Pairings for {current.name} · {current.title} go live on {current.date} in the admin panel.</>}
+                />
+              ) : (
+                <div className="hub-bracket-scroll">
+                  <p className="hub-scroll-hint">Swipe / scroll sideways to follow the full 32-player bracket →</p>
+                  <div className="hub-round-labels">
+                    {LABELS.map((l, i) => (
+                      <span key={i} className={`hub-lbl ${l === "FINAL" ? "is-final" : ""}`}>{l}</span>
+                    ))}
+                  </div>
 
-            <NeonWireLayer className="hub-bracket-grid" links={links}>
-              {L32.map((m, i) => <MatchCard key={`L32-${i}`} m={m} wire={`L32-${i}`} style={colPlace(1, i + 1, 1)} />)}
-              {L16.map((m, i) => <MatchCard key={`L16-${i}`} m={m} wire={`L16-${i}`} style={colPlace(2, i * 2 + 1, 2)} />)}
-              {LQF.map((m, i) => <MatchCard key={`LQF-${i}`} m={m} wire={`LQF-${i}`} style={colPlace(3, i * 4 + 1, 4)} />)}
-              <MatchCard m={LSF} wire="LSF" style={colPlace(4, 1, 8)} />
+                  <NeonWireLayer className="hub-bracket-grid" links={links}>
+                    {L32.map((m, i) => <MatchCard key={`L32-${i}`} m={m} wire={`L32-${i}`} style={colPlace(1, i + 1, 1)} />)}
+                    {L16.map((m, i) => <MatchCard key={`L16-${i}`} m={m} wire={`L16-${i}`} style={colPlace(2, i * 2 + 1, 2)} />)}
+                    {LQF.map((m, i) => <MatchCard key={`LQF-${i}`} m={m} wire={`LQF-${i}`} style={colPlace(3, i * 4 + 1, 4)} />)}
+                    <MatchCard m={LSF} wire="LSF" style={colPlace(4, 1, 8)} />
 
-              <div className="hub-center-col">
-                <ChampionBlock />
-                <MatchCard m={FINAL} wire="FINAL" />
-              </div>
+                    <div className="hub-center-col">
+                      <ChampionBlock />
+                      <MatchCard m={FINAL} wire="FINAL" />
+                    </div>
 
-              <MatchCard m={RSF} wire="RSF" style={colPlace(6, 1, 8)} />
-              {RQF.map((m, i) => <MatchCard key={`RQF-${i}`} m={m} wire={`RQF-${i}`} style={colPlace(7, i * 4 + 1, 4)} />)}
-              {R16.map((m, i) => <MatchCard key={`R16-${i}`} m={m} wire={`R16-${i}`} style={colPlace(8, i * 2 + 1, 2)} />)}
-              {R32.map((m, i) => <MatchCard key={`R32-${i}`} m={m} wire={`R32-${i}`} style={colPlace(9, i + 1, 1)} />)}
-            </NeonWireLayer>
-          </div>
+                    <MatchCard m={RSF} wire="RSF" style={colPlace(6, 1, 8)} />
+                    {RQF.map((m, i) => <MatchCard key={`RQF-${i}`} m={m} wire={`RQF-${i}`} style={colPlace(7, i * 4 + 1, 4)} />)}
+                    {R16.map((m, i) => <MatchCard key={`R16-${i}`} m={m} wire={`R16-${i}`} style={colPlace(8, i * 2 + 1, 2)} />)}
+                    {R32.map((m, i) => <MatchCard key={`R32-${i}`} m={m} wire={`R32-${i}`} style={colPlace(9, i + 1, 1)} />)}
+                  </NeonWireLayer>
+                </div>
+              )}
+            </>
+          )}
         </section>
-      </main>
+      </div>
     </HubPage>
   );
 }

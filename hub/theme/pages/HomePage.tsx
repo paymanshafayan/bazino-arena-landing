@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { HubIcon } from "../../design-system";
 import { HubPage } from "../../design-system/chrome";
-import bannerFc26 from "../../bracket-demo/covers/banner-fc26.png";
+import slideFc26 from "../assets/slide-fc26.jpg";
 import slideCity from "../assets/slide-city.jpg";
 import slideMatch from "../assets/slide-match.jpg";
 
 const SLIDES = [
-  { img: bannerFc26, badge: "NOW", badgeClass: "is-live", title: <>FC 26 <em>TOURNAMENT</em></>, body: "Saturday night bracket. 32 players. Live on the club TVs.", cta: "VIEW BRACKET", href: "/hub/events/brackets" },
+  { img: slideFc26, badge: "NOW", badgeClass: "is-live", title: <>FC 26 <em>TOURNAMENT</em></>, body: "Saturday night bracket. 32 players. Live on the club TVs.", cta: "VIEW BRACKET", href: "/hub/events/brackets" },
   { img: slideCity, badge: "COMING SOON", badgeClass: "is-soon", title: <>GRAND THEFT AUTO <em>VI</em></>, body: "The next generation of games. Stay tuned at Bazino.", cta: "HOME NEWS", href: "/hub/blog" },
   { img: slideMatch, badge: "LIVE MATCH", badgeClass: "is-live", title: <>TONIGHT <em>21:00</em></>, body: "Big screen football in the lounge. First come, first seated.", cta: "RESERVE A BAY", href: "/hub/games" },
 ];
