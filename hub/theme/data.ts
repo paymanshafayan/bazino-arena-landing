@@ -22,11 +22,15 @@ export const SYSTEMS = [
   { id: "extra", name: "EXTRA CONTROLLER", rate: 25, size: "—", pads: 1, group: "any" as const },
 ];
 
+/**
+ * PDF §11 — every weekly card must carry all of its info inside the card:
+ * day + date, time, entry fee, 1st/2nd/3rd prize and capacity. No "view details" page.
+ */
 export const WEEKLY = [
-  { game: "FC 26", title: "FC 26 WEEKLY TOURNAMENT", blurb: "Show your skills, compete with other players and become this week's champion.", tags: ["Football", "Sports", "1v1"], when: "EVERY SATURDAY", max: 32, prize: "300 BC", tone: "purple" as const, cover: "fc26" },
-  { game: "UFC 5", title: "UFC 5 WEEKLY TOURNAMENT", blurb: "Step into the octagon and prove you are the best.", tags: ["Fighting", "Sports", "1v1"], when: "EVERY TUESDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "ufc5" },
-  { game: "MORTAL KOMBAT 1", title: "MORTAL KOMBAT 1 WEEKLY TOURNAMENT", blurb: "Choose your fighter, finish your rivals and claim victory.", tags: ["Fighting", "Action", "1v1"], when: "EVERY THURSDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "mk1" },
-  { game: "TEKKEN 8", title: "TEKKEN 8 WEEKLY TOURNAMENT", blurb: "Fast fights, high skills and iron-clad action are guaranteed.", tags: ["Fighting", "Action", "1v1"], when: "EVERY FRIDAY", max: 16, prize: "250 BC", tone: "purple" as const, cover: "tekken8" },
+  { game: "FC 26", title: "FC 26 WEEKLY TOURNAMENT", blurb: "Show your skills, compete with other players and become this week's champion.", tags: ["Football", "Sports", "1v1"], when: "EVERY SATURDAY", date: "12 SEP 2026", time: "20:00", fee: "150 ₺", first: "1,000 ₺", second: "300 ₺", third: "150 ₺", max: 32, prize: "300 BC", tone: "purple" as const, cover: "fc26" },
+  { game: "UFC 5", title: "UFC 5 WEEKLY TOURNAMENT", blurb: "Step into the octagon and prove you are the best.", tags: ["Fighting", "Sports", "1v1"], when: "EVERY TUESDAY", date: "15 SEP 2026", time: "20:30", fee: "150 ₺", first: "800 ₺", second: "300 ₺", third: "150 ₺", max: 16, prize: "250 BC", tone: "purple" as const, cover: "ufc5" },
+  { game: "MORTAL KOMBAT 1", title: "MORTAL KOMBAT 1 WEEKLY TOURNAMENT", blurb: "Choose your fighter, finish your rivals and claim victory.", tags: ["Fighting", "Action", "1v1"], when: "EVERY THURSDAY", date: "17 SEP 2026", time: "21:00", fee: "150 ₺", first: "800 ₺", second: "300 ₺", third: "150 ₺", max: 16, prize: "250 BC", tone: "purple" as const, cover: "mk1" },
+  { game: "TEKKEN 8", title: "TEKKEN 8 WEEKLY TOURNAMENT", blurb: "Fast fights, high skills and iron-clad action are guaranteed.", tags: ["Fighting", "Action", "1v1"], when: "EVERY FRIDAY", date: "18 SEP 2026", time: "21:00", fee: "150 ₺", first: "800 ₺", second: "300 ₺", third: "150 ₺", max: 16, prize: "250 BC", tone: "purple" as const, cover: "tekken8" },
 ];
 
 export const SPECIAL = [
@@ -37,6 +41,19 @@ export const SPECIAL = [
 ];
 
 export const SEASONS = ["SPRING", "SUMMER", "AUTUMN", "WINTER"] as const;
+
+/** PDF §13 — the season page shows how many days are left in the running season. */
+export const SEASON_WINDOWS: Record<(typeof SEASONS)[number], { from: string; to: string; end: string }> = {
+  SPRING: { from: "21 MAR", to: "20 JUN", end: "2026-06-20" },
+  SUMMER: { from: "21 JUN", to: "22 SEP", end: "2026-09-22" },
+  AUTUMN: { from: "23 SEP", to: "20 DEC", end: "2026-12-20" },
+  WINTER: { from: "21 DEC", to: "20 MAR", end: "2027-03-20" },
+};
+
+export function daysLeft(iso: string, now: Date = new Date()) {
+  const ms = new Date(`${iso}T23:59:59`).getTime() - now.getTime();
+  return Math.max(0, Math.ceil(ms / 86_400_000));
+}
 
 export const LEADERBOARD = [
   { rank: 1, name: "ArmanK", tag: "#BZN1024", pts: 48, game: "FC26" },

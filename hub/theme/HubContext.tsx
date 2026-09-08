@@ -54,7 +54,8 @@ const HubContext = createContext<HubCtx | null>(null);
 
 export function HubProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>("en");
-  const [user, setUser] = useState<HubUser | null>(DEMO_USER);
+  // Guests land logged out (PDF §2: logged-out header shows LOGIN, member menu only after login).
+  const [user, setUser] = useState<HubUser | null>(null);
   const [hoursOpen, setHoursOpen] = useState(false);
   const [authOpen, setAuthOpenState] = useState(false);
   const [authMode, setAuthMode] = useState<"otp" | "password">("otp");

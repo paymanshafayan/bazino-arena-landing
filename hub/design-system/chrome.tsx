@@ -59,7 +59,7 @@ export function HubHeader({ active }: { active?: string }) {
         </nav>
         <div className="hub-head-right">
           <div className="hub-chip">
-            <HubIcon.Globe size={14} /> {lang.toUpperCase()} <HubIcon.Chevron size={12} />
+            <HubIcon.Globe size={14} /> <span className="hub-chip-tx">{lang.toUpperCase()}</span> <HubIcon.Chevron size={12} />
             <div className="hub-lang-menu" role="list">
               {langs.map((l) => (
                 <button key={l} type="button" className={l === lang ? "is-on" : ""} onClick={() => setLang(l)}>
@@ -83,7 +83,15 @@ export function HubHeader({ active }: { active?: string }) {
               <button className="hub-login-btn hub-neon-box" type="button" onClick={() => setAuthOpen(true, "otp")}>{tx(lang, "LOGIN")}</button>
             </>
           )}
-          <button className="hub-burger" type="button" onClick={() => setMobileNav(!mobileNav)} aria-label="menu">☰</button>
+          <button
+            className="hub-burger"
+            type="button"
+            onClick={() => setMobileNav(!mobileNav)}
+            aria-label="menu"
+            aria-expanded={mobileNav}
+          >
+            {mobileNav ? "✕" : "☰"}
+          </button>
         </div>
       </header>
       <nav className={`hub-mobile-nav ${mobileNav ? "is-on" : ""}`}>
@@ -101,28 +109,39 @@ export function HubFooter() {
   const { lang, setHoursOpen } = useHub();
   return (
     <footer className="hub-footer">
-      <Link href="/hub" className="hub-foot-logo"><b>BAZINO</b><small>GAMING CLUB</small></Link>
-      <div className="hub-vdiv" />
-      <a href={GOOGLE_MAPS} target="_blank" rel="noreferrer" className="hub-foot-item">
-        <span className="hub-fic pink"><HubIcon.Pin size={16} /></span>
-        <span>Iskele, Long Beach<br /><b>Hotel VistaMare</b></span>
-      </a>
-      <button className="hub-foot-item" type="button" onClick={() => setHoursOpen(true)}>
-        <span className="hub-fic red"><HubIcon.Clock size={16} /></span>
-        <span>{tx(lang, "OPEN")}<br /><b>11:00 – 23:50</b></span>
-      </button>
-      <a className="hub-foot-item" href="https://wa.me/905391123747" target="_blank" rel="noreferrer">
-        <span className="hub-fic green"><HubIcon.Chat size={16} /></span>
-        <span>{tx(lang, "WHATSAPP")}<br /><b>+90 539 112 37 47</b></span>
-      </a>
-      <a className="hub-foot-item" href="https://instagram.com/bazinopro" target="_blank" rel="noreferrer">
-        <span className="hub-fic ig"><HubIcon.Gram size={16} /></span>
-        <span>{tx(lang, "INSTAGRAM")}<br /><b>@bazinopro</b></span>
-      </a>
-      <div className="hub-foot-sign">
-        <HubIcon.Crown size={20} />
-        More Than a Game
-        <i>A Community</i>
+      <div className="hub-footer-main">
+        <Link href="/hub" className="hub-foot-logo"><b>BAZINO</b><small>GAMING CLUB</small></Link>
+        <div className="hub-vdiv" />
+        <a href={GOOGLE_MAPS} target="_blank" rel="noreferrer" className="hub-foot-item">
+          <span className="hub-fic pink"><HubIcon.Pin size={16} /></span>
+          <span>Iskele, Long Beach<br /><b>Hotel VistaMare</b></span>
+        </a>
+        <button className="hub-foot-item" type="button" onClick={() => setHoursOpen(true)}>
+          <span className="hub-fic red"><HubIcon.Clock size={16} /></span>
+          <span>{tx(lang, "OPEN")}<br /><b>11:00 – 23:50</b></span>
+        </button>
+        <a className="hub-foot-item" href="https://wa.me/905391123747" target="_blank" rel="noreferrer">
+          <span className="hub-fic green"><HubIcon.Chat size={16} /></span>
+          <span>{tx(lang, "WHATSAPP")}<br /><b>+90 539 112 37 47</b></span>
+        </a>
+        <a className="hub-foot-item" href="https://instagram.com/bazinopro" target="_blank" rel="noreferrer">
+          <span className="hub-fic ig"><HubIcon.Gram size={16} /></span>
+          <span>{tx(lang, "INSTAGRAM")}<br /><b>@bazinopro</b></span>
+        </a>
+        <div className="hub-foot-sign">
+          <HubIcon.Crown size={20} />
+          More Than a Game
+          <i>A Community</i>
+        </div>
+      </div>
+      {/* PDF §21 — Rules / Privacy always reachable from the bottom of every page. */}
+      <div className="hub-foot-legal">
+        <Link href="/hub/rules">RULES</Link>
+        <span>·</span>
+        <Link href="/hub/privacy">PRIVACY</Link>
+        <span>·</span>
+        <Link href="/hub/contact">CONTACT</Link>
+        <small>© {new Date().getFullYear()} BAZINO GAMING CLUB — Good Games · Better People</small>
       </div>
     </footer>
   );
@@ -133,7 +152,7 @@ export function HubPage({ children, activeNav }: { children: ReactNode; activeNa
   return (
     <div className="hub-page" dir="ltr">
       <HubHeader active={activeNav} />
-      {children}
+      <main className="hub-main">{children}</main>
       <HubFooter />
       <HoursModal />
       <AuthModal />

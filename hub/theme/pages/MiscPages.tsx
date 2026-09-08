@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { HubAvatar, HubIcon } from "../../design-system";
+import { HubAvatar, HubEmpty, HubIcon } from "../../design-system";
 import { HubPage } from "../../design-system/chrome";
 import { BLOG_POSTS, CHAT_THREADS, GOOGLE_MAPS, PROFILE_TABS } from "../data";
 import { useHub } from "../HubContext";
@@ -216,10 +216,29 @@ export function ProfilePage() {
           )}
           {tab === "wallet" && <div className="hub-box hub-neon-box hub-neon-box--gold"><h3>WALLET</h3><p>PayTR connected. Balance demo 0.00 ₺ — top-up stays on the portal.</p></div>}
           {tab === "points" && <div className="hub-box hub-neon-box hub-neon-box--green"><h3>POINTS</h3><p>{user.points} season points this Spring.</p></div>}
-          {tab === "reservations" && <div className="hub-box hub-neon-box"><h3>RESERVATIONS</h3><p>No active bay. Book from Games.</p><Link href="/hub/games">Open Games →</Link></div>}
-          {tab === "orders" && <div className="hub-box hub-neon-box"><h3>ORDERS</h3><p>Cafe / shop tickets appear here when those desks go live.</p></div>}
+          {tab === "reservations" && (
+            <div className="hub-box hub-neon-box">
+              <h3>RESERVATIONS</h3>
+              <HubEmpty
+                title="NO ACTIVE BAY"
+                body="Reserve a kids or adults station and it will show up here."
+                action={<Link href="/hub/games" className="hub-state-btn">OPEN GAMES →</Link>}
+              />
+            </div>
+          )}
+          {tab === "orders" && (
+            <div className="hub-box hub-neon-box">
+              <h3>ORDERS</h3>
+              <HubEmpty title="NO ORDERS YET" body="Cafe and shop tickets will appear here once those desks go live." />
+            </div>
+          )}
           {tab === "tournaments" && <div className="hub-box hub-neon-box hub-neon-box--magenta"><h3>TOURNAMENTS</h3><p>FC 26 Weekly #13 — Champion. UFC 5 Weekly #12 — Semi-final.</p></div>}
-          {tab === "tickets" && <div className="hub-box hub-neon-box"><h3>SUPPORT</h3><p>Open a ticket from the portal desk. Demo has no open tickets.</p></div>}
+          {tab === "tickets" && (
+            <div className="hub-box hub-neon-box">
+              <h3>SUPPORT</h3>
+              <HubEmpty title="NO OPEN TICKETS" body="Ask any staff member or open a ticket at the desk." />
+            </div>
+          )}
           {tab === "affiliate" && <div className="hub-box hub-neon-box"><h3>AFFILIATE</h3><p>Referral code ARMNK-26. Commission posts to wallet.</p></div>}
           {tab === "security" && (
             <div className="hub-box hub-neon-box">
@@ -287,8 +306,8 @@ export function Hub404() {
 export function RulesPage() {
   return (
     <HubPage>
-      <section className="hub-page-hero"><h1>CLUB <em>RULES</em></h1></section>
-      <ol className="hub-form" style={{ color: "#c5ceee", lineHeight: 1.6 }}>
+      <section className="hub-page-hero"><h1>CLUB <em>RULES</em></h1><p>8 HOUSE RULES · EVENT RULES ON EACH CARD</p></section>
+      <ol className="hub-form hub-legal" style={{ color: "#c5ceee", lineHeight: 1.6 }}>
         <li>Respect players, guests and staff.</li>
         <li>Take care of equipment.</li>
         <li>Follow game, tournament and event rules.</li>
@@ -298,6 +317,27 @@ export function RulesPage() {
         <li>Deliberate damage is charged at repair/replace cost.</li>
         <li>Serious or repeated offences may mean a temp or permanent ban.</li>
       </ol>
+    </HubPage>
+  );
+}
+
+export function PrivacyPage() {
+  return (
+    <HubPage>
+      <section className="hub-page-hero"><h1>PRIVACY <em>POLICY</em></h1><p>WHAT WE STORE · WHY · HOW LONG</p></section>
+      <div className="hub-form hub-legal">
+        <h3>WHAT WE COLLECT</h3>
+        <p>Name, username, date of birth, phone number and an optional profile photo — the data you type when you create a Bazino account.</p>
+        <h3>WHY WE USE IT</h3>
+        <p>To identify you at the desk, place your gamertag on tournament brackets, keep season points and Bazino Credits, and contact you about a booking or an event.</p>
+        <h3>WHAT WE NEVER DO</h3>
+        <p>We do not sell your data and we do not share it with advertisers. Payment details are handled by the payment provider and are never stored on our servers.</p>
+        <h3>PHOTOS</h3>
+        <p>Photos taken during tournaments may appear in the club gallery. Ask any staff member and we will remove a picture of you.</p>
+        <h3>YOUR RIGHTS</h3>
+        <p>You can ask for a copy of your data or for your account to be deleted at any time via WhatsApp <a href="https://wa.me/905391123747" target="_blank" rel="noreferrer">+90 539 112 37 47</a>.</p>
+        <p className="hub-legal-foot">Accepting the rules and this policy is part of creating a Bazino account.</p>
+      </div>
     </HubPage>
   );
 }

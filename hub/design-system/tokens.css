@@ -48,7 +48,14 @@
 
   --hub-header-h: 64px;
   --hub-footer-h: 72px;
-  --hub-mcard-w: 138px;
+
+  /* Bracket metrics — tuned so the whole 32-player tree fits a 1600px+ laptop
+     screen without horizontal scrolling (PDF §14: "see the full 32 bracket"). */
+  --hub-mcard-w: 124px;
+  --hub-bcol: 126px;
+  --hub-bcol-final: 168px;
+  --hub-bgap: 10px;
+  --hub-bmin: 1256px;
 
   --hub-wire-cyan: #3ccaf5;
   --hub-wire-magenta: #e070d4;
@@ -81,4 +88,15 @@
 .hub-page button,
 .hub-page a {
   font-family: inherit;
+}
+
+/* Wide desktops get the roomier original bracket metrics. */
+@media (min-width: 1900px) {
+  .hub-page {
+    --hub-mcard-w: 138px;
+    --hub-bcol: 140px;
+    --hub-bcol-final: 200px;
+    --hub-bgap: 18px;
+    --hub-bmin: 1440px;
+  }
 }

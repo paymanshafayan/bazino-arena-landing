@@ -2,7 +2,7 @@ import { Route, Switch } from "wouter";
 import HomePage from "./pages/HomePage";
 import GamesPage from "./pages/GamesPage";
 import { EventsHubPage, RegisterEventPage, SeasonPage, SpecialPage, WeeklyPage } from "./pages/EventsPages";
-import { BlogPage, ChatPage, ClubPage, ContactPage, FoodPage, Hub404, ProfilePage, RulesPage, ShopPage } from "./pages/MiscPages";
+import { BlogPage, ChatPage, ClubPage, ContactPage, FoodPage, Hub404, PrivacyPage, ProfilePage, RulesPage, ShopPage } from "./pages/MiscPages";
 import BracketDemo from "../bracket-demo/BracketDemo";
 
 export default function HubTheme() {
@@ -24,6 +24,7 @@ export default function HubTheme() {
       <Route path="/hub/profile" component={ProfilePage} />
       <Route path="/hub/contact" component={ContactPage} />
       <Route path="/hub/rules" component={RulesPage} />
+      <Route path="/hub/privacy" component={PrivacyPage} />
       <Route component={Hub404} />
     </Switch>
   );
