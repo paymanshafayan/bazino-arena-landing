@@ -48,7 +48,7 @@ hub/
 | `/hub/events/special` | رویداد ویژه (اطلاعات) |
 | `/hub/events/season` | ۴ فصل، امتیاز ۵/۲/۱ و ۱۰/۴/۲ |
 | `/hub/events/brackets` | براکت ۳۲ نفره |
-| `/hub/events/register` | ثبت‌نام تورنمنت + PayTR دمو |
+| `/hub/events/register` | ثبت‌نام تورنمنت (پرداخت ورودی حضوری، طبق §۲۳) |
 | `/hub/shop` `/hub/food` | Coming Soon (صف ادمین در یادداشت) |
 | `/hub/club` `/hub/blog` `/hub/chat` | قابلیت پورتال در ناو |
 | `/hub/profile` | ۹ تب پورتال |

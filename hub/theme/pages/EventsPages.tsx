@@ -66,7 +66,7 @@ export function EventsHubPage() {
           <header><HubIcon.Gamepad size={22} /><span><b>REGISTER</b><small>Join the next weekly</small></span></header>
           <div className="hub-evart" style={{ backgroundImage: `url(${mk1})` }} />
           <div className="hub-evlist">
-            <span>Pick a title</span><span>Pay entry via PayTR</span><span>Name on the bracket</span><span>Show up, play, advance</span>
+            <span>Pick a title</span><span>Pay 150 ₺ entry at the desk</span><span>Name on the bracket</span><span>Show up, play, advance</span>
           </div>
           <Link href="/hub/events/register" className="hub-evcta">REGISTER →</Link>
         </article>
@@ -203,13 +203,13 @@ export function RegisterEventPage() {
   const [game, setGame] = useState("FC 26");
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="REGISTER" em="TO PLAY" line="NAME ON THE BRACKET · PAYTR ENTRY · SHOW UP" back />
+      <Hero title="REGISTER" em="TO PLAY" line="NAME ON THE BRACKET · 150 ₺ AT THE DESK · SHOW UP" back />
       <form
         className="hub-form"
         onSubmit={(e) => {
           e.preventDefault();
           if (!user) { setAuthOpen(true, "otp"); return; }
-          flash(`Registered ${user.displayName} for ${game} (PayTR demo)`);
+          flash(`Seat held for ${user.displayName} · ${game} · pay 150 ₺ at the desk (demo)`);
         }}
       >
         <div className="hub-field">
@@ -222,7 +222,9 @@ export function RegisterEventPage() {
           <label>GAMERTAG ON BRACKET</label>
           <input defaultValue={user?.displayName ?? ""} placeholder="ArmanK" />
         </div>
-        <button className="hub-cta" type="submit">PAY ENTRY & REGISTER</button>
+        <button className="hub-cta" type="submit">HOLD MY SEAT</button>
+        {/* PDF §23 — payments are cash / card machine at the club, never online. */}
+        <p className="hub-form-note">Entry fee 150 ₺ — paid in cash or by card at the desk when you check in.</p>
       </form>
     </HubPage>
   );

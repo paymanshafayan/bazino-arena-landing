@@ -167,11 +167,13 @@
 .hub-evcard header b { font-size: 13px; letter-spacing: 0.08em; display: block; }
 .hub-evcard header small { color: var(--hub-muted); font-size: 11px; }
 .hub-evart {
-  height: 150px; border-radius: 12px; background: #0b1528 center/cover no-repeat;
+  /* fixed height on purpose: the cover art is only 288x100, upscaling shows the blur */
+  height: 150px; flex: 0 0 150px;
+  border-radius: 12px; background: #0b1528 center/cover no-repeat;
   display: grid; place-items: center; overflow: hidden;
 }
 .hub-evart img { width: 100%; height: 100%; object-fit: cover; }
-.hub-evlist { display: flex; flex-direction: column; gap: 6px; flex: 1; font-size: 12px; color: #c5ceee; }
+.hub-evlist { display: flex; flex-direction: column; gap: 6px; flex: 0 1 auto; justify-content: center; font-size: 12px; color: #c5ceee; }
 .hub-evlist span { display: flex; gap: 8px; align-items: center; }
 .hub-evcta {
   margin-top: auto; width: 100%; padding: 10px 12px; border-radius: 10px; cursor: pointer;
@@ -283,7 +285,8 @@
 .hub-admin-note { margin-top: 18px; font-size: 11px; color: #5f6da6; }
 
 /* ── GAMES RESERVE ─────────────────────────────────────────────── */
-.hub-reserve { padding: 8px 18px 28px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+.hub-reserve { padding: 8px 18px 28px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; align-content: center; }
+.hub-reserve > * { align-self: center; }
 .hub-sys { display: grid; gap: 10px; }
 .hub-sys button {
   text-align: left; padding: 14px; border-radius: 14px; cursor: pointer;
@@ -404,6 +407,8 @@
 .hub-hours-list div { display: flex; justify-content: space-between; font-size: 13px; color: #c5ceee; padding: 4px 2px; border-bottom: 1px solid rgba(90,120,220,0.12); }
 
 .hub-form { max-width: 560px; margin: 0 auto; padding: 8px 18px 32px; display: flex; flex-direction: column; gap: 10px; }
+.hub-main > .hub-form { justify-content: center; }
+.hub-form-note { margin: 4px 0 0; font-size: 12px; color: var(--hub-muted); text-align: center; }
 .hub-form textarea, .hub-form select {
   background: rgba(0,0,0,0.35); border: 1px solid rgba(90,120,220,0.28);
   border-radius: 10px; padding: 10px 12px; color: #fff; font: inherit;
@@ -413,6 +418,8 @@
 .hub-404 h1 { font-size: 72px; margin: 0; background: linear-gradient(90deg, #3ccaf5, #ff2db0); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* ── LOADING / EMPTY / ERROR (PDF §21) ─────────────────────────── */
+.hub-state-wrap { display: flex; padding: 24px 18px 30px; }
+.hub-state-wrap > .hub-state { flex: 1; }
 .hub-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px; text-align: center; padding: 26px 18px; margin: 6px 0;

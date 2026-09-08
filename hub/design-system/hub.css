@@ -8,7 +8,8 @@
    unless the token itself must change.
    ═══════════════════════════════════════════════════════════════════ */
 
-.hub-page button { background: none; border: none; color: inherit; }
+/* zero-specificity reset (:where) so single-class button styles below still win */
+.hub-page :where(button) { background: none; border: none; color: inherit; }
 .hub-page img { max-width: none; }
 
 /* ── HEADER ──────────────────────────────────────────────────────── */

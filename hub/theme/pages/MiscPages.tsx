@@ -88,7 +88,7 @@ export function ClubPage() {
           <div className="hub-box hub-neon-box hub-neon-box--gold">
             <h3>BAZINO CREDITS</h3>
             <p style={{ fontSize: 42, margin: "8px 0", fontFamily: "Orbitron, sans-serif" }}>{user.credits.toLocaleString()} BC</p>
-            <p style={{ color: "#7f8fc0" }}>Season points live on Events → Ranking. Wallet cash is separate (PayTR).</p>
+            <p style={{ color: "#7f8fc0" }}>Season points live on Events → Ranking. Club credit is separate and is topped up at the desk.</p>
           </div>
           <div className="hub-member hub-neon-box hub-neon-box--magenta">
             <small>BAZINO MEMBER CARD</small>
@@ -175,9 +175,13 @@ export function ProfilePage() {
   if (!user) {
     return (
       <HubPage>
-        <div style={{ padding: 48, textAlign: "center" }}>
-          <button className="hub-cta" style={{ maxWidth: 280 }} type="button" onClick={() => setAuthOpen(true)}>LOGIN TO OPEN PROFILE</button>
-        </div>
+        <section className="hub-state-wrap">
+          <HubEmpty
+            title="MEMBERS ONLY"
+            body="Sign in with your phone number to see your credits, member card, season points and tournament history."
+            action={<button className="hub-cta" style={{ maxWidth: 280 }} type="button" onClick={() => setAuthOpen(true, "otp")}>LOGIN TO OPEN PROFILE</button>}
+          />
+        </section>
       </HubPage>
     );
   }
@@ -214,7 +218,7 @@ export function ProfilePage() {
               </div>
             </>
           )}
-          {tab === "wallet" && <div className="hub-box hub-neon-box hub-neon-box--gold"><h3>WALLET</h3><p>PayTR connected. Balance demo 0.00 ₺ — top-up stays on the portal.</p></div>}
+          {tab === "wallet" && <div className="hub-box hub-neon-box hub-neon-box--gold"><h3>WALLET</h3><p>Club credit demo 0.00 ₺ — top up with cash or card at the desk. No online payment.</p></div>}
           {tab === "points" && <div className="hub-box hub-neon-box hub-neon-box--green"><h3>POINTS</h3><p>{user.points} season points this Spring.</p></div>}
           {tab === "reservations" && (
             <div className="hub-box hub-neon-box">
