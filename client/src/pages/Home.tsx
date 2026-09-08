@@ -27,6 +27,8 @@ import {
   Monitor,
   Flame,
   Tv,
+  Download,
+  FolderArchive,
 } from "lucide-react";
 
 import monaHeroWide from "/assets/mona-hero-wide.png";
@@ -457,6 +459,7 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("fa");
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
 
   // ── INTERACTIVE SANDBOX CUSTOMIZER STATE (AuthKit Style) ─────────
@@ -547,6 +550,14 @@ export default function Home() {
           <a href="#tournaments">{t.nav.tournaments}</a>
           <a href="#lounge">{t.nav.lounge}</a>
           <a href="#visit">{t.nav.visit}</a>
+          <button
+            type="button"
+            onClick={() => setDownloadModalOpen(true)}
+            className="flex items-center gap-1.5 text-[#00e5ff] font-bold hover:text-white transition-colors"
+          >
+            <Download size={14} />
+            <span>{lang === "fa" ? "دانلود قالب‌ها (ZIP)" : "DOWNLOAD ZIP"}</span>
+          </button>
           <Link href="/hub" className="text-[#ffc400] font-black hover:text-[#ffd54f] transition-colors">
             HUB DEMO →
           </Link>
@@ -640,10 +651,100 @@ export default function Home() {
             <a href="#tournaments" onClick={() => setMobileMenuOpen(false)}>{t.nav.tournaments}</a>
             <a href="#lounge" onClick={() => setMobileMenuOpen(false)}>{t.nav.lounge}</a>
             <a href="#visit" onClick={() => setMobileMenuOpen(false)}>{t.nav.visit}</a>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setDownloadModalOpen(true);
+              }}
+              className="text-[#00e5ff] font-bold text-left"
+            >
+              📦 {lang === "fa" ? "دانلود قالب‌ها (ZIP)" : "DOWNLOAD ZIP THEMES"}
+            </button>
             <Link href="/hub" className="text-[#ffc400] font-black">HUB DEMO →</Link>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Theme Packages Download Modal */}
+      {downloadModalOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-6 z-50" onClick={() => setDownloadModalOpen(false)}>
+          <div className="bg-[#0e121a] border border-white/15 rounded-3xl p-8 max-w-xl w-full shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setDownloadModalOpen(false)}
+              className="absolute top-6 right-6 text-gray-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-10 h-10 rounded-2xl bg-[#35a9ff]/15 text-[#35a9ff] flex items-center justify-center">
+                <FolderArchive size={22} />
+              </span>
+              <div>
+                <h3 className="font-orbitron text-xl font-black text-white">
+                  {lang === "fa" ? "دانلود بسته‌های نصبی قالب" : "DOWNLOAD THEME PACKAGES"}
+                </h3>
+                <p className="text-xs text-gray-400">
+                  {lang === "fa" ? "قابل نصب مستقیم از پنل مدیریت پورتال گیم‌نت بازینو" : "Installable via Bazino Portal Admin Panel"}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 my-6">
+              {/* Package 1: Arena Theme */}
+              <div className="p-5 rounded-2xl bg-[#131826] border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="mono-tag text-[#ffc400] font-bold">THEME 01</span>
+                    <span className="text-xs text-gray-400">v4.5.5 • 15 MB</span>
+                  </div>
+                  <h4 className="font-orbitron font-bold text-white text-base">bazino-arena-theme.zip</h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {lang === "fa" ? "قالب کلاسیک سینمایی با تصاویر مونا و کاستومایزر استیشن‌ها" : "Cinematic Arena theme with Mona hero & customizer"}
+                  </p>
+                </div>
+                <a
+                  href="/bazino-arena-theme.zip"
+                  download="bazino-arena-theme.zip"
+                  className="btn-gold-action shrink-0"
+                >
+                  <Download size={14} />
+                  <span>{lang === "fa" ? "دانلود فایل" : "DOWNLOAD"}</span>
+                </a>
+              </div>
+
+              {/* Package 2: Hub Neon Theme */}
+              <div className="p-5 rounded-2xl bg-[#131826] border border-[#35a9ff]/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="mono-tag text-[#00e5ff] font-bold">THEME 02</span>
+                    <span className="text-xs text-gray-400">v1.0.0 • 13 MB</span>
+                  </div>
+                  <h4 className="font-orbitron font-bold text-white text-base">bazino-hub-theme.zip</h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {lang === "fa" ? "قالب نئونی هاب با ۱۷ صفحه، براکت ۳۲ نفره و ۴ کارت Games" : "Full neon Hub theme with 17 pages & 32-player bracket"}
+                  </p>
+                </div>
+                <a
+                  href="/bazino-hub-theme.zip"
+                  download="bazino-hub-theme.zip"
+                  className="btn-ghost-action shrink-0 border-[#35a9ff]/50 text-[#35a9ff] hover:bg-[#35a9ff]/10"
+                >
+                  <Download size={14} />
+                  <span>{lang === "fa" ? "دانلود فایل" : "DOWNLOAD"}</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center text-xs font-orbitron text-gray-500 border-t border-white/10 pt-4">
+              <span>THEME SDK v2 COMPATIBLE</span>
+              <span className="text-[#ffc400]">BAZINO ARENA</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       {authOpen && (
