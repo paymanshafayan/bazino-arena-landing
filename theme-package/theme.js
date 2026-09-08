@@ -548,7 +548,7 @@
     if (parts.length >= 2) {
       var first = parts[0].trim();
       var rest = parts.slice(1).join(',').trim();
-      if (first && rest) return [first + ',', rest];
+      if (first && rest) return [first + '،', rest];
     }
     var words = s.trim().split(/\s+/);
     if (words.length <= 3) return [s, ''];
@@ -713,7 +713,7 @@
     var activeSlide = slides[Math.min(slideIndex, slideCount - 1)] || slides[0];
 
     var videoUrl = String(settings.hero_video || settings.hero_video_url || '') || (base + 'hero-arena.mp4');
-    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + (smallScreen ? 'hero-poster-small.webp' : 'hero-poster.webp'));
+    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + 'mona-hero-wide.png');
 
     function startPlayback() {
       var v = videoRef.current;
@@ -958,7 +958,7 @@
         h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || T('signalWord'))
       ];
       if (withMedia) {
-        var cImg = entry.imageUrl || entry.image || (base + 'hero-poster-small.webp');
+        var cImg = entry.imageUrl || entry.image || (base + 'mona-hero-wide.png');
         kids.push(mediaImg(cImg, loc(entry.title, language) || 'Bazino', 'bazino-home-card-media', '(min-width: 801px) 25vw, 100vw', 'media-' + index));
       }
       kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || T('cardTitleFallback')));
@@ -1105,7 +1105,7 @@
               var body = loc(e.desc || e.description || e.body, language) || T('cardBodyFallback');
               var labelMap = ['CONSOLE 01', 'CONSOLE 02', 'SCREEN 03', 'LOUNGE 04'];
               var icons = ['◆', '◆', '◆', '◆'];
-              var fallbackPoster = posterUrl || (base + 'hero-poster-small.webp');
+              var fallbackPoster = posterUrl || (base + 'mona-hero-wide.png');
               var imgSrc = e.imageUrl || e.image || fallbackPoster;
               var imgEl = mediaImg(imgSrc, title, 'experience-card-image', '(min-width: 801px) 25vw, 100vw', 'img-' + idx);
               return h('article', { key: e.id || idx, className: 'experience-card experience-card--' + (idx + 1) },
