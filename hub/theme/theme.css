@@ -138,8 +138,8 @@
   font-family: var(--hub-font-display); cursor: pointer;
 }
 
-/* ── GAMES 3 CARDS ─────────────────────────────────────────────── */
-.hub-tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding: 22px; }
+/* ── GAMES 4 CARDS (KIDS / ADULTS / SYSTEMS & GEAR / REQUESTS) ────── */
+.hub-tri { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 22px; }
 .hub-tri-card {
   border-radius: 18px; overflow: hidden; min-height: 340px; position: relative;
   cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end;
@@ -147,14 +147,21 @@
 }
 .hub-tri-card::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(6,10,22,0.15), rgba(6,10,22,0.88));
+  background: linear-gradient(180deg, rgba(6,10,22,0.18), rgba(6,10,22,0.92));
 }
 .hub-tri-card > * { position: relative; z-index: 1; }
-.hub-tri-card h2 { margin: 0 0 6px; font-size: 28px; }
-.hub-tri-card p { margin: 0 0 14px; color: #c5ceee; }
+.hub-tri-card h2 { margin: 0 0 6px; font-size: 24px; letter-spacing: 0.04em; }
+.hub-tri-card p { margin: 0 0 14px; color: #c5ceee; font-size: 13px; line-height: 1.45; }
 .hub-tri-cta {
   align-self: flex-start; padding: 8px 14px; border-radius: 10px; font-size: 11px; font-weight: 800;
   letter-spacing: 0.1em; font-family: var(--hub-font-display);
+}
+
+@media (max-width: 1200px) {
+  .hub-tri { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .hub-tri { grid-template-columns: 1fr; }
 }
 
 /* ── EVENTS HUB CARDS ──────────────────────────────────────────── */
