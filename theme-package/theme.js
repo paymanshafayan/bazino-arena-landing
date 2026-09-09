@@ -32,7 +32,7 @@
 (function () {
   var SDK = (typeof window !== 'undefined') ? window.BazinoThemeSDK : null;
   if (!SDK || !SDK.registerComponent) return;
-  var R = SDK.React;
+  var R = (SDK && SDK.React) ? SDK.React : (typeof window !== 'undefined' ? window.React : null);
   if (!R) return;
 
   /* 4.5.5 — shared logout/session helpers.
@@ -548,7 +548,7 @@
     if (parts.length >= 2) {
       var first = parts[0].trim();
       var rest = parts.slice(1).join(',').trim();
-      if (first && rest) return [first + '،', rest];
+      if (first && rest) return [first + ',', rest];
     }
     var words = s.trim().split(/\s+/);
     if (words.length <= 3) return [s, ''];
@@ -713,7 +713,7 @@
     var activeSlide = slides[Math.min(slideIndex, slideCount - 1)] || slides[0];
 
     var videoUrl = String(settings.hero_video || settings.hero_video_url || '') || (base + 'hero-arena.mp4');
-    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + 'mona-hero-wide.png');
+    var posterUrl = String(settings.hero_poster || settings.hero_poster_url || '') || (base + (smallScreen ? 'hero-poster-small.webp' : 'hero-poster.webp'));
 
     function startPlayback() {
       var v = videoRef.current;
@@ -958,7 +958,7 @@
         h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || T('signalWord'))
       ];
       if (withMedia) {
-        var cImg = entry.imageUrl || entry.image || (base + 'mona-hero-wide.png');
+        var cImg = entry.imageUrl || entry.image || (base + 'hero-poster-small.webp');
         kids.push(mediaImg(cImg, loc(entry.title, language) || 'Bazino', 'bazino-home-card-media', '(min-width: 801px) 25vw, 100vw', 'media-' + index));
       }
       kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || T('cardTitleFallback')));
@@ -1105,7 +1105,7 @@
               var body = loc(e.desc || e.description || e.body, language) || T('cardBodyFallback');
               var labelMap = ['CONSOLE 01', 'CONSOLE 02', 'SCREEN 03', 'LOUNGE 04'];
               var icons = ['◆', '◆', '◆', '◆'];
-              var fallbackPoster = posterUrl || (base + 'mona-hero-wide.png');
+              var fallbackPoster = posterUrl || (base + 'hero-poster-small.webp');
               var imgSrc = e.imageUrl || e.image || fallbackPoster;
               var imgEl = mediaImg(imgSrc, title, 'experience-card-image', '(min-width: 801px) 25vw, 100vw', 'img-' + idx);
               return h('article', { key: e.id || idx, className: 'experience-card experience-card--' + (idx + 1) },
@@ -1224,7 +1224,7 @@
                 h('strong', null, String(score)),
                 h('span', { className: 'score-mode' }, mode)
               );
-            }) : [h('div', { className: 'score-row', key: 'score-fallback' }, h('span', { className: 'score-round' }, 'ROUND 07'), h('span', { className: 'score-players' }, 'OFFICIAL / UPDATE'), h('strong', null, '— —'), h('span', { className: 'score-mode' }, 'PORTAL DATA'))],
+            }) : [h('div', { className: 'score-row' }, h('span', { className: 'score-round' }, 'ROUND 07'), h('span', { className: 'score-players' }, 'OFFICIAL / UPDATE'), h('strong', null, '— —'), h('span', { className: 'score-mode' }, 'PORTAL DATA'))],
             h('div', { className: 'scoreboard-foot' }, h('span', null, h('span', { 'aria-hidden': true }, '◈'), ' NEXT OFFICIAL UPDATE'), h('span', null, 'BAZINO.PRO'))
           )
         )
@@ -1380,27 +1380,27 @@
     );
   }
 
-  function createSdkEntry(Component) {
-    function UniversalWrapper(props) {
-      if (!props || typeof props !== 'object' || (!props.settings && !props.lang && !props.language && !props.ts)) {
+  function makeFactory(Component) {
+    var fn = function (props) {
+      if (arguments.length === 0) {
         return {
           apiVersion: 2,
           render: function (p) {
-            return R.createElement(Component, p);
+            return R.createElement(Component, p || {});
           }
         };
       }
-      return R.createElement(Component, props);
-    }
-    UniversalWrapper.apiVersion = 2;
-    UniversalWrapper.render = function (props) {
-      return R.createElement(Component, props);
+      return R.createElement(Component, props || {});
     };
-    return UniversalWrapper;
+    fn.apiVersion = 2;
+    fn.render = function (props) {
+      return R.createElement(Component, props || {});
+    };
+    return fn;
   }
 
-  SDK.registerComponent('home', createSdkEntry(ArenaHome));
-  SDK.registerComponent('hero', createSdkEntry(ArenaHome));
+  SDK.registerComponent('home', makeFactory(ArenaHome));
+  SDK.registerComponent('hero', makeFactory(ArenaHome));
 
 
   /* ── HEADER region (SDK v2) — reference-design header ─────────────
@@ -1633,5 +1633,5 @@
     );
   }
 
-  SDK.registerComponent('header', createSdkEntry(ArenaHeader));
+  SDK.registerComponent('header', makeFactory(ArenaHeader));
 })();

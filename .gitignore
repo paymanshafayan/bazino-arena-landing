@@ -99,6 +99,8 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+clip6_frames/
+Clip6.mp4
 hub/reference/pdf-pages/
 
 # Database
