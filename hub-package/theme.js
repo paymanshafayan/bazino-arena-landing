@@ -68,23 +68,26 @@
     return fn;
   }
 
-  /* Explicit string literals for portal regex validation */
+  /* Explicit string literals matching portal SDK allowed regions whitelist */
   SDK.registerComponent('home', HomeFactory);
   SDK.registerComponent('header', HeaderFactory);
   SDK.registerComponent('hero', HomeFactory);
-  SDK.registerComponent('games', GenericFactory('GAMES'));
-  SDK.registerComponent('events', GenericFactory('EVENTS'));
-  SDK.registerComponent('bracket', GenericFactory('BRACKET'));
-  SDK.registerComponent('season', GenericFactory('SEASON'));
-  SDK.registerComponent('shop', GenericFactory('SHOP'));
-  SDK.registerComponent('food', GenericFactory('FOOD'));
-  SDK.registerComponent('club', GenericFactory('CLUB'));
-  SDK.registerComponent('blog', GenericFactory('BLOG'));
-  SDK.registerComponent('chat', GenericFactory('CHAT'));
-  SDK.registerComponent('profile', GenericFactory('PROFILE'));
-  SDK.registerComponent('contact', GenericFactory('CONTACT'));
-  SDK.registerComponent('rules', GenericFactory('RULES'));
-  SDK.registerComponent('privacy', GenericFactory('PRIVACY'));
+  SDK.registerComponent('hub.home', HomeFactory);
+  SDK.registerComponent('hub.games', GenericFactory('GAMES'));
+  SDK.registerComponent('hub.events', GenericFactory('EVENTS'));
+  SDK.registerComponent('hub.weekly', GenericFactory('WEEKLY'));
+  SDK.registerComponent('hub.special', GenericFactory('SPECIAL'));
+  SDK.registerComponent('hub.season', GenericFactory('SEASON'));
+  SDK.registerComponent('hub.brackets', GenericFactory('BRACKETS'));
+  SDK.registerComponent('hub.register', GenericFactory('REGISTER'));
+  SDK.registerComponent('hub.shop', GenericFactory('SHOP'));
+  SDK.registerComponent('hub.food', GenericFactory('FOOD'));
+  SDK.registerComponent('hub.club', GenericFactory('CLUB'));
+  SDK.registerComponent('hub.blog', GenericFactory('BLOG'));
+  SDK.registerComponent('hub.chat', GenericFactory('CHAT'));
+  SDK.registerComponent('hub.contact', GenericFactory('CONTACT'));
+  SDK.registerComponent('hub.rules', GenericFactory('RULES'));
+  SDK.registerComponent('hub.privacy', GenericFactory('PRIVACY'));
 
   console.log('Bazino Hub Neon Theme registered successfully.');
 })();
