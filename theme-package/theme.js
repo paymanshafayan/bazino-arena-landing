@@ -1380,13 +1380,27 @@
     );
   }
 
-  ArenaHome.apiVersion = 2;
-  ArenaHome.render = function (props) {
-    return R.createElement(ArenaHome, props);
-  };
+  function createSdkEntry(Component) {
+    function UniversalWrapper(props) {
+      if (!props || typeof props !== 'object' || (!props.settings && !props.lang && !props.language && !props.ts)) {
+        return {
+          apiVersion: 2,
+          render: function (p) {
+            return R.createElement(Component, p);
+          }
+        };
+      }
+      return R.createElement(Component, props);
+    }
+    UniversalWrapper.apiVersion = 2;
+    UniversalWrapper.render = function (props) {
+      return R.createElement(Component, props);
+    };
+    return UniversalWrapper;
+  }
 
-  SDK.registerComponent('home', ArenaHome);
-  SDK.registerComponent('hero', ArenaHome);
+  SDK.registerComponent('home', createSdkEntry(ArenaHome));
+  SDK.registerComponent('hero', createSdkEntry(ArenaHome));
 
 
   /* ── HEADER region (SDK v2) — reference-design header ─────────────
@@ -1619,10 +1633,5 @@
     );
   }
 
-  ArenaHeader.apiVersion = 2;
-  ArenaHeader.render = function (props) {
-    return R.createElement(ArenaHeader, props);
-  };
-
-  SDK.registerComponent('header', ArenaHeader);
+  SDK.registerComponent('header', createSdkEntry(ArenaHeader));
 })();
