@@ -1,3 +1,41 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BAZINO THEME — HUB NEON (Theme SDK v2)
+   ═══════════════════════════════════════════════════════════════════ */
+
+body[data-theme='bazino-hub'] {
+  --primary-color: #35A9FF;
+  --primary-hover-color: #64BCFF;
+  --accent-color: #FFC400;
+  --accent-red-color: #FF2DB0;
+  --dark-bg-color: #06080E;
+  --dark-card-color: #0D121F;
+  --theme-bg: #06080E;
+  --theme-card-bg: #0D121F;
+  --theme-card-border: rgba(53, 169, 255, 0.2);
+  --theme-card-radius: 1rem;
+  --theme-primary: #35A9FF;
+  --theme-btn-radius: 0.75rem;
+  --hub-cyan: #35A9FF;
+  --hub-gold: #FFC400;
+  --hub-magenta: #FF2DB0;
+  --hub-bg: #06080E;
+  --hub-panel: #0D121F;
+  --hub-font-display: "Orbitron", "Vazirmatn", sans-serif;
+  --hub-font-sans: "Rajdhani", "Vazirmatn", system-ui, sans-serif;
+}
+
+.theme-bazino-hub :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(53, 169, 255, 0.25);
+}
+
+body[data-theme='bazino-hub'],
+body[data-theme='bazino-hub'] .app-bg-main {
+  background-color: var(--dark-bg-color);
+  color: #F6F8FC;
+}
+
 /* Hub theme pages — sits on design-system/hub.css */
 
 .hub-page a { color: inherit; text-decoration: none; }
