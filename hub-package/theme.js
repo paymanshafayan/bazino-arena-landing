@@ -37,6 +37,8 @@
       )
     );
   }
+  HeaderFactory.apiVersion = 2;
+  HeaderFactory.render = function (props) { return R.createElement(HeaderFactory, props); };
 
   function HomeFactory(props) {
     return R.createElement('div', { className: 'hub-home-root' },
@@ -49,9 +51,11 @@
       )
     );
   }
+  HomeFactory.apiVersion = 2;
+  HomeFactory.render = function (props) { return R.createElement(HomeFactory, props); };
 
   function GenericFactory(name) {
-    return function (props) {
+    var fn = function (props) {
       return R.createElement('div', { className: 'hub-page-root' },
         R.createElement(HeaderFactory, props),
         R.createElement('div', { className: 'hub-page-content' },
@@ -59,36 +63,28 @@
         )
       );
     };
+    fn.apiVersion = 2;
+    fn.render = function (props) { return R.createElement(fn, props); };
+    return fn;
   }
 
-  var regions = [
-    'home',
-    'header',
-    'games',
-    'events',
-    'bracket',
-    'season',
-    'shop',
-    'food',
-    'club',
-    'blog',
-    'chat',
-    'profile',
-    'contact',
-    'rules',
-    'privacy'
-  ];
+  /* Explicit string literals for portal regex validation */
+  SDK.registerComponent('home', HomeFactory);
+  SDK.registerComponent('header', HeaderFactory);
+  SDK.registerComponent('hero', HomeFactory);
+  SDK.registerComponent('games', GenericFactory('GAMES'));
+  SDK.registerComponent('events', GenericFactory('EVENTS'));
+  SDK.registerComponent('bracket', GenericFactory('BRACKET'));
+  SDK.registerComponent('season', GenericFactory('SEASON'));
+  SDK.registerComponent('shop', GenericFactory('SHOP'));
+  SDK.registerComponent('food', GenericFactory('FOOD'));
+  SDK.registerComponent('club', GenericFactory('CLUB'));
+  SDK.registerComponent('blog', GenericFactory('BLOG'));
+  SDK.registerComponent('chat', GenericFactory('CHAT'));
+  SDK.registerComponent('profile', GenericFactory('PROFILE'));
+  SDK.registerComponent('contact', GenericFactory('CONTACT'));
+  SDK.registerComponent('rules', GenericFactory('RULES'));
+  SDK.registerComponent('privacy', GenericFactory('PRIVACY'));
 
-  for (var i = 0; i < regions.length; i++) {
-    var reg = regions[i];
-    if (reg === 'home') {
-      SDK.registerComponent(reg, HomeFactory);
-    } else if (reg === 'header') {
-      SDK.registerComponent(reg, HeaderFactory);
-    } else {
-      SDK.registerComponent(reg, GenericFactory(reg.toUpperCase()));
-    }
-  }
-
-  console.log('Bazino Hub Neon Theme registered successfully: ' + regions.join(', '));
+  console.log('Bazino Hub Neon Theme registered successfully.');
 })();

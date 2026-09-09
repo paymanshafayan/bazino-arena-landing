@@ -1224,7 +1224,7 @@
                 h('strong', null, String(score)),
                 h('span', { className: 'score-mode' }, mode)
               );
-            }) : [h('div', { className: 'score-row' }, h('span', { className: 'score-round' }, 'ROUND 07'), h('span', { className: 'score-players' }, 'OFFICIAL / UPDATE'), h('strong', null, '— —'), h('span', { className: 'score-mode' }, 'PORTAL DATA'))],
+            }) : [h('div', { className: 'score-row', key: 'score-fallback' }, h('span', { className: 'score-round' }, 'ROUND 07'), h('span', { className: 'score-players' }, 'OFFICIAL / UPDATE'), h('strong', null, '— —'), h('span', { className: 'score-mode' }, 'PORTAL DATA'))],
             h('div', { className: 'scoreboard-foot' }, h('span', null, h('span', { 'aria-hidden': true }, '◈'), ' NEXT OFFICIAL UPDATE'), h('span', null, 'BAZINO.PRO'))
           )
         )
@@ -1380,14 +1380,13 @@
     );
   }
 
-  SDK.registerComponent('home', function () {
-    return {
-      apiVersion: 2,
-      render: function (props) {
-        return R.createElement(ArenaHome, props);
-      }
-    };
-  });
+  ArenaHome.apiVersion = 2;
+  ArenaHome.render = function (props) {
+    return R.createElement(ArenaHome, props);
+  };
+
+  SDK.registerComponent('home', ArenaHome);
+  SDK.registerComponent('hero', ArenaHome);
 
 
   /* ── HEADER region (SDK v2) — reference-design header ─────────────
@@ -1620,12 +1619,10 @@
     );
   }
 
-  SDK.registerComponent('header', function () {
-    return {
-      apiVersion: 2,
-      render: function (props) {
-        return R.createElement(ArenaHeader, props);
-      }
-    };
-  });
+  ArenaHeader.apiVersion = 2;
+  ArenaHeader.render = function (props) {
+    return R.createElement(ArenaHeader, props);
+  };
+
+  SDK.registerComponent('header', ArenaHeader);
 })();
