@@ -2,12 +2,15 @@
 /**
  * CDP Browser Bridge — Chrome DevTools Protocol Client for Arena Agent
  * Connects directly to Chrome remote debugging port or Cloudflare tunnel.
+<<<<<<< HEAD
  *
  * Usage:
  *   node cdp_bridge.mjs <cdp_url> list
  *   node cdp_bridge.mjs <cdp_url> navigate <url>
  *   node cdp_bridge.mjs <cdp_url> screenshot <output_path>
  *   node cdp_bridge.mjs <cdp_url> eval <javascript_expression>
+=======
+>>>>>>> 0e5bf34 (feat: Add CDP live verification dashboard, endpoint, and final installable theme ZIP packages)
  */
 
 import fs from 'node:fs';
@@ -28,7 +31,10 @@ async function getTabs() {
 }
 
 function resolveWsUrl(rawWsUrl) {
+<<<<<<< HEAD
   // If Chrome returned ws://localhost:9222/devtools/page/... but we are connecting via https://xyz.trycloudflare.com
+=======
+>>>>>>> 0e5bf34 (feat: Add CDP live verification dashboard, endpoint, and final installable theme ZIP packages)
   const u = new URL(rawWsUrl);
   const baseU = new URL(cleanBase);
   u.protocol = baseU.protocol === 'https:' ? 'wss:' : 'ws:';

@@ -203,7 +203,62 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+function vitePluginScreenshotSaver(): Plugin {
+  return {
+    name: "screenshot-saver",
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use("/api/save-screenshot", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk) => {
+          body += chunk.toString();
+        });
+
+        req.on("end", () => {
+          try {
+            const data = JSON.parse(body);
+            const { name = "live-screenshot", imageBase64 } = data;
+            if (!imageBase64) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Missing imageBase64" }));
+              return;
+            }
+
+            const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+            const buffer = Buffer.from(cleanBase64, "base64");
+            
+            const targetPaths = [
+              path.resolve(PROJECT_ROOT, `hub/previews/${name}.png`),
+              path.resolve(PROJECT_ROOT, `client/public/${name}.png`),
+              path.resolve(PROJECT_ROOT, `${name}.png`)
+            ];
+
+            for (const p of targetPaths) {
+              fs.mkdirSync(path.dirname(p), { recursive: true });
+              fs.writeFileSync(p, buffer);
+            }
+
+            console.log(`[Screenshot Saver] Successfully saved ${name}.png (${buffer.length} bytes) to target paths.`);
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, size: buffer.length, name }));
+          } catch (e) {
+            console.error("[Screenshot Saver] Error saving screenshot:", e);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: String(e) }));
+          }
+        });
+      });
+    },
+  };
+}
+
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy(), vitePluginScreenshotSaver()];
 
 export default defineConfig({
   plugins,

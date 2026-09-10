@@ -15,6 +15,7 @@ import HubKit from "../../hub/design-system/KitPage";
 import HubTheme from "../../hub/theme/HubTheme";
 import { HubProvider } from "../../hub/theme/HubContext";
 import ThemeHarness from "./pages/ThemeHarness";
+import CdpVerificationPage from "./pages/CdpVerificationPage";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
@@ -23,6 +24,7 @@ function Router() {
   return (
     <HubProvider>
       <Switch>
+        <Route path="/verify-cdp" component={CdpVerificationPage} />
         <Route path="/theme-harness" component={ThemeHarness} />
         <Route path="/brackets" component={BracketDemo} />
         <Route path="/hub/kit" component={HubKit} />
