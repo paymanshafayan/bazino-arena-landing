@@ -12,8 +12,38 @@
     "cyan": "#00D2FF",
     "crimson": "#FF2A5F"
   },
+  "tokens": {
+    "font-display": "\"Orbitron\", \"Vazirmatn\", sans-serif",
+    "font-sans": "\"Vazirmatn\", system-ui, sans-serif",
+    "border": "rgba(255, 196, 0, 0.4)",
+    "glow": "rgba(255, 196, 0, 0.45)"
+  },
   "regions": [
     "home",
     "header"
-  ]
+  ],
+  "strings": {
+    "fa": {
+      "hero": "اگه یه قهرمانی، این آخرشه.",
+      "sub": "کاوش ۳ بعدی فضای سالن گیم‌نت بازینو",
+      "cta": "رزرو جایگاه",
+      "headerReserve": "رزرو نوبت",
+      "nav.home": "خانه سه‌بعدی",
+      "nav.games": "بازی‌ها",
+      "nav.reservations": "کنسول‌های PS5",
+      "nav.tournaments": "مسابقات",
+      "nav.cafe": "کافه"
+    },
+    "en": {
+      "hero": "IF YOU ARE A CHAMP, THIS IS IT.",
+      "sub": "3D Spatial Walkthrough of Bazino Gaming Lounge",
+      "cta": "Reserve",
+      "headerReserve": "RESERVE",
+      "nav.home": "3D HOME",
+      "nav.games": "GAMES",
+      "nav.reservations": "PS5 PRO",
+      "nav.tournaments": "ARENA",
+      "nav.cafe": "CAFE"
+    }
+  }
 }
