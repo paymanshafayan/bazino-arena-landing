@@ -466,8 +466,8 @@
   ],
   "media": {
     "heroVideo": "assets/hero-arena.mp4",
-    "heroPoster": "assets/hero-poster.webp",
-    "heroPosterSmall": "assets/hero-poster-small.webp",
+    "heroPoster": "assets/mona-hero-wide.png",
+    "heroPosterSmall": "assets/mona-hero-wide.png",
     "videoLoading": "deferred-after-window-load",
     "videoAutoplay": "muted-playsinline-after-idle",
     "videoReplay": "click-on-hero"

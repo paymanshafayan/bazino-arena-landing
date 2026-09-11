@@ -1,0 +1,320 @@
+/*
+ * BAZINO 3D DIMENSION THEME — theme.css
+ * OLED-optimized 3D spatial card deck & walkthrough theme for Bazino Portal.
+ */
+
+:root {
+  --bz3d-bg-void: #050608;
+  --bz3d-bg-surface: rgba(12, 16, 26, 0.75);
+  --bz3d-bg-card: rgba(14, 18, 30, 0.85);
+  --bz3d-border-glass: rgba(255, 255, 255, 0.1);
+  --bz3d-border-gold: rgba(255, 196, 0, 0.4);
+  --bz3d-border-cyan: rgba(0, 210, 255, 0.4);
+  --bz3d-gold: #ffc400;
+  --bz3d-gold-glow: rgba(255, 196, 0, 0.45);
+  --bz3d-cyan: #00d2ff;
+  --bz3d-cyan-glow: rgba(0, 210, 255, 0.45);
+  --bz3d-crimson: #ff2a5f;
+  --bz3d-text-main: #ffffff;
+  --bz3d-text-dim: #cbd5e1;
+  --bz3d-text-muted: #94a3b8;
+  --bz3d-font-fa: 'Vazirmatn', sans-serif;
+  --bz3d-font-display: 'Orbitron', 'Vazirmatn', sans-serif;
+}
+
+body[data-theme='bazino-3d-dimension'],
+.theme-bazino-3d-dimension {
+  background-color: var(--bz3d-bg-void);
+  color: var(--bz3d-text-main);
+  font-family: var(--bz3d-font-fa);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ── SPATIAL HEADER ─────────────────────────────────────────────── */
+.theme-bazino-3d-dimension .b3d-header {
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  max-width: 1360px;
+  margin: 16px auto 32px auto;
+  padding: 0 28px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px;
+  background: rgba(12, 16, 26, 0.8);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--bz3d-border-glass);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.theme-bazino-3d-dimension .b3d-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.theme-bazino-3d-dimension .b3d-logo-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(255, 196, 0, 0.25), rgba(0, 210, 255, 0.25));
+  border: 1px solid var(--bz3d-gold);
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--bz3d-gold-glow);
+  font-family: var(--bz3d-font-display);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--bz3d-gold);
+}
+
+.theme-bazino-3d-dimension .b3d-logo-text {
+  font-family: var(--bz3d-font-display);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #ffffff 0%, var(--bz3d-gold) 50%, var(--bz3d-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.theme-bazino-3d-dimension .b3d-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.theme-bazino-3d-dimension .b3d-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bz3d-text-dim);
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.theme-bazino-3d-dimension .b3d-nav a:hover,
+.theme-bazino-3d-dimension .b3d-nav a.is-active {
+  color: #000;
+  background: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
+  font-weight: 800;
+  box-shadow: 0 0 20px var(--bz3d-gold-glow);
+}
+
+.theme-bazino-3d-dimension .b3d-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
+  color: #000;
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px var(--bz3d-gold-glow);
+}
+
+/* ── 3D HERO SPATIAL DECK ────────────────────────────────────────── */
+.theme-bazino-3d-dimension .b3d-hero {
+  position: relative;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 40px 24px 80px 24px;
+  text-align: center;
+  perspective: 1200px;
+}
+
+.theme-bazino-3d-dimension .b3d-conical-light {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 900px;
+  height: 400px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 196, 0, 0.18) 0%, rgba(0, 210, 255, 0.08) 40%, transparent 80%);
+  z-index: 0;
+}
+
+.theme-bazino-3d-dimension .b3d-hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.theme-bazino-3d-dimension .b3d-hero-gold {
+  background: linear-gradient(135deg, #ffffff 0%, var(--bz3d-gold) 60%, #ff8800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 35px var(--bz3d-gold-glow);
+}
+
+.theme-bazino-3d-dimension .b3d-hero-sub {
+  position: relative;
+  z-index: 2;
+  font-size: 16px;
+  color: var(--bz3d-text-dim);
+  max-width: 580px;
+  margin: 0 auto 40px auto;
+  line-height: 1.7;
+}
+
+/* 3D Deck Container */
+.theme-bazino-3d-dimension .b3d-deck-stage {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.theme-bazino-3d-dimension .b3d-card {
+  position: absolute;
+  width: 380px;
+  height: 450px;
+  border-radius: 28px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--bz3d-border-glass);
+  transform-style: preserve-3d;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.theme-bazino-3d-dimension .b3d-card.is-center {
+  background: rgba(13, 18, 32, 0.92);
+  border-color: rgba(255, 196, 0, 0.5);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 196, 0, 0.25);
+  transform: translate3d(0, 0, 50px) scale(1);
+  z-index: 30;
+}
+
+.theme-bazino-3d-dimension .b3d-card.is-left {
+  background: rgba(9, 13, 22, 0.8);
+  transform: translate3d(-220px, 0, -100px) rotateY(15deg) scale(0.88);
+  opacity: 0.75;
+  z-index: 20;
+}
+
+.theme-bazino-3d-dimension .b3d-card.is-right {
+  background: rgba(9, 13, 22, 0.8);
+  transform: translate3d(220px, 0, -100px) rotateY(-15deg) scale(0.88);
+  opacity: 0.75;
+  z-index: 20;
+}
+
+.theme-bazino-3d-dimension .b3d-card-img {
+  width: 100%;
+  height: 220px;
+  border-radius: 18px;
+  object-fit: cover;
+  margin: 12px 0;
+  border: 1px solid var(--bz3d-border-glass);
+}
+
+.theme-bazino-3d-dimension .b3d-card-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 4px 0;
+  text-align: right;
+}
+
+.theme-bazino-3d-dimension .b3d-card-desc {
+  font-size: 12px;
+  color: var(--bz3d-text-dim);
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+  text-align: right;
+}
+
+/* ── 3D GAMES ROSTER ─────────────────────────────────────────────── */
+.theme-bazino-3d-dimension .b3d-section {
+  max-width: 1360px;
+  margin: 80px auto 0 auto;
+  padding: 0 24px;
+}
+
+.theme-bazino-3d-dimension .b3d-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.theme-bazino-3d-dimension .b3d-game-card {
+  position: relative;
+  height: 420px;
+  border-radius: 24px;
+  background: var(--bz3d-bg-card);
+  border: 1px solid var(--bz3d-border-glass);
+  overflow: hidden;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+}
+
+.theme-bazino-3d-dimension .b3d-game-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--bz3d-gold);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 35px var(--bz3d-gold-glow);
+}
+
+.theme-bazino-3d-dimension .b3d-game-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: transform 0.5s;
+}
+
+.theme-bazino-3d-dimension .b3d-game-card:hover img {
+  transform: scale(1.08);
+}
+
+.theme-bazino-3d-dimension .b3d-game-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5,6,8,0.2) 0%, rgba(5,6,8,0.95) 75%);
+  z-index: 2;
+}
+
+.theme-bazino-3d-dimension .b3d-game-content {
+  position: relative;
+  z-index: 3;
+}
