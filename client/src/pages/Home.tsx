@@ -1,1299 +1,732 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { QRCodeSVG } from "qrcode.react";
 import { Link } from "wouter";
 import {
-  ArrowUpRight,
-  ChevronDown,
+  Gamepad2,
+  Tv,
+  Monitor,
+  Trophy,
+  Sparkles,
+  Zap,
+  Radio,
+  Flame,
+  Award,
+  Crown,
   ChevronLeft,
   ChevronRight,
-  Coffee,
-  Globe,
-  LogOut,
-  MapPin,
-  Menu,
-  Radio,
-  Sparkles,
-  Trophy,
-  Users,
-  X,
-  Zap,
-  CheckCircle2,
-  SlidersHorizontal,
-  Clock,
   ShieldCheck,
-  Gamepad2,
-  Volume2,
-  Monitor,
-  Flame,
-  Tv,
+  Compass,
+  Play,
+  Sword,
+  Users,
+  Eye,
+  Layers
 } from "lucide-react";
 
 import monaHeroWide from "/assets/mona-hero-wide.png";
-import slideFc26 from "../../../hub/bracket-demo/covers/fc26.png";
-import slideUfc5 from "../../../hub/bracket-demo/covers/ufc5.png";
-import slideMk1 from "../../../hub/bracket-demo/covers/mk1.png";
-import slideTekken8 from "../../../hub/bracket-demo/covers/tekken8.png";
-import gamesAdults from "../../../hub/theme/assets/games-adults.jpg";
-import gamesGear from "../../../hub/theme/assets/games-gear.jpg";
-import slideMatch from "../../../hub/theme/assets/slide-match.jpg";
-import foodSoon from "../../../hub/theme/assets/food-soon.jpg";
-import slideCity from "../../../hub/theme/assets/slide-city.jpg";
+import heroSetup from "/assets/hero-setup.jpg";
+import heroPlayer from "/assets/hero-player.jpg";
+import gamesGear from "/assets/games-gear.jpg";
+import slideFc26 from "/assets/fc26.png";
+import slideTekken8 from "/assets/tekken8.png";
+import slideMk1 from "/assets/mk1.png";
+import slideUfc5 from "/assets/ufc5.png";
+import avatarArman from "/assets/avatar-armank.jpg";
 
-// SVG Flags
-const FlagIR: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 3 2" className={className} aria-hidden="true">
-    <rect width="3" height="2" fill="#fff" />
-    <rect width="3" height="0.667" fill="#239f40" />
-    <rect y="1.333" width="3" height="0.667" fill="#da0000" />
-    <circle cx="1.5" cy="1" r="0.26" fill="none" stroke="#da0000" strokeWidth="0.09" />
-  </svg>
-);
-
-const FlagGB: React.FC<{ className?: string }> = ({ className }) => {
-  const clipId = useId().replace(/:/g, "-");
-  return (
-    <svg viewBox="0 0 60 30" className={className} aria-hidden="true">
-      <clipPath id={clipId}><path d="M0 0v30h60V0z" /></clipPath>
-      <path d="M0 0v30h60V0z" fill="#012169" />
-      <path d="M0 0l60 30m0-30L0 30" stroke="#fff" strokeWidth="6" />
-      <path d="M0 0l60 30m0-30L0 30" clipPath={`url(#${clipId})`} stroke="#C8102E" strokeWidth="4" />
-      <path d="M30 0v30M0 15h60" stroke="#fff" strokeWidth="10" />
-      <path d="M30 0v30M0 15h60" stroke="#C8102E" strokeWidth="6" />
-    </svg>
-  );
-};
-
-const FlagRU: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 3 2" className={className} aria-hidden="true">
-    <rect width="3" height="2" fill="#fff" />
-    <rect y="0.667" width="3" height="0.667" fill="#0039a6" />
-    <rect y="1.333" width="3" height="0.667" fill="#d52b1e" />
-  </svg>
-);
-
-const FlagTR: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 30 20" className={className} aria-hidden="true">
-    <rect width="30" height="20" fill="#e30a17" />
-    <circle cx="11.25" cy="10" r="5" fill="#fff" />
-    <circle cx="12.5" cy="10" r="4" fill="#e30a17" />
-    <polygon fill="#fff" points="17.5,10 15.1,10.8 16.6,8.7 16.6,11.3 15.1,9.2" transform="rotate(0 16.3 10)" />
-  </svg>
-);
-
-const Flag: React.FC<{ country: string; className?: string }> = ({ country, className = "w-4 h-3 rounded-[2px] shadow-sm shrink-0" }) => {
-  switch (country) {
-    case "IR": return <FlagIR className={className} />;
-    case "GB": return <FlagGB className={className} />;
-    case "RU": return <FlagRU className={className} />;
-    case "TR": return <FlagTR className={className} />;
-    default: return null;
-  }
-};
-
-type Lang = "fa" | "en" | "tr" | "ru";
-const reservationUrl = "/reservations";
-
-// ── 3D TILT CONTAINER ──────────────────────────────────────────────
-interface TiltCardProps {
-  children: ReactNode;
-  className?: string;
-  maxTilt?: number;
+interface SpatialDeckCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: string;
+  badge: string;
+  badgeColor: "gold" | "cyan" | "crimson";
+  image: string;
+  specs: string[];
+  rate: string;
+  actionText: string;
 }
 
-function TiltCard({ children, className = "", maxTilt = 8 }: TiltCardProps) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+const CARDS: SpatialDeckCard[] = [
+  {
+    id: "lounge",
+    title: "سالن اصلی گیم‌نت بازینو",
+    subtitle: "اتمسفر لوکس نسل نهم با کنسول‌های PS5 Pro، نورپردازی نئونی و حضور مونا",
+    category: "BAZINO MAIN LOUNGE",
+    badge: "360° SPATIAL VIEW",
+    badgeColor: "gold",
+    image: monaHeroWide,
+    specs: ["۴۲ ایستگاه فعال", "کاناپه‌های چرمی VIP", "سیستم صوتی سه‌بعدی"],
+    rate: "فضای اختصاصی",
+    actionText: "رزرو جایگاه در سالن"
+  },
+  {
+    id: "fc26",
+    title: "EA SPORTS FC 26",
+    subtitle: "جدیدترین نسخه شبیه‌ساز فوتبال با موتور هایپرموشن و مسابقات هفتگی",
+    category: "SPORTS & TOURNAMENT",
+    badge: "۱۴ کنسول فعال",
+    badgeColor: "cyan",
+    image: slideFc26,
+    specs: ["رزولوشن 4K / 120Hz", "تورنمنت جمعه‌ها", "دسته‌های DualSense Edge"],
+    rate: "۵۰ ₺ / ساعت",
+    actionText: "رزرو کنسول FC26"
+  },
+  {
+    id: "ps5pods",
+    title: "ایستگاه‌های PS5 Pro VIP",
+    subtitle: "تلویزیون‌های ۶۵ اینچ OLED با رفرش‌ریت ۱۲۰ هرتز و بازی‌های لایسنس‌شده کامل",
+    category: "CONSOLE ZONE",
+    badge: "OLED HDR 120FPS",
+    badgeColor: "gold",
+    image: heroSetup,
+    specs: ["تلویزیون 65\" OLED", "صدای فراگیر Pulse", "پذیرایی اختصاصی"],
+    rate: "۵۰ ₺ / ساعت",
+    actionText: "رزرو استگاه VIP"
+  },
+  {
+    id: "pcrigs",
+    title: "ریگ‌های مسابقاتی RTX 4090",
+    subtitle: "سیستم‌های گیمینگ بتل‌استیشن با مانیتورهای ۲۴۰ هرتز ZOWIE و پینگ تک‌رقمی",
+    category: "ESPORTS ARENA",
+    badge: "240HZ PRO GEAR",
+    badgeColor: "cyan",
+    image: heroPlayer,
+    specs: ["پردازنده RTX 4090", "کیبورد مکانیکی Razer", "اینترنت فیبر نوری"],
+    rate: "۶۵ ₺ / ساعت",
+    actionText: "رزرو سیستم PC"
+  },
+  {
+    id: "tekken8",
+    title: "TEKKEN 8 & MORTAL KOMBAT 1",
+    subtitle: "مبارزات حرفه‌ای با فایت‌استیک‌های آرکید سفارشی و رندرهای آنریل ۵",
+    category: "PRO FIGHTING",
+    badge: "ARCADE BATTLE",
+    badgeColor: "crimson",
+    image: slideTekken8,
+    specs: ["فایت‌استیک آرکید", "لابی مبارزات کلاب", "فینیشرهای 4K"],
+    rate: "۵۰ ₺ / ساعت",
+    actionText: "ورود به لابی مبارزه"
+  }
+];
 
-  const mouseXSpring = useSpring(x, { stiffness: 220, damping: 22 });
-  const mouseYSpring = useSpring(y, { stiffness: 220, damping: 22 });
+export default function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [`${maxTilt}deg`, `-${maxTilt}deg`]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [`-${maxTilt}deg`, `${maxTilt}deg`]);
+  // Framer Motion 3D Tilt Values
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 120 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-12, 12]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(xPct);
+    mouseY.set(yPct);
   };
 
   const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  const nextCard = () => {
+    setActiveIndex((prev) => (prev + 1) % CARDS.length);
+  };
+
+  const prevCard = () => {
+    setActiveIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
   };
 
   return (
-    <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={`perspective-container transition-transform duration-300 ${className}`}
-    >
-      <div style={{ transform: "translateZ(16px)" }} className="w-full h-full">
-        {children}
-      </div>
-    </motion.div>
-  );
-}
+    <div className="relative min-h-screen bg-[#050608] text-white selection:bg-[#ffc400] selection:text-black overflow-x-hidden font-sans">
+      
+      {/* Overhead Conical Spotlight (AuthKit Aesthetic) */}
+      <div 
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+        style={{
+          background: "radial-gradient(ellipse 90% 50% at 50% -10%, rgba(255, 196, 0, 0.15) 0%, rgba(0, 210, 255, 0.08) 40%, transparent 80%)"
+        }}
+      />
 
-// ── DATA SOURCES & COPY ────────────────────────────────────────────
-const tournamentGames = [
-  { key: "football", cover: slideFc26, title: "FC 26 CHAMPIONSHIP", genre: "1V1 KNOCKOUT", prize: "$500 PRIZE POOL", time: "SAT 20:00", activePlayers: "32/32" },
-  { key: "tactical", cover: slideUfc5, title: "UFC 5 OCTAGON FIGHT", genre: "MMA / SINGLE ELIM", prize: "$350 PRIZE POOL", time: "SUN 20:30", activePlayers: "16/16" },
-  { key: "rpg", cover: slideMk1, title: "MORTAL KOMBAT 1", genre: "ACTION / DOUBLE ELIM", prize: "$300 PRIZE POOL", time: "FRI 21:00", activePlayers: "16/16" },
-  { key: "racing", cover: slideTekken8, title: "TEKKEN 8 SHOWDOWN", genre: "FIGHTING / 3D", prize: "$400 PRIZE POOL", time: "THU 20:00", activePlayers: "24/32" },
-];
+      {/* Cyber Grid Background */}
+      <div 
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-20"
+        style={{
+          backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px)",
+          backgroundSize: "40px 40px"
+        }}
+      />
 
-const copy: Record<Lang, {
-  nav: { arena: string; stations: string; tournaments: string; lounge: string; visit: string };
-  hero: { kicker: string; titleLine1: string; titleLine2: string; subtitle: string; primaryCta: string; secondaryCta: string; monaTag: string };
-  customizer: { index: string; title: string; subtitle: string; lightingLabel: string; consoleLabel: string; audioLabel: string; hospitalityLabel: string };
-  bracket: { index: string; title: string; subtitle: string; liveBadge: string; viewBracket: string };
-  telemetry: { index: string; title: string; subtitle: string; radarLabel: string; verifiedBadge: string; rows: Array<{ round: string; match: string; score: string; mode: string }> };
-  lounge: { index: string; title: string; subtitle: string; amenities: Array<{ title: string; desc: string }> };
-  entry: { index: string; title: string; subtitle: string; steps: Array<{ num: string; title: string; desc: string }> };
-  visit: { index: string; title: string; subtitle: string; locationName: string; mapsCta: string; digitalPassTitle: string; digitalPassDesc: string };
-  footer: { copyright: string; portalLink: string; privacyLink: string };
-}> = {
-  fa: {
-    nav: { arena: "تالار اصلی", stations: "سفارشی‌ساز", tournaments: "براکت مسابقات", lounge: "کافه و لانژ", visit: "مسیریابی" },
-    hero: {
-      kicker: "فصل ۰۱ • ایسکله، قبرس شمالی",
-      titleLine1: "اگه یه قهرمانی،",
-      titleLine2: "این آخرشه.",
-      subtitle: "برترین تجربه گیمینگ کنسولی با استیشن‌های مجهز PS5 و Xbox Series X، نمایشگرهای غول‌پیکر ۸۵ اینچ 4K و اتمسفر لوکس هتل ویستا ماره.",
-      primaryCta: "رزرو جایگاه",
-      secondaryCta: "کشف آرنا",
-      monaTag: "مونا • اینفلوئنسر رسمی بازینو",
-    },
-    customizer: {
-      index: "فصل ۰۲ / سفارشی‌سازی شب بازی",
-      title: "استیشن بازی خود را بسازید.",
-      subtitle: "کنسول، نورپردازی محیطی و خدمات اختصاصی را به صورت زنده انتخاب کنید.",
-      lightingLabel: "پالت نوری نئونی",
-      consoleLabel: "کنسول مسابقه",
-      audioLabel: "پیکربندی صدا",
-      hospitalityLabel: "پذیرایی VIP کافه",
-    },
-    bracket: {
-      index: "فصل ۰۳ / سیگنال مسابقات",
-      title: "درخت زنده مسابقات قهرمانی.",
-      subtitle: "جدول حذفی هفتگی با جوایز نقدی، امتیازات فصلی و پخش زنده روی استیج اصلی.",
-      liveBadge: "مسابقه هفتگی ۳۲ نفره • شنبه‌ها ۲۰:۰۰",
-      viewBracket: "مشاهده براکت مسابقه",
-    },
-    telemetry: {
-      index: "فصل ۰۴ / تله‌متری و لیدربورد",
-      title: "سیگنال راندهای تأییدشده.",
-      subtitle: "ثبت زنده نتایج مسابقات، رادار اسکن کلاب و پینگ پایدار استیشن‌ها.",
-      radarLabel: "رادار اسکن زنده آرنا",
-      verifiedBadge: "داده‌های رسمی تأییدشده",
-      rows: [
-        { round: "راند ۰۷", match: "ArmanK در برابر Mahan10", score: "۵ — ۳", mode: "فینال FC 26" },
-        { round: "راند ۰۶", match: "Kasra در برابر RezaB", score: "۳ — ۱", mode: "نیمه‌نهایی UFC 5" },
-        { round: "راند ۰۵", match: "NimaPro در برابر AliGameR", score: "۴ — ۲", mode: "فینال TEKKEN 8" },
-      ],
-    },
-    lounge: {
-      index: "فصل ۰۵ / لانژ شبانه و کافه",
-      title: "ریتم VIP. مکث کافه.",
-      subtitle: "طراحی‌شده برای لحظات بین راندها. مبلمان راحتی چرمی، نوشیدنی‌های خنک و تجدید قوا برای قهرمانی.",
-      amenities: [
-        { title: "جایگاه‌های اختصاصی VIP", desc: "آکوستیک ایزوله و بدون نویز با کنترل شخصی نور." },
-        { title: "سرویس داخل استیشن", desc: "سفارش مستقیم نوشیدنی و میان‌وعده بدون وقفه در بازی." },
-        { title: "پخش زنده رویدادهای بزرگ", desc: "نمایش مسابقات فوتبال و ورزش‌های الکترونیک." },
-      ],
-    },
-    entry: {
-      index: "فصل ۰۶ / مراحل ورود",
-      title: "سه قدم. یک شب خاطره‌انگیز.",
-      subtitle: "کنسول خود را انتخاب کنید، آنلاین رزرو کنید و با حضور در کلاب بازی را آغاز کنید.",
-      steps: [
-        { num: "۰۱", title: "انتخاب استیشن و کنسول", desc: "انتخاب از میان PS5 Haptic، Xbox Series X یا جایگاه ۸۵ اینچ VIP." },
-        { num: "۰۲", title: "رزرو آسان با کد رهگیری", desc: "ثبت سریع نوبت آنلاین — پرداخت حضوری نقد/کارت در دسک کلاب." },
-        { num: "۰۳", title: "شروع مسابقه و هیجان", desc: "حضور همراه دوستان، دریافت دسته‌های پرو و شروع رقابت." },
-      ],
-    },
-    visit: {
-      index: "فصل ۰۷ / دسترسی و کارت عضویت",
-      title: "شب بازی در ایسکله.",
-      subtitle: "هتل ویستا ماره، لانگ بیچ، ایسکله، قبرس شمالی.",
-      locationName: "هتل ویستا ماره • ایسکله",
-      mapsCta: "مسیریابی با گوگل مپس",
-      digitalPassTitle: "کارت دیجیتال عضویت بازینو",
-      digitalPassDesc: "برای دریافت کارت عضویت، مشاهده براکت‌ها و رزرو سریع اسکن کنید.",
-    },
-    footer: {
-      copyright: "بازینو • آرنای اسطوره‌های گیمینگ",
-      portalLink: "پورتال رسمی بازینو",
-      privacyLink: "حریم خصوصی",
-    },
-  },
-  en: {
-    nav: { arena: "Arena", stations: "Customizer", tournaments: "Brackets", lounge: "Lounge", visit: "Find Us" },
-    hero: {
-      kicker: "CHAPTER 01 • ISKELE, CYPRUS",
-      titleLine1: "IF YOU ARE A CHAMP,",
-      titleLine2: "THIS IS IT.",
-      subtitle: "High-octane console gaming with PS5 & Xbox Series X stations, giant 85\" 4K screens and VIP hospitality at Hotel VistaMare.",
-      primaryCta: "RESERVE A BAY",
-      secondaryCta: "EXPLORE ARENA",
-      monaTag: "Mona • Official Bazino Influencer",
-    },
-    customizer: {
-      index: "CHAPTER 02 / STATION CONFIGURATOR",
-      title: "BUILD YOUR GAME NIGHT.",
-      subtitle: "Select your console, ambient neon lighting, and VIP hospitality in real-time.",
-      lightingLabel: "NEON AMBIENT GLOW",
-      consoleLabel: "COMPETITION CONSOLE",
-      audioLabel: "AUDIO PRESET",
-      hospitalityLabel: "IN-BAY SERVICE",
-    },
-    bracket: {
-      index: "CHAPTER 03 / TOURNAMENT SIGNAL",
-      title: "LIVE CHAMPIONSHIP BRACKET.",
-      subtitle: "Weekly knockout brackets with cash prizes, verified leaderboard points and main-stage broadcast.",
-      liveBadge: "32-PLAYER BRACKET • SATURDAY 20:00",
-      viewBracket: "VIEW MATCH BRACKET",
-    },
-    telemetry: {
-      index: "CHAPTER 04 / TELEMETRY & RADAR",
-      title: "VERIFIED MATCH SIGNALS.",
-      subtitle: "Real-time match telemetry, live radar arena scan and ultra-low station latency.",
-      radarLabel: "LIVE ARENA RADAR SCAN",
-      verifiedBadge: "OFFICIAL VERIFIED DATA",
-      rows: [
-        { round: "ROUND 07", match: "ArmanK vs Mahan10", score: "5 — 3", mode: "FC 26 GRAND FINAL" },
-        { round: "ROUND 06", match: "Kasra vs RezaB", score: "3 — 1", mode: "UFC 5 SEMI-FINAL" },
-        { round: "ROUND 05", match: "NimaPro vs AliGameR", score: "4 — 2", mode: "TEKKEN 8 FINAL" },
-      ],
-    },
-    lounge: {
-      index: "CHAPTER 05 / NIGHT LOUNGE & CAFE",
-      title: "VIP RHYTHM. CAFE PAUSE.",
-      subtitle: "Designed for the moments between rounds. Relax in leather VIP bays, order refreshments and reset for victory.",
-      amenities: [
-        { title: "Private VIP Bays", desc: "Acoustically treated quiet bays with custom lighting." },
-        { title: "In-Bay Cafe Service", desc: "Order gourmet snacks and cold energy drinks directly to your console." },
-        { title: "Live Esports Wall", desc: "Live broadcasts of premier sports and international tournaments." },
-      ],
-    },
-    entry: {
-      index: "CHAPTER 06 / ENTRY PROTOCOL",
-      title: "THREE STEPS. ONE GLORIOUS NIGHT.",
-      subtitle: "Choose your console, secure your spot online, and arrive at the desk to start your round.",
-      steps: [
-        { num: "01", title: "SELECT YOUR STATION", desc: "Pick between PS5 Haptic, Xbox Series X or 85\" VIP Focus bays." },
-        { num: "02", title: "HOLD YOUR SPOT", desc: "Instant booking code — pay in-person via cash/card at the desk." },
-        { num: "03", title: "COMMENCE THE MATCH", desc: "Arrive with your crew, grab your controllers and climb the ranks." },
-      ],
-    },
-    visit: {
-      index: "CHAPTER 07 / LOCATION & DIGITAL PASS",
-      title: "GAME NIGHT IN ISKELE.",
-      subtitle: "Hotel VistaMare, Long Beach, Iskele, Northern Cyprus.",
-      locationName: "Hotel VistaMare • Iskele",
-      mapsCta: "OPEN IN GOOGLE MAPS",
-      digitalPassTitle: "BAZINO DIGITAL MEMBERSHIP",
-      digitalPassDesc: "Scan to add your digital pass, view tournament brackets, and fast-track reservations.",
-    },
-    footer: {
-      copyright: "BAZINO • ARENA OF LEGENDS",
-      portalLink: "Official Portal",
-      privacyLink: "Privacy Policy",
-    },
-  },
-  tr: {
-    nav: { arena: "Arena", stations: "Özelleştirici", tournaments: "Braketler", lounge: "Lounge", visit: "Konum" },
-    hero: {
-      kicker: "BÖLÜM 01 • İSKELE, KIBRIS",
-      titleLine1: "ŞAMPİYONSAN,",
-      titleLine2: "İŞTE BURASI.",
-      subtitle: "PS5 ve Xbox Series X deneyimi, 85 inç 4K dev ekranlar ve Hotel VistaMare'de VIP gaming lounge atmosferi.",
-      primaryCta: "YERİNİ AYIR",
-      secondaryCta: "ARENAYI KEŞFET",
-      monaTag: "Mona • Resmi Bazino Influencerı",
-    },
-    customizer: {
-      index: "BÖLÜM 02 / İSTASYON YAPILANDIRICI",
-      title: "OYUN GECENİ KENDİN TASARLA.",
-      subtitle: "Konsolunu, ambiyans ışıklandırmanı ve VIP ikramlarını anında seç.",
-      lightingLabel: "NEON AMBİYANS IŞIĞI",
-      consoleLabel: "TURNUVA KONSOLU",
-      audioLabel: "SES PROFİLİ",
-      hospitalityLabel: "İSTASYONA SERVİS",
-    },
-    bracket: {
-      index: "BÖLÜM 03 / TURNUVA SİNYALİ",
-      title: "CANLI TURNUVA BRAKETİ.",
-      subtitle: "Nakit ödüllü haftalık eleme turnuvaları, sezon puanları ve ana sahnede canlı yayın.",
-      liveBadge: "32 OYUNCU • CUMARTESİ 20:00",
-      viewBracket: "BRAKETİ GÖR",
-    },
-    telemetry: {
-      index: "BÖLÜM 04 / TELEMETRİ VE RADAR",
-      title: "ONAYLANMIŞ MAÇ SİNYALLERİ.",
-      subtitle: "Canlı maç verileri, arena radar taraması ve ultra düşük istasyon gecikmesi.",
-      radarLabel: "CANLI RADAR TARAMASI",
-      verifiedBadge: "RESMİ ONAYLI VERİ",
-      rows: [
-        { round: "RAUND 07", match: "ArmanK vs Mahan10", score: "5 — 3", mode: "FC 26 BÜYÜK FİNAL" },
-        { round: "RAUND 06", match: "Kasra vs RezaB", score: "3 — 1", mode: "UFC 5 YARI FİNAL" },
-        { round: "RAUND 05", match: "NimaPro vs AliGameR", score: "4 — 2", mode: "TEKKEN 8 FİNAL" },
-      ],
-    },
-    lounge: {
-      index: "BÖLÜM 05 / NIGHT LOUNGE & KAFE",
-      title: "VIP RİTMİ. KAFE MOLASI.",
-      subtitle: "Raund araları için özel olarak tasarlandı. VIP koltuklarda dinlenin, içeceğinizi yudumlayın.",
-      amenities: [
-        { title: "Özel VIP İstasyonları", desc: "Akustik izolasyonlu sakin ortam ve ayarlanabilir ışıklandırma." },
-        { title: "İstasyona Servis", desc: "Oyunu bölmeden içecek ve atıştırmalık siparişi." },
-        { title: "Canlı Espor Duvarı", desc: "Büyük spor ve espor etkinliklerinin canlı yayını." },
-      ],
-    },
-    entry: {
-      index: "BÖLÜM 06 / GİRİŞ ADIMLARI",
-      title: "ÜÇ ADIM. UNUTULMAZ BİR GECE.",
-      subtitle: "Konsolunu seç, yerini ayırt ve kulübe gelerek oyuna başla.",
-      steps: [
-        { num: "01", title: "İSTASYONUNU SEÇ", desc: "PS5 Haptic, Xbox Series X veya 85\" VIP Salonu seç." },
-        { num: "02", title: "YERİNİ AYIRT", desc: "Anında takip kodu — ödeme girişte kasada." },
-        { num: "03", title: "OYUNA BAŞLA", desc: "Arkadaşlarınla gel, kolları al ve liderlik tablosunu fethet." },
-      ],
-    },
-    visit: {
-      index: "BÖLÜM 07 / KONUM VE DİJİTAL KART",
-      title: "İSKELE'DE OYUN GECESİ.",
-      subtitle: "Hotel VistaMare, Long Beach, İskele, Kuzey Kıbrıs.",
-      locationName: "Hotel VistaMare • İskele",
-      mapsCta: "GOOGLE MAPS İLE AÇ",
-      digitalPassTitle: "BAZINO DİJİTAL ÜYELİK",
-      digitalPassDesc: "Üye kartı, turnuva braketleri ve hızlı rezervasyon için tara.",
-    },
-    footer: {
-      copyright: "BAZINO • ARENA OF LEGENDS",
-      portalLink: "Resmi Portal",
-      privacyLink: "Gizlilik Politikası",
-    },
-  },
-  ru: {
-    nav: { arena: "Арена", stations: "Конфигуратор", tournaments: "Сетки", lounge: "Лаунж", visit: "Как найти" },
-    hero: {
-      kicker: "ГЛАВА 01 • ИСКЕЛЕ, КИПР",
-      titleLine1: "ЕСЛИ ТЫ ЧЕМПИОН,",
-      titleLine2: "ТЕБЕ СЮДА.",
-      subtitle: "Консольные станции PS5 и Xbox Series X, 85-дюймовые 4K экраны и VIP атмосфера в отеле VistaMare.",
-      primaryCta: "ЗАБРОНИРОВАТЬ",
-      secondaryCta: "ОТКРЫТЬ АРЕНУ",
-      monaTag: "Мона • Официальный амбассадор Bazino",
-    },
-    customizer: {
-      index: "ГЛАВА 02 / КОНФИГУРАТОР СТАНЦИИ",
-      title: "СОЗДАЙ СВОЙ ИГРОВОЙ ВЕЧЕР.",
-      subtitle: "Выбирайте консоль, неоновую подсветку и сервис в реальном времени.",
-      lightingLabel: "НЕОНОВАЯ ПОДСВЕТКА",
-      consoleLabel: "КОНСОЛЬ",
-      audioLabel: "АУДИО РЕЖИМ",
-      hospitalityLabel: "СЕРВИС К СТАНЦИИ",
-    },
-    bracket: {
-      index: "ГЛАВА 03 / СИГНАЛ ТУРНИРОВ",
-      title: "ЖИВАЯ ТУРНИРНАЯ СЕТКА.",
-      subtitle: "Еженедельные турниры на выбывание с денежными призами и трансляцией.",
-      liveBadge: "32 ИГРОКА • СУББОТА 20:00",
-      viewBracket: "СЕТКА ТУРНИРА",
-    },
-    telemetry: {
-      index: "ГЛАВА 04 / ТЕЛЕМЕТРИЯ И РАДАР",
-      title: "ПОДТВЕРЖДЕННЫЕ СИГНАЛЫ.",
-      subtitle: "Статистика матчей, радар сканирования клуба и ультранизкий пинг.",
-      radarLabel: "РАДАР СКАНИРОВАНИЯ АРЕНЫ",
-      verifiedBadge: "ОФИЦИАЛЬНЫЕ ДАННЫЕ",
-      rows: [
-        { round: "РАУНД 07", match: "ArmanK против Mahan10", score: "5 — 3", mode: "ГРАНД-ФИНАЛ FC 26" },
-        { round: "РАУНД 06", match: "Kasra против RezaB", score: "3 — 1", mode: "ПОЛУФИНАЛ UFC 5" },
-        { round: "РАУНД 05", match: "NimaPro против AliGameR", score: "4 — 2", mode: "ФИНАЛ TEKKEN 8" },
-      ],
-    },
-    lounge: {
-      index: "ГЛАВА 05 / НОЧНОЙ ЛАУНЖ И КАФЕ",
-      title: "РИТМ VIP. ПАУЗА В КАФЕ.",
-      subtitle: "Создано для времени между раундами. Отдыхайте в кожаных креслах и заказывайте напитки.",
-      amenities: [
-        { title: "Приватные VIP Зоны", desc: "Акустический комфорт и регулируемое освещение." },
-        { title: "Сервис к станции", desc: "Заказ закусок и напитков прямо к игровому месту." },
-        { title: "Киберспортивный экран", desc: "Трансляции главных матчей на центральной стене." },
-      ],
-    },
-    entry: {
-      index: "ГЛАВА 06 / ПРАВИЛА ВХОДА",
-      title: "ТРИ ШАГА. ОДНА ЛЕГЕНДАРНАЯ НОЧЬ.",
-      subtitle: "Выберите консоль, забронируйте место и приходите в клуб.",
-      steps: [
-        { num: "01", title: "ВЫБЕРИТЕ СТАНЦИЮ", desc: "PS5 Haptic, Xbox Series X или 85\" VIP Зал." },
-        { num: "02", title: "ЗАБРОНИРУЙТЕ", desc: "Мгновенный код брони — оплата на ресепшн." },
-        { num: "03", title: "НАЧНИТЕ ИГРУ", desc: "Приходите с друзьями, берите геймпады и побеждайте." },
-      ],
-    },
-    visit: {
-      index: "ГЛАВА 07 / ЛОКАЦИЯ И ЦИФРОВАЯ КАРТА",
-      title: "ИГРОВАЯ НОЧЬ В ИСКЕЛЕ.",
-      subtitle: "Отель VistaMare, Лонг-Бич, Искеле, Северный Кипр.",
-      locationName: "Отель VistaMare • Искеле",
-      mapsCta: "ОТКРЫТЬ НА GOOGLE MAPS",
-      digitalPassTitle: "ЦИФРОВАЯ КАРТА BAZINO",
-      digitalPassDesc: "Сканируйте для доступа к профилю, сетке турниров и быстрой брони.",
-    },
-    footer: {
-      copyright: "BAZINO • АРЕНА ЛЕГЕНД",
-      portalLink: "Официальный портал",
-      privacyLink: "Конфиденциальность",
-    },
-  },
-};
-
-export default function Home() {
-  const [lang, setLang] = useState<Lang>("fa");
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const langMenuRef = useRef<HTMLDivElement | null>(null);
-
-  // ── INTERACTIVE SANDBOX CUSTOMIZER STATE (AuthKit Style) ─────────
-  const [activeLighting, setActiveLighting] = useState<"gold" | "cyan" | "magenta" | "emerald">("gold");
-  const [activeConsole, setActiveConsole] = useState<"ps5" | "xbox" | "focus85">("ps5");
-  const [activeAudio, setActiveAudio] = useState<"spatial" | "dolby">("spatial");
-  const [vipCafeActive, setVipCafeActive] = useState(true);
-
-  // ── HERO 3D CARD STACK STATE ────────────────────────────────────
-  const [heroStackIndex, setHeroStackIndex] = useState(0);
-
-  const [user, setUser] = useState<{ username: string } | null>(() => {
-    try {
-      const raw = localStorage.getItem("bazino_mock_user");
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    return null;
-  });
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authUsername, setAuthUsername] = useState("");
-
-  const t = copy[lang] ?? copy.fa;
-
-  const LANGUAGE_OPTIONS: Array<{ id: Lang; code: string; country: string; full: string }> = [
-    { id: "fa", code: "FA", country: "IR", full: "فارسی" },
-    { id: "en", code: "EN", country: "GB", full: "English" },
-    { id: "tr", code: "TR", country: "TR", full: "Türkçe" },
-    { id: "ru", code: "RU", country: "RU", full: "Русский" },
-  ];
-  const currentLang = LANGUAGE_OPTIONS.find((o) => o.id === lang) ?? LANGUAGE_OPTIONS[0];
-
-  useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
-    document.body.setAttribute("dir", lang === "fa" ? "rtl" : "ltr");
-  }, [lang]);
-
-  const handleLogout = () => {
-    try { localStorage.removeItem("bazino_mock_user"); } catch {}
-    setUser(null);
-  };
-
-  const handleAuthSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!authUsername.trim()) return;
-    const next = { username: authUsername.trim() };
-    setUser(next);
-    try { localStorage.setItem("bazino_mock_user", JSON.stringify(next)); } catch {}
-    setAuthOpen(false);
-    setAuthUsername("");
-  };
-
-  const heroStackCards = [
-    { id: "ps5", title: "PS5 HAPTIC BAY", badge: "85\" 4K 120Hz", spec: "DualSense Pro • 12ms Ping", image: gamesAdults, color: "#ffc400" },
-    { id: "xbox", title: "XBOX SERIES X", badge: "GAME PASS ULTIMATE", spec: "12 TFLOPS • Quick Resume", image: slideFc26, color: "#35a9ff" },
-    { id: "vip", title: "VIP STADIUM FOCUS", badge: "PRIVATE ACOUSTIC", spec: "Dolby Atmos • Leather Recliner", image: slideMatch, color: "#ff2db0" },
-  ];
-
-  const getLightingGlow = () => {
-    switch (activeLighting) {
-      case "gold": return "border-[#ffc400] shadow-[0_0_40px_rgba(255,196,0,0.35)]";
-      case "cyan": return "border-[#35a9ff] shadow-[0_0_40px_rgba(53,169,255,0.35)]";
-      case "magenta": return "border-[#ff2db0] shadow-[0_0_40px_rgba(255,45,176,0.35)]";
-      case "emerald": return "border-[#10b981] shadow-[0_0_40px_rgba(16,185,129,0.35)]";
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#07080c] text-[#f6f8fc] relative overflow-hidden font-sans selection:bg-[#ffc400] selection:text-[#07080c]">
-      {/* ── TOP VOLUMETRIC SPOTLIGHT BEAM (AuthKit / 3D Dark UI) ──── */}
-      <div className="top-spotlight-beam" />
-      <div className="technical-grid fixed inset-0 pointer-events-none opacity-40 z-0" />
-
-      {/* ── FLOATING PILL NAV ──────────────────────────────────────── */}
-      <header className="floating-nav">
-        <a href="#top" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-7 h-7 rounded-full bg-[#ffc400] text-[#07080c] font-black text-xs flex items-center justify-center font-orbitron shadow-[0_0_12px_rgba(255,196,0,0.4)]">
-            B
-          </span>
-          <span className="font-orbitron font-black text-sm tracking-wider text-white hidden sm:inline">
-            BAZINO
-          </span>
-        </a>
-
-        <nav className="hidden lg:flex items-center gap-6">
-          <a href="#arena">{t.nav.arena}</a>
-          <a href="#customizer">{t.nav.stations}</a>
-          <a href="#tournaments">{t.nav.tournaments}</a>
-          <a href="#lounge">{t.nav.lounge}</a>
-          <a href="#visit">{t.nav.visit}</a>
-          <Link href="/hub" className="text-[#ffc400] font-black hover:text-[#ffd54f] transition-colors">
-            HUB DEMO →
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <div ref={langMenuRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setLangMenuOpen(!langMenuOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/05 hover:bg-white/10 text-xs font-orbitron text-gray-300 transition-colors border border-white/08"
-            >
-              <Flag country={currentLang.country} />
-              <span>{currentLang.code}</span>
-              <ChevronDown size={12} className={langMenuOpen ? "rotate-180" : ""} />
-            </button>
-            <AnimatePresence>
-              {langMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  className="absolute top-full mt-2 right-0 bg-[#0e121a] border border-white/15 rounded-xl shadow-2xl p-1.5 z-50 min-w-[120px]"
-                >
-                  {LANGUAGE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => {
-                        setLang(opt.id);
-                        setLangMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                        lang === opt.id ? "bg-[#ffc400]/15 text-[#ffc400]" : "text-gray-300 hover:bg-white/05"
-                      }`}
-                    >
-                      <Flag country={opt.country} />
-                      <span>{opt.full}</span>
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+      {/* Main Content Area */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24">
+        
+        {/* Floating Spatial Header */}
+        <header className="flex items-center justify-between h-20 px-6 sm:px-8 rounded-2xl bg-[#0c101a]/70 backdrop-blur-2xl border border-white/10 shadow-2xl mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#ffc400]/30 to-[#00d2ff]/30 border border-[#ffc400] flex items-center justify-center shadow-[0_0_20px_rgba(255,196,0,0.4)]">
+              <Gamepad2 className="w-6 h-6 text-[#ffc400]" />
+            </div>
+            <div>
+              <div className="font-['Orbitron'] font-black text-2xl tracking-wider bg-gradient-to-r from-white via-[#ffc400] to-[#00d2ff] bg-clip-text text-transparent">
+                BAZINO
+              </div>
+              <div className="font-['Rajdhani'] text-[11px] font-bold text-[#00d2ff] tracking-widest uppercase">
+                3D SPATIAL LOUNGE
+              </div>
+            </div>
           </div>
 
-          {/* User Auth */}
-          {user ? (
-            <div className="flex items-center gap-2 bg-white/05 rounded-full px-3 py-1 text-xs font-orbitron text-[#ffc400]">
-              <span>@{user.username}</span>
-              <button type="button" onClick={handleLogout} className="text-gray-400 hover:text-red-400">
-                <LogOut size={12} />
+          <nav className="hidden md:flex items-center gap-2">
+            <a href="#hero" className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ffaa00] text-black font-extrabold text-sm shadow-[0_0_20px_rgba(255,196,0,0.4)] flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> کاوش ۳ بعدی
+            </a>
+            <a href="#games" className="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 font-semibold text-sm transition-all flex items-center gap-2">
+              <Gamepad2 className="w-4 h-4" /> بازی‌ها
+            </a>
+            <a href="#pods" className="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 font-semibold text-sm transition-all flex items-center gap-2">
+              <Tv className="w-4 h-4" /> کنسول‌های PS5 Pro
+            </a>
+            <a href="#tournaments" className="px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 font-semibold text-sm transition-all flex items-center gap-2">
+              <Trophy className="w-4 h-4" /> مسابقات
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00d2ff]/10 border border-[#00d2ff]/30 text-[#00d2ff] font-['Rajdhani'] font-bold text-xs">
+              <span className="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_10px_#00ff88] animate-pulse" />
+              <span>۳۸ / ۴۲ کنسول آنلاین</span>
+            </div>
+            <button 
+              onClick={() => alert("🎮 رزرو سریع: سیستم و جایگاه شما ثبت شد. مونا اطلاعات ستاپ را برای شما ارسال می‌کند.")}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ffaa00] text-black font-extrabold text-sm shadow-[0_4px_20px_rgba(255,196,0,0.5)] hover:shadow-[0_6px_28px_rgba(255,196,0,0.7)] active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Zap className="w-4 h-4" />
+              <span>رزرو جایگاه</span>
+            </button>
+          </div>
+        </header>
+
+        {/* =========================================================
+           AUTHKIT-INSPIRED 3D SPATIAL HERO SECTION
+           ========================================================= */}
+        <section 
+          id="hero"
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className="relative min-h-[680px] flex flex-col items-center justify-center pt-8 pb-12 select-none"
+          style={{ perspective: 1200 }}
+        >
+          {/* Hero Typography */}
+          <div className="text-center max-w-3xl mx-auto mb-8 relative z-20">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ffc400]/10 border border-[#ffc400]/30 text-[#ffc400] text-xs font-extrabold mb-4 shadow-[0_0_20px_rgba(255,196,0,0.2)]">
+              <Compass className="w-4 h-4" />
+              <span>کاوش تعاملی سه‌بعدی سالن گیم‌نت بازینو</span>
+            </div>
+            
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight mb-4">
+              اگه یه قهرمانی، <br />
+              <span className="bg-gradient-to-r from-white via-[#ffd700] to-[#ff9900] bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(255,196,0,0.5)]">
+                این آخرشه.
+              </span>
+            </h1>
+            
+            <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto font-normal">
+              ماوس خود را حرکت دهید تا پرسپکتیو سه‌بعدی سالن را کنترل کنید یا برای بازدید از بخش‌های مختلف، کارت‌ها را انتخاب نمایید.
+            </p>
+          </div>
+
+          {/* 3D Multi-Card Carousel Deck (Framer Motion) */}
+          <motion.div 
+            className="relative w-full max-w-4xl h-[420px] sm:h-[480px] flex items-center justify-center my-4"
+            style={{
+              rotateX,
+              rotateY,
+              transformStyle: "preserve-3d"
+            }}
+          >
+            {CARDS.map((card, idx) => {
+              // Calculate offset relative to active index
+              const offset = (idx - activeIndex + CARDS.length) % CARDS.length;
+              let normalizedOffset = offset;
+              if (normalizedOffset > CARDS.length / 2) {
+                normalizedOffset -= CARDS.length;
+              }
+
+              const isCenter = normalizedOffset === 0;
+              const isImmediateLeft = normalizedOffset === -1;
+              const isImmediateRight = normalizedOffset === 1;
+              const isVisible = Math.abs(normalizedOffset) <= 2;
+
+              if (!isVisible) return null;
+
+              // Compute 3D translations & rotations
+              const translateX = normalizedOffset * (window.innerWidth < 640 ? 120 : 220);
+              const translateZ = -Math.abs(normalizedOffset) * 140;
+              const cardRotateY = normalizedOffset * -15;
+              const scale = 1 - Math.abs(normalizedOffset) * 0.15;
+              const opacity = 1 - Math.abs(normalizedOffset) * 0.35;
+              const zIndex = 30 - Math.abs(normalizedOffset) * 10;
+
+              return (
+                <motion.div
+                  key={card.id}
+                  onClick={() => setActiveIndex(idx)}
+                  animate={{
+                    x: translateX,
+                    z: translateZ,
+                    rotateY: cardRotateY,
+                    scale,
+                    opacity
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 160,
+                    damping: 22
+                  }}
+                  className={`absolute w-[290px] sm:w-[380px] h-[380px] sm:h-[450px] rounded-3xl p-5 sm:p-6 flex flex-col justify-between cursor-pointer backdrop-blur-2xl border transition-colors duration-300 ${
+                    isCenter
+                      ? "bg-[#0d1220]/90 border-[#ffc400]/50 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_50px_rgba(255,196,0,0.25)] ring-1 ring-[#ffc400]/30"
+                      : "bg-[#090d16]/80 border-white/10 hover:border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+                  }`}
+                  style={{
+                    zIndex,
+                    transformStyle: "preserve-3d"
+                  }}
+                >
+                  {/* Top HUD */}
+                  <div className="flex items-center justify-between z-10">
+                    <span className="font-['Rajdhani'] font-bold text-xs tracking-wider text-[#00d2ff] bg-black/60 px-3 py-1 rounded-lg border border-white/10">
+                      {card.category}
+                    </span>
+                    <span className={`font-['Orbitron'] font-extrabold text-[11px] px-2.5 py-1 rounded-lg border ${
+                      card.badgeColor === "gold" 
+                        ? "bg-[#ffc400]/20 border-[#ffc400] text-[#ffc400]" 
+                        : card.badgeColor === "cyan" 
+                        ? "bg-[#00d2ff]/20 border-[#00d2ff] text-[#00d2ff]" 
+                        : "bg-[#ff2a5f]/20 border-[#ff2a5f] text-[#ff2a5f]"
+                    }`}>
+                      {card.badge}
+                    </span>
+                  </div>
+
+                  {/* Image Backdrop inside Card */}
+                  <div className="relative w-full h-[180px] sm:h-[220px] rounded-2xl overflow-hidden my-3 border border-white/10 bg-black/50">
+                    <img 
+                      src={card.image} 
+                      alt={card.title} 
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent opacity-80" />
+                  </div>
+
+                  {/* Card Bottom Content */}
+                  <div className="z-10">
+                    <h3 className="font-black text-lg sm:text-xl text-white mb-1">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs text-slate-300 line-clamp-2 mb-3 leading-relaxed">
+                      {card.subtitle}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                      <span className="font-['Rajdhani'] font-bold text-sm text-[#ffc400]">
+                        {card.rate}
+                      </span>
+                      {isCenter ? (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            alert(`🎮 ${card.actionText} انجام شد!`);
+                          }}
+                          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ffaa00] text-black font-black text-xs shadow-[0_0_15px_rgba(255,196,0,0.5)] active:scale-95 transition-all cursor-pointer"
+                        >
+                          {card.actionText}
+                        </button>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-semibold flex items-center gap-1">
+                          کلیک برای انتخاب <ChevronLeft className="w-3 h-3" />
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+
+          {/* Bottom Interactive Pill Selector (AuthKit Bottom Switcher) */}
+          <div className="relative z-20 flex items-center gap-2 p-1.5 rounded-full bg-[#0d1220]/80 backdrop-blur-xl border border-white/15 shadow-2xl mt-4 max-w-full overflow-x-auto">
+            <button 
+              onClick={prevCard} 
+              className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+
+            {CARDS.map((c, idx) => (
+              <button
+                key={c.id}
+                onClick={() => setActiveIndex(idx)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                  activeIndex === idx
+                    ? "bg-gradient-to-r from-[#ffd700] to-[#ffaa00] text-black shadow-[0_0_15px_rgba(255,196,0,0.4)]"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>{c.title.split(" ")[0]}</span>
+              </button>
+            ))}
+
+            <button 
+              onClick={nextCard} 
+              className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+
+        </section>
+
+        {/* =========================================================
+           3D GAME ROSTER GALLERY
+           ========================================================= */}
+        <section id="games" className="mt-24">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-black text-white flex items-center gap-3 mb-2">
+                <Gamepad2 className="w-8 h-8 text-[#ffc400]" /> بازی‌های برتر کلاب بازینو
+              </h2>
+              <p className="text-slate-400 text-sm">عناوین لایسنس‌شده رسمی بر روی کنسول‌های PS5 Pro و ستاپ‌های اختصاصی</p>
+            </div>
+            <a href="#hero" className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 hover:text-white transition-all">
+              ورق زدن در هیرو سه‌بعدی
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Game 1: FC 26 */}
+            <div 
+              onClick={() => { setActiveIndex(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="relative h-[440px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#ffc400] overflow-hidden p-6 flex flex-col justify-between group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_25px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(255,196,0,0.3)]"
+            >
+              <img src={slideFc26} alt="FC 26" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#00d2ff]">
+                  SPORTS & CUP
+                </span>
+                <Trophy className="w-5 h-5 text-[#ffc400]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black text-white mb-1">EA SPORTS FC 26</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4 leading-relaxed">
+                  شبیه‌ساز نسل جدید فوتبال با موتور هایپرموشن و مسابقات قهرمانی هفتگی بازینو.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#ffc400]">۱۴ کنسول فعال</span>
+                  <button className="px-3 py-1.5 rounded-lg bg-[#ffc400] text-black font-black text-xs">
+                    انتخاب
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Game 2: Tekken 8 */}
+            <div 
+              onClick={() => { setActiveIndex(4); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="relative h-[440px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#00d2ff] overflow-hidden p-6 flex flex-col justify-between group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_25px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(0,210,255,0.3)]"
+            >
+              <img src={slideTekken8} alt="Tekken 8" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#ffc400]">
+                  PRO FIGHTING
+                </span>
+                <Flame className="w-5 h-5 text-[#ff2a5f]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black text-white mb-1">TEKKEN 8</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4 leading-relaxed">
+                  مبارزات نفس‌گیر با موتور آنریل انجین ۵، فایت‌استیک‌های اختصاصی و صدای فراگیر.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#00d2ff]">۸ کنسول فعال</span>
+                  <button className="px-3 py-1.5 rounded-lg bg-[#00d2ff] text-black font-black text-xs">
+                    انتخاب
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Game 3: Mortal Kombat 1 */}
+            <div 
+              onClick={() => { setActiveIndex(4); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="relative h-[440px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#ff2a5f] overflow-hidden p-6 flex flex-col justify-between group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_25px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(255,42,95,0.3)]"
+            >
+              <img src={slideMk1} alt="Mortal Kombat 1" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#ff2a5f]">
+                  KOMBAT ARENA
+                </span>
+                <Sword className="w-5 h-5 text-[#ff2a5f]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black text-white mb-1">MORTAL KOMBAT 1</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4 leading-relaxed">
+                  فینیشرهای سینمایی 4K با سیستم کامئو و لابی اختصاصی رقابت‌های کلاب.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#ffc400]">۶ کنسول فعال</span>
+                  <button className="px-3 py-1.5 rounded-lg bg-[#ffc400] text-black font-black text-xs">
+                    انتخاب
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Game 4: UFC 5 */}
+            <div 
+              onClick={() => { setActiveIndex(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="relative h-[440px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#00d2ff] overflow-hidden p-6 flex flex-col justify-between group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_25px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(0,210,255,0.3)]"
+            >
+              <img src={slideUfc5} alt="UFC 5" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#00d2ff]">
+                  MMA FIGHT
+                </span>
+                <ShieldCheck className="w-5 h-5 text-[#00d2ff]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black text-white mb-1">EA SPORTS UFC 5</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4 leading-relaxed">
+                  شبیه‌سازی واقعی مبارزات قفس MMA با آسیب‌دیدگی‌های بلادرنگ و فیزیک واقع‌گرایانه.
+                </p>
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#00d2ff]">۱۰ کنسول فعال</span>
+                  <button className="px-3 py-1.5 rounded-lg bg-[#00d2ff] text-black font-black text-xs">
+                    انتخاب
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* =========================================================
+           REAL HARDWARE & LOUNGE SETUP
+           ========================================================= */}
+        <section id="pods" className="mt-24">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-black text-white flex items-center gap-3 mb-2">
+                <Tv className="w-8 h-8 text-[#00d2ff]" /> سالن‌ها و ستاپ‌های واقعی بازینو
+              </h2>
+              <p className="text-slate-400 text-sm">تصاویر واقعی از اتمسفر کلاب، تجهیزات نئونی و سالن‌های اختصاصی</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div className="relative h-[380px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#ffc400] overflow-hidden p-6 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+              <img src={heroSetup} alt="PS5 Setup" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex justify-between items-center">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#ffc400]">
+                  PS5 PRO VIP
+                </span>
+                <Tv className="w-5 h-5 text-[#ffc400]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-xl font-black text-white mb-1">ایستگاه‌های PS5 Pro</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4">
+                  تلویزیون‌های ۶۵ اینچ OLED 120Hz، دسته‌های DualSense Edge و کاناپه‌های چرمی VIP.
+                </p>
+                <div className="flex justify-between items-center pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#ffc400]">۵۰ ₺ / ساعت</span>
+                  <button onClick={() => alert("🎮 رزرو استگاه PS5 Pro ثبت شد.")} className="px-3.5 py-1.5 rounded-lg bg-[#ffc400] text-black font-black text-xs">
+                    رزرو
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative h-[380px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#00d2ff] overflow-hidden p-6 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+              <img src={heroPlayer} alt="RTX 4090 Rigs" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex justify-between items-center">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#00d2ff]">
+                  ESPORTS RIGS
+                </span>
+                <Monitor className="w-5 h-5 text-[#00d2ff]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-xl font-black text-white mb-1">ریگ‌های بتل‌استیشن RTX 4090</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4">
+                  مانیتورهای ۲۴۰ هرتز ZOWIE، کیبوردهای مکانیکی ریزر و پینگ تک‌رقمی اختصاصی.
+                </p>
+                <div className="flex justify-between items-center pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#00d2ff]">۶۵ ₺ / ساعت</span>
+                  <button onClick={() => alert("⚡ رزرو ریگ PC ثبت شد.")} className="px-3.5 py-1.5 rounded-lg bg-[#00d2ff] text-black font-black text-xs">
+                    رزرو
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative h-[380px] rounded-3xl bg-[#0c101a]/80 border border-white/10 hover:border-[#ffc400] overflow-hidden p-6 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+              <img src={gamesGear} alt="VIP Room" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
+              
+              <div className="relative z-10 flex justify-between items-center">
+                <span className="font-['Rajdhani'] font-bold text-xs bg-black/70 px-3 py-1 rounded-lg border border-white/10 text-[#ffc400]">
+                  VIP PRIVATE
+                </span>
+                <Crown className="w-5 h-5 text-[#ffc400]" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-xl font-black text-white mb-1">اتاق خصوصی VIP & استریم</h3>
+                <p className="text-xs text-slate-300 line-clamp-2 mb-4">
+                  فضای عایق صوتی برای گروه‌های ۴ تا ۸ نفره به همراه سیستم ضبط و پخش زنده.
+                </p>
+                <div className="flex justify-between items-center pt-3 border-t border-white/10">
+                  <span className="font-['Rajdhani'] font-bold text-sm text-[#ffc400]">۱۵۰ ₺ / ساعت</span>
+                  <button onClick={() => alert("👑 رزرو سالن خصوصی VIP ثبت شد.")} className="px-3.5 py-1.5 rounded-lg bg-[#ffc400] text-black font-black text-xs">
+                    رزرو
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* =========================================================
+           LIVE TOURNAMENT ARENA
+           ========================================================= */}
+        <section id="tournaments" className="mt-24 rounded-3xl bg-gradient-to-br from-[#0e1322] to-[#250d18] border border-[#ff2a5f]/40 p-8 sm:p-12 shadow-[0_30px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(255,42,95,0.2)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff2a5f]/20 border border-[#ff2a5f] text-[#ff2a5f] font-['Orbitron'] font-extrabold text-xs">
+                  <span className="w-2 h-2 rounded-full bg-[#ff2a5f] animate-ping" />
+                  <span>LIVE MATCH</span>
+                </div>
+                <span className="font-['Orbitron'] text-xs text-slate-400 font-bold">BAZINO CUP • FINALS</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">فینال بزرگ تورنمنت FC26 بازینو</h2>
+              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                پخش زنده رقابت فینالیست‌ها در سالن اصلی و اهدای کمربند قهرمانی به همراه جایزه ۵,۰۰۰ لیر به قهرمان فصل.
+              </p>
+
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-black/50 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <img src={avatarArman} alt="Arman" className="w-12 h-12 rounded-full border-2 border-[#ffc400] object-cover" />
+                  <div>
+                    <div className="font-black text-sm text-white">Arman_Pro</div>
+                    <div className="font-['Rajdhani'] text-xs text-[#00d2ff]">REAL MADRID (ESP)</div>
+                  </div>
+                </div>
+
+                <div className="font-['Orbitron'] font-black text-2xl text-[#ff2a5f] px-4 py-1.5 rounded-xl bg-[#ff2a5f]/10 border border-[#ff2a5f]/30">
+                  3 - 2
+                </div>
+
+                <div className="flex items-center gap-3 flex-row-reverse text-left">
+                  <div className="w-12 h-12 rounded-full bg-slate-800 border-2 border-[#00d2ff] flex items-center justify-center font-bold text-white text-xs">
+                    SK
+                  </div>
+                  <div>
+                    <div className="font-black text-sm text-white">Salar_K</div>
+                    <div className="font-['Rajdhani'] text-xs text-[#00d2ff]">MAN CITY (ENG)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 justify-center">
+              <div className="p-6 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="font-extrabold text-base text-white mb-3 flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-[#ffc400]" /> جدول مسابقات هفتگی بازینو
+                </h4>
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 text-xs">
+                    <span>تورنمنت تک‌حذفی مورتال کامبت ۱</span>
+                    <span className="text-[#ffc400] font-['Rajdhani'] font-bold text-sm">جمعه ساعت ۲۱:۰۰</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 text-xs">
+                    <span>مسترز لیگ تیکن ۸ (Tekken 8)</span>
+                    <span className="text-[#00d2ff] font-['Rajdhani'] font-bold text-sm">شنبه ساعت ۲۰:۰۰</span>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => alert("🏆 ثبت‌نام شما در مسابقات بعدی بازینو با موفقیت ثبت شد!")}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#00d2ff] to-[#0066ff] text-white font-black text-sm shadow-[0_6px_25px_rgba(0,210,255,0.4)] hover:shadow-[0_8px_35px_rgba(0,210,255,0.6)] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Trophy className="w-4 h-4" />
+                <span>ثبت‌نام رایگان در مسابقات بعدی</span>
               </button>
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setAuthOpen(true)}
-              className="text-xs font-orbitron font-bold text-gray-300 hover:text-white px-2 py-1"
-            >
-              {lang === "fa" ? "ورود" : "LOGIN"}
-            </button>
-          )}
 
-          <a href={reservationUrl} className="btn-gold-action hidden sm:inline-flex">
-            <span>{t.hero.primaryCta}</span>
-            <ArrowUpRight size={14} />
-          </a>
+          </div>
+        </section>
 
-          <button
-            type="button"
-            className="lg:hidden text-white p-1"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+        {/* Footer */}
+        <footer className="mt-24 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-slate-400 text-xs gap-4">
+          <div className="flex items-center gap-3 font-['Orbitron'] font-bold text-white text-sm">
+            <Gamepad2 className="w-5 h-5 text-[#ffc400]" />
+            <span>BAZINO 3D GAMING LOUNGE</span>
+          </div>
+          <div>
+            © 2026 بازینو کلاب گیمینگ. تمام حقوق محفوظ است.
+          </div>
+        </footer>
+
+      </div>
+
+      {/* Mona Floating AI Dock */}
+      <div 
+        onClick={() => alert("✨ مونا: سلام قهرمان! من مونا هستم، دستیار هوشمند و مجری تورنمنت‌های بازینو. برای راهنمایی یا رزرو سیستم‌ها در خدمتم!")}
+        className="fixed bottom-6 left-6 z-50 flex items-center gap-3.5 p-2 pr-5 rounded-full bg-[#0d1220]/90 border border-[#ffc400] backdrop-blur-2xl shadow-[0_20px_40px_rgba(0,0,0,0.8),0_0_30px_rgba(255,196,0,0.4)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.9),0_0_35px_rgba(0,210,255,0.5)] hover:border-[#00d2ff] hover:-translate-y-1 transition-all cursor-pointer"
+      >
+        <img src={monaHeroWide} alt="Mona" className="w-11 h-11 rounded-full object-cover border-2 border-[#ffc400]" />
+        <div>
+          <div className="font-extrabold text-xs text-white">مونا • دستیار هوشمند</div>
+          <div className="font-['Rajdhani'] text-[11px] font-bold text-[#00d2ff]">کلیک برای گفتگو و راهنمایی</div>
         </div>
-      </header>
+        <Sparkles className="w-4 h-4 text-[#ffc400]" />
+      </div>
 
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-[76px] bg-[#0c0e14] border-b border-white/10 p-6 z-40 lg:hidden flex flex-col gap-4 font-orbitron text-sm"
-          >
-            <a href="#arena" onClick={() => setMobileMenuOpen(false)}>{t.nav.arena}</a>
-            <a href="#customizer" onClick={() => setMobileMenuOpen(false)}>{t.nav.stations}</a>
-            <a href="#tournaments" onClick={() => setMobileMenuOpen(false)}>{t.nav.tournaments}</a>
-            <a href="#lounge" onClick={() => setMobileMenuOpen(false)}>{t.nav.lounge}</a>
-            <a href="#visit" onClick={() => setMobileMenuOpen(false)}>{t.nav.visit}</a>
-            <Link href="/hub" className="text-[#ffc400] font-black">HUB DEMO →</Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Auth Modal */}
-      {authOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-6 z-50" onClick={() => setAuthOpen(false)}>
-          <div className="bg-[#0e1118] border border-white/15 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-orbitron text-xl font-black text-white mb-2">
-              {lang === "fa" ? "ورود به بازینو" : "LOGIN TO BAZINO"}
-            </h3>
-            <p className="text-gray-400 text-xs mb-6">
-              {lang === "fa" ? "نام کاربری خود را برای دسترسی به کارت عضویت و رزرو وارد کنید:" : "Enter your username to access club passes and booking:"}
-            </p>
-            <form onSubmit={handleAuthSubmit} className="flex flex-col gap-4">
-              <input
-                autoFocus
-                value={authUsername}
-                onChange={(e) => setAuthUsername(e.target.value)}
-                placeholder="ArmanK"
-                className="w-full px-4 py-3 bg-white/05 border border-white/15 rounded-xl text-white outline-none focus:border-[#ffc400]"
-              />
-              <div className="flex gap-3">
-                <button type="button" onClick={() => setAuthOpen(false)} className="btn-ghost-action flex-1 justify-center">
-                  {lang === "fa" ? "انصراف" : "CANCEL"}
-                </button>
-                <button type="submit" className="btn-gold-action flex-1 justify-center">
-                  {lang === "fa" ? "ورود" : "CONTINUE"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <main className="pt-28">
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 01: HERO — REAL BAZINO ARENA + MONA + 3D STACK
-        ════════════════════════════════════════════════════════════ */}
-        <section id="top" className="max-w-7xl mx-auto px-6 pt-6 pb-24 relative z-10">
-          <div className="relative rounded-[36px] overflow-hidden border border-white/12 bg-[#0a0d14] p-8 sm:p-14 lg:p-16 min-h-[85vh] flex flex-col justify-between shadow-2xl">
-            {/* Background: Real Bazino Game Net + Mona */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={monaHeroWide}
-                alt="Bazino Arena Lounge & Mona"
-                className="w-full h-full object-cover object-right-top sm:object-center opacity-35 filter saturate-125"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14] via-[#0a0d14]/70 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14] via-[#0a0d14]/40 to-transparent" />
-            </div>
-
-            {/* Technical Crosshairs & Top HUD */}
-            <div className="crosshair-corner crosshair-tl" />
-            <div className="crosshair-corner crosshair-tr" />
-            <div className="crosshair-corner crosshair-bl" />
-            <div className="crosshair-corner crosshair-br" />
-
-            <div className="relative z-10 flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-6">
-              <div className="editorial-index">
-                <span>{t.hero.kicker}</span>
-              </div>
-
-              <div className="flex items-center gap-4 text-xs font-orbitron font-bold text-gray-400">
-                <span className="flex items-center gap-1.5 text-[#ffc400] bg-black/40 px-3 py-1 rounded-full border border-[#ffc400]/30">
-                  <Sparkles size={13} />
-                  <span>{t.hero.monaTag}</span>
-                </span>
-                <span className="text-gray-600 hidden sm:inline">•</span>
-                <span className="flex items-center gap-1.5 text-white">
-                  <span className="w-2 h-2 rounded-full bg-[#00e5ff] animate-pulse" />
-                  OPEN NOW
-                </span>
-              </div>
-            </div>
-
-            {/* Main Headline & 3D Interactive Card Stack (AuthKit Style) */}
-            <div className="relative z-10 my-12 grid lg:grid-cols-12 gap-12 items-center">
-              {/* Left Column: Headline */}
-              <div className="lg:col-span-7">
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black font-orbitron uppercase text-white tracking-tight leading-[1.05] mb-6">
-                  {t.hero.titleLine1}
-                  <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffc400] via-[#ffd700] to-[#35a9ff]">
-                    {t.hero.titleLine2}
-                  </span>
-                </h1>
-
-                <p className="text-gray-300 text-base sm:text-xl font-normal leading-relaxed max-w-xl mb-10">
-                  {t.hero.subtitle}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-4">
-                  <a href={reservationUrl} className="btn-gold-action">
-                    <span>{t.hero.primaryCta}</span>
-                    <ArrowUpRight size={16} />
-                  </a>
-
-                  <a href="#customizer" className="btn-ghost-action">
-                    <span>{t.hero.secondaryCta}</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Right Column: Interactive 3D Stack (AuthKit Cover-Flow) */}
-              <div className="lg:col-span-5 flex flex-col items-center">
-                <div className="relative w-full max-w-sm h-72 perspective-container">
-                  {heroStackCards.map((card, idx) => {
-                    const offset = idx - heroStackIndex;
-                    const isActive = idx === heroStackIndex;
-                    return (
-                      <motion.div
-                        key={card.id}
-                        onClick={() => setHeroStackIndex(idx)}
-                        animate={{
-                          x: offset * 24,
-                          y: offset * -12,
-                          z: offset * -40,
-                          scale: 1 - Math.abs(offset) * 0.08,
-                          opacity: 1 - Math.abs(offset) * 0.25,
-                          rotateZ: offset * 3,
-                        }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                        className={`absolute inset-0 rounded-2xl p-6 flex flex-col justify-between overflow-hidden cursor-pointer backdrop-blur-xl border ${
-                          isActive
-                            ? "bg-[#101420]/95 border-[#ffc400]/60 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(255,196,0,0.25)] z-30"
-                            : "bg-[#0b0e16]/80 border-white/10 z-10"
-                        }`}
-                      >
-                        <img
-                          src={card.image}
-                          alt={card.title}
-                          className="absolute inset-0 w-full h-full object-cover opacity-35"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/60 to-transparent" />
-
-                        <div className="relative z-10 flex justify-between items-center">
-                          <span className="mono-tag text-[#ffc400] bg-black/60 px-3 py-1 rounded-full border border-white/10">
-                            {card.badge}
-                          </span>
-                          <span className="w-2 h-2 rounded-full bg-[#00e5ff] animate-ping" />
-                        </div>
-
-                        <div className="relative z-10">
-                          <h3 className="text-xl font-black font-orbitron text-white mb-1">{card.title}</h3>
-                          <p className="text-xs text-gray-300 font-medium">{card.spec}</p>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-
-                {/* Stack Switcher Pill Buttons */}
-                <div className="flex gap-2 mt-6 bg-[#0e121a] border border-white/10 p-1 rounded-full">
-                  {heroStackCards.map((c, idx) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setHeroStackIndex(idx)}
-                      className={`px-4 py-1.5 rounded-full text-[11px] font-orbitron font-bold transition-all ${
-                        heroStackIndex === idx
-                          ? "bg-[#ffc400] text-[#07080c]"
-                          : "text-gray-400 hover:text-white"
-                      }`}
-                    >
-                      {c.id.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom 3 Live Pillars */}
-            <div className="relative z-10 grid sm:grid-cols-3 gap-6 pt-8 border-t border-white/10">
-              <div>
-                <div className="mono-tag text-[#ffc400] mb-1">STATION FLEET</div>
-                <div className="text-xl font-black font-orbitron text-white">۱۲ جایگاه فعال PS5 & XBOX</div>
-              </div>
-              <div>
-                <div className="mono-tag text-[#35a9ff] mb-1">PRO ESPORTS WALL</div>
-                <div className="text-xl font-black font-orbitron text-white">نمایشگرهای ۸۵ اینچ 4K 120Hz</div>
-              </div>
-              <div>
-                <div className="mono-tag text-gray-400 mb-1">VIP HOSPITALITY</div>
-                <div className="text-xl font-black font-orbitron text-white">سرویس اختصاصی کافه در جایگاه</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 02: INTERACTIVE CUSTOMIZER WORKBENCH (AuthKit Style)
-        ════════════════════════════════════════════════════════════ */}
-        <section id="customizer" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-            <div>
-              <div className="editorial-index mb-3">
-                <span>{t.customizer.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight">
-                {t.customizer.title}
-              </h2>
-            </div>
-            <p className="text-gray-400 text-sm sm:text-base max-w-md">
-              {t.customizer.subtitle}
-            </p>
-          </div>
-
-          {/* Interactive Configurator Sandbox Canvas */}
-          <div className="customizer-workbench p-8 sm:p-12">
-            <div className="grid lg:grid-cols-12 gap-10 items-center">
-              {/* Left Controls Toolbar */}
-              <div className="lg:col-span-5 space-y-6">
-                {/* 1. Neon Lighting Color Picker */}
-                <div className="bg-[#111622] border border-white/08 rounded-2xl p-5">
-                  <span className="mono-tag text-gray-400 block mb-3">{t.customizer.lightingLabel}</span>
-                  <div className="flex gap-3">
-                    {[
-                      { id: "gold", color: "#ffc400", label: "Gold" },
-                      { id: "cyan", color: "#35a9ff", label: "Cyan" },
-                      { id: "magenta", color: "#ff2db0", label: "Magenta" },
-                      { id: "emerald", color: "#10b981", label: "Emerald" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setActiveLighting(item.id as any)}
-                        style={{ backgroundColor: item.color }}
-                        className={`w-9 h-9 rounded-xl transition-all ${
-                          activeLighting === item.id
-                            ? "ring-4 ring-white/30 scale-110 shadow-lg"
-                            : "opacity-60 hover:opacity-100"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Console Model Selector */}
-                <div className="bg-[#111622] border border-white/08 rounded-2xl p-5">
-                  <span className="mono-tag text-gray-400 block mb-3">{t.customizer.consoleLabel}</span>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: "ps5", label: "PS5 HAPTIC" },
-                      { id: "xbox", label: "XBOX SERIES X" },
-                      { id: "focus85", label: "85\" STADIUM" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setActiveConsole(item.id as any)}
-                        className={`px-3 py-2.5 rounded-xl text-xs font-orbitron font-bold transition-all ${
-                          activeConsole === item.id
-                            ? "bg-[#ffc400] text-[#07080c] shadow-lg shadow-[#ffc400]/20"
-                            : "bg-white/04 text-gray-400 hover:text-white border border-white/06"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 3. Audio & VIP Toggles */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="bg-[#111622] border border-white/08 rounded-2xl p-4 flex justify-between items-center">
-                    <div>
-                      <span className="mono-tag text-gray-400 block mb-1">AUDIO</span>
-                      <span className="text-xs font-orbitron font-bold text-white">
-                        {activeAudio === "spatial" ? "3D SPATIAL" : "DOLBY ATMOS"}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveAudio(activeAudio === "spatial" ? "dolby" : "spatial")}
-                      className="p-2 rounded-lg bg-white/05 hover:bg-white/10 text-[#ffc400]"
-                    >
-                      <Volume2 size={18} />
-                    </button>
-                  </div>
-
-                  <div className="bg-[#111622] border border-white/08 rounded-2xl p-4 flex justify-between items-center">
-                    <div>
-                      <span className="mono-tag text-gray-400 block mb-1">VIP CAFE</span>
-                      <span className="text-xs font-orbitron font-bold text-white">
-                        {vipCafeActive ? "INCLUDED" : "OPTIONAL"}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setVipCafeActive(!vipCafeActive)}
-                      className={`p-2 rounded-lg transition-colors ${
-                        vipCafeActive ? "bg-[#ffc400] text-[#07080c]" : "bg-white/05 text-gray-400"
-                      }`}
-                    >
-                      <Coffee size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Live Preview Card (Reactively Updates) */}
-              <div className="lg:col-span-7">
-                <TiltCard
-                  className={`editorial-card p-8 min-h-[460px] flex flex-col justify-between transition-all duration-500 border-2 ${getLightingGlow()}`}
-                >
-                  <div className="absolute inset-0 z-0">
-                    <img
-                      src={
-                        activeConsole === "ps5"
-                          ? gamesAdults
-                          : activeConsole === "xbox"
-                          ? slideFc26
-                          : slideMatch
-                      }
-                      alt="Selected Station"
-                      className="w-full h-full object-cover opacity-45"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/60 to-transparent" />
-                  </div>
-
-                  <div className="relative z-10 flex justify-between items-center">
-                    <span className="mono-tag text-white bg-black/60 px-3 py-1 rounded-full border border-white/10">
-                      LIVE PREVIEW
-                    </span>
-                    <span className="mono-tag text-[#ffc400] font-black">
-                      {activeConsole === "ps5" ? "4K 120HZ • DUALSENSE" : activeConsole === "xbox" ? "12 TFLOPS • ELITE" : "85\" DOLBY ATMOS"}
-                    </span>
-                  </div>
-
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: activeLighting === "gold" ? "#ffc400" : activeLighting === "cyan" ? "#35a9ff" : activeLighting === "magenta" ? "#ff2db0" : "#10b981" }} />
-                      <span className="mono-tag text-gray-300">CONFIGURED BAY READY</span>
-                    </div>
-                    <h3 className="text-3xl font-black font-orbitron text-white mb-2">
-                      {activeConsole === "ps5" ? "PS5 Haptic Arena Bay" : activeConsole === "xbox" ? "Xbox Series X Pro Bay" : "85\" Stadium VIP Suite"}
-                    </h3>
-                    <p className="text-gray-300 text-sm max-w-md mb-6">
-                      {activeConsole === "ps5"
-                        ? "فیدبک هپتیک پیشرفته نسل ۹ با دسته‌های DualSense Pro و نمایشگر اختصاصی ۸۵ اینچ 4K."
-                        : activeConsole === "xbox"
-                        ? "قدرت پردازش فوق‌العاده با حافظه سریع NVMe و آرشیو کامل اشتراک Game Pass Ultimate."
-                        : "نمایشگر سینمایی ۸۵ اینچ با زاویه دید بهینه و صدای محیطی دالبی اتموس."}
-                    </p>
-
-                    <div className="flex items-center justify-between border-t border-white/10 pt-6">
-                      <div>
-                        <div className="mono-tag text-gray-400">STATUS</div>
-                        <div className="text-sm font-bold font-orbitron text-white">IMMEDIATE AVAILABILITY</div>
-                      </div>
-                      <a href={reservationUrl} className="btn-gold-action">
-                        <span>رزرو این استیشن ↗</span>
-                      </a>
-                    </div>
-                  </div>
-                </TiltCard>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 03: LIVE TOURNAMENT BRACKETS & FEED
-        ════════════════════════════════════════════════════════════ */}
-        <section id="tournaments" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-            <div>
-              <div className="editorial-index mb-3">
-                <span>{t.bracket.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight">
-                {t.bracket.title}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3 bg-[#111622] border border-[#ffc400]/40 rounded-full px-5 py-2 text-xs font-orbitron">
-              <Trophy size={16} className="text-[#ffc400]" />
-              <span className="text-white font-bold">{t.bracket.liveBadge}</span>
-            </div>
-          </div>
-
-          {/* Tournament Cards Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tournamentGames.map((game) => (
-              <TiltCard key={game.title} className="editorial-card p-6 min-h-[400px] flex flex-col justify-between group">
-                <div className="absolute inset-0 z-0">
-                  <img
-                    src={game.cover}
-                    alt={game.title}
-                    className="w-full h-full object-cover opacity-70 group-hover:scale-105 group-hover:opacity-90 transition-all duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/50 to-transparent" />
-                </div>
-
-                <div className="relative z-10 flex justify-between items-center">
-                  <span className="mono-tag text-[#35a9ff] bg-black/60 px-2.5 py-1 rounded-full border border-white/10">{game.genre}</span>
-                  <span className="mono-tag text-[#ffc400] font-black">{game.prize}</span>
-                </div>
-
-                <div className="relative z-10">
-                  <div className="flex justify-between items-center text-xs font-orbitron text-gray-300 mb-2">
-                    <span>{game.time}</span>
-                    <span className="text-[#00e5ff] font-bold">{game.activePlayers}</span>
-                  </div>
-                  <h3 className="text-lg font-black font-orbitron text-white mb-4">{game.title}</h3>
-                  <Link href="/hub/events/brackets" className="btn-ghost-action w-full justify-between">
-                    <span>{t.bracket.viewBracket}</span>
-                    <ArrowUpRight size={14} />
-                  </Link>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 04: TELEMETRY & LIVE RADAR SCOREBOARD
-        ════════════════════════════════════════════════════════════ */}
-        <section id="arena" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Telemetry & Radar Widget */}
-            <div className="lg:col-span-5">
-              <div className="editorial-index mb-3">
-                <span>{t.telemetry.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
-                {t.telemetry.title}
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
-                {t.telemetry.subtitle}
-              </p>
-
-              {/* Rotating Radar Widget (AuthKit Style) */}
-              <div className="bg-[#101420] border border-white/10 rounded-2xl p-6 flex items-center gap-6">
-                <div className="relative w-20 h-20 rounded-full border border-[#00e5ff]/40 flex items-center justify-center shrink-0 overflow-hidden">
-                  <div className="radar-sweep-beam" />
-                  <div className="w-2 h-2 rounded-full bg-[#00e5ff] shadow-[0_0_8px_#00e5ff]" />
-                  <div className="absolute top-3 right-4 w-1.5 h-1.5 rounded-full bg-[#ffc400]" />
-                  <div className="absolute bottom-4 left-4 w-1.5 h-1.5 rounded-full bg-[#ff2db0]" />
-                </div>
-                <div>
-                  <div className="mono-tag text-[#00e5ff] mb-1">{t.telemetry.radarLabel}</div>
-                  <div className="text-sm font-bold font-orbitron text-white">ALL 12 BAYS ONLINE</div>
-                  <div className="text-xs text-gray-400">LATENCY: 12ms • ZERO DROPPED FRAMES</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Scoreboard Ledger */}
-            <div className="lg:col-span-7">
-              <div className="editorial-card p-6 sm:p-8">
-                <div className="flex justify-between items-center text-xs font-orbitron text-gray-400 border-b border-white/10 pb-4 mb-4">
-                  <span className="flex items-center gap-2 text-[#ffc400]">
-                    <Zap size={14} className="text-[#00e5ff]" />
-                    RECENT ROUND TELEMETRY
-                  </span>
-                  <span className="text-[#35a9ff]">{t.telemetry.verifiedBadge}</span>
-                </div>
-
-                <div className="divide-y divide-white/06">
-                  {t.telemetry.rows.map((row) => (
-                    <div key={row.round} className="py-4 flex items-center justify-between font-orbitron">
-                      <div className="flex items-center gap-3">
-                        <span className="mono-tag text-[#35a9ff]">{row.round}</span>
-                        <div>
-                          <div className="text-sm font-bold text-white">{row.match}</div>
-                          <div className="text-[10px] text-gray-500">{row.mode}</div>
-                        </div>
-                      </div>
-
-                      <div className="text-lg font-black text-[#ffc400] bg-black/40 border border-white/10 px-3.5 py-1 rounded-lg">
-                        {row.score}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-white/10 pt-4 mt-4 flex justify-between items-center text-[11px] font-orbitron text-gray-400">
-                  <span>NEXT BROADCAST: SATURDAY 20:00</span>
-                  <span className="text-[#ffc400]">HOTEL VISTAMARE</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 05: NIGHT LOUNGE & CAFE
-        ════════════════════════════════════════════════════════════ */}
-        <section id="lounge" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Lounge Photo Box */}
-            <div className="lg:col-span-6">
-              <TiltCard className="editorial-card overflow-hidden aspect-[4/3] group">
-                <img
-                  src={slideCity}
-                  alt="Night Lounge"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                  <div>
-                    <div className="mono-tag text-[#ffc400] mb-1">ISKELE NIGHT VIBE</div>
-                    <div className="text-lg font-bold text-white">Hotel VistaMare Lounge</div>
-                  </div>
-                </div>
-              </TiltCard>
-            </div>
-
-            {/* Lounge Amenities */}
-            <div className="lg:col-span-6">
-              <div className="editorial-index mb-3">
-                <span>{t.lounge.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
-                {t.lounge.title}
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
-                {t.lounge.subtitle}
-              </p>
-
-              <div className="space-y-4">
-                {t.lounge.amenities.map((item) => (
-                  <div key={item.title} className="p-4 rounded-xl bg-white/03 border border-white/06 flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#ffc400]/10 text-[#ffc400] flex items-center justify-center shrink-0">
-                      <Coffee size={18} />
-                    </div>
-                    <div>
-                      <h3 className="font-orbitron font-bold text-sm text-white mb-1">{item.title}</h3>
-                      <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 06: HOW TO ENTER (3-STEP TIMELINE)
-        ════════════════════════════════════════════════════════════ */}
-        <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="editorial-index justify-center mb-3">
-              <span>{t.entry.index}</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-4">
-              {t.entry.title}
-            </h2>
-            <p className="text-gray-400 text-sm sm:text-base">
-              {t.entry.subtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {t.entry.steps.map((step) => (
-              <TiltCard key={step.num} className="editorial-card p-8 min-h-[260px] flex flex-col justify-between">
-                <div className="flex justify-between items-center">
-                  <span className="text-4xl font-black font-orbitron text-[#ffc400]">{step.num}</span>
-                  <CheckCircle2 size={20} className="text-[#00e5ff]" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black font-orbitron text-white mb-2">{step.title}</h3>
-                  <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <a href={reservationUrl} className="btn-gold-action">
-              <span>{lang === "fa" ? "رزرو آنلاین جایگاه" : "RESERVE YOUR SPOT"}</span>
-              <ArrowUpRight size={16} />
-            </a>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 07: LOCATION & DIGITAL MEMBERSHIP PASS
-        ════════════════════════════════════════════════════════════ */}
-        <section id="visit" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Location Box */}
-            <div className="lg:col-span-6">
-              <div className="editorial-index mb-3">
-                <span>{t.visit.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
-                {t.visit.title}
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
-                {t.visit.subtitle}
-              </p>
-
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=Hotel%20VistaMare%2C%20%C4%B0skele%2C%20Long%20Beach%2C%20Cyprus"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-ghost-action"
-              >
-                <MapPin size={16} className="text-[#ffc400]" />
-                <span>{t.visit.mapsCta}</span>
-              </a>
-            </div>
-
-            {/* Apple Wallet Style Digital Pass Card */}
-            <div className="lg:col-span-6">
-              <TiltCard className="wallet-pass p-8">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <div className="bg-white p-3 rounded-2xl shadow-xl shrink-0">
-                    <QRCodeSVG value="https://bazino.pro" size={110} level="M" />
-                  </div>
-                  <div>
-                    <div className="mono-tag text-[#35a9ff] mb-1">DIGITAL MEMBER ID</div>
-                    <h3 className="text-xl font-black font-orbitron text-white mb-2">
-                      {t.visit.digitalPassTitle}
-                    </h3>
-                    <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                      {t.visit.digitalPassDesc}
-                    </p>
-                    <div className="flex items-center gap-2 text-[10px] font-orbitron text-[#ffc400]">
-                      <ShieldCheck size={14} />
-                      <span>OFFICIAL BAZINO ARENA PASS</span>
-                    </div>
-                  </div>
-                </div>
-              </TiltCard>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ── MINIMALIST FOOTER ────────────────────────────────────── */}
-      <footer className="max-w-7xl mx-auto px-6 border-t border-white/10 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 font-orbitron">
-          <div className="flex items-center gap-3">
-            <span className="w-6 h-6 rounded-full bg-[#ffc400] text-[#07080c] font-black text-xs flex items-center justify-center">
-              B
-            </span>
-            <span className="text-white font-bold">{t.footer.copyright}</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <a href="https://bazino.pro" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-              {t.footer.portalLink}
-            </a>
-            <Link href="/hub/privacy" className="hover:text-white transition-colors">
-              {t.footer.privacyLink}
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

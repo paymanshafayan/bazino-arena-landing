@@ -10,8 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&family=Vazirmatn:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   
-  <!-- Three.js CDN & GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP for Smooth Spring Physics -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,22 +18,23 @@
   <style>
     :root {
       --bg-void: #050608;
-      --bg-glass: rgba(10, 14, 24, 0.75);
-      --bg-glass-card: rgba(14, 18, 30, 0.85);
+      --bg-glass: rgba(12, 16, 26, 0.75);
+      --bg-card: rgba(14, 18, 30, 0.85);
       --border-glass: rgba(255, 255, 255, 0.1);
       --border-gold: rgba(255, 196, 0, 0.4);
       --border-cyan: rgba(0, 210, 255, 0.4);
       
       --gold-primary: #ffc400;
-      --gold-glow: rgba(255, 196, 0, 0.5);
+      --gold-bright: #ffd700;
+      --gold-glow: rgba(255, 196, 0, 0.45);
       --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
       
       --cyan-primary: #00d2ff;
-      --cyan-glow: rgba(0, 210, 255, 0.5);
+      --cyan-glow: rgba(0, 210, 255, 0.45);
       --cyan-gradient: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
       
       --crimson-primary: #ff2a5f;
-      --crimson-glow: rgba(255, 42, 95, 0.5);
+      --crimson-glow: rgba(255, 42, 95, 0.45);
       
       --text-white: #ffffff;
       --text-dim: #cbd5e1;
@@ -45,7 +45,6 @@
       --font-mono: 'Rajdhani', sans-serif;
       
       --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-tactile: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -61,59 +60,73 @@
       font-family: var(--font-fa);
       overflow-x: hidden;
       min-height: 100vh;
+      selection-background-color: var(--gold-primary);
+      selection-color: #000;
     }
 
-    /* WebGL Background Particles */
-    #webgl-canvas {
+    /* Overhead Conical Spotlight (AuthKit Style) */
+    .conical-spotlight {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
+      pointer-events: none;
       z-index: 0;
-      pointer-events: none;
+      background: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 196, 0, 0.16) 0%, rgba(0, 210, 255, 0.08) 40%, transparent 80%);
     }
 
-    /* Ambient Spotlight */
-    .ambient-spotlight {
+    /* Cyber Coordinate Grid */
+    .cyber-grid {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 1;
       pointer-events: none;
-      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 40%), rgba(255, 196, 0, 0.09) 0%, rgba(0, 210, 255, 0.06) 40%, transparent 75%);
+      z-index: 0;
+      opacity: 0.18;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
 
-    /* Main Container */
-    .main-wrapper {
+    /* Dynamic Pointer Lighting */
+    .pointer-ambient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 40%), rgba(255, 196, 0, 0.06) 0%, rgba(0, 210, 255, 0.04) 35%, transparent 70%);
+    }
+
+    /* Layout Wrapper */
+    .wrapper {
       position: relative;
       z-index: 10;
-      width: 100%;
-      max-width: 1440px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 0 24px 100px 24px;
+      padding: 20px 24px 100px 24px;
     }
 
-    /* =========================================================
-       1. FLOATING GLASS HEADER
-       ========================================================= */
-    .spatial-header {
+    /* Floating Header */
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 80px;
       padding: 0 28px;
-      margin-top: 20px;
       border-radius: 20px;
-      background: var(--bg-glass);
+      background: rgba(12, 16, 26, 0.7);
       backdrop-filter: blur(24px) saturate(180%);
       border: 1px solid var(--border-glass);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      margin-bottom: 24px;
     }
 
-    .brand-logo-wrap {
+    .brand-logo {
       display: flex;
       align-items: center;
       gap: 14px;
@@ -121,7 +134,7 @@
       color: inherit;
     }
 
-    .brand-hologram {
+    .logo-hologram {
       width: 44px;
       height: 44px;
       display: grid;
@@ -132,7 +145,7 @@
       box-shadow: 0 0 20px var(--gold-glow);
     }
 
-    .brand-name {
+    .brand-title {
       font-family: var(--font-en);
       font-size: 24px;
       font-weight: 900;
@@ -142,14 +155,14 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .nav-items {
+    .nav-links {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       list-style: none;
     }
 
-    .nav-items a {
+    .nav-links a {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -162,217 +175,48 @@
       transition: all 0.2s;
     }
 
-    .nav-items a:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .nav-items a.active {
+    .nav-links a.active {
       color: #000;
       background: var(--gold-gradient);
       font-weight: 800;
       box-shadow: 0 0 20px var(--gold-glow);
     }
 
-    .btn-tactile {
+    .btn-gold {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
+      gap: 8px;
       padding: 12px 24px;
-      font-family: var(--font-fa);
-      font-size: 14px;
-      font-weight: 800;
-      border-radius: 12px;
-      cursor: pointer;
-      text-decoration: none;
-      border: none;
-      outline: none;
-      transition: transform 0.12s var(--ease-tactile), box-shadow 0.2s;
-    }
-
-    .btn-tactile:active {
-      transform: scale(0.96) !important;
-    }
-
-    .btn-gold {
       background: var(--gold-gradient);
       color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 6px 20px var(--gold-glow);
+      transition: all 0.2s;
     }
 
-    .btn-gold:hover {
-      box-shadow: 0 8px 30px rgba(255, 196, 0, 0.7);
-      transform: translateY(-2px);
-    }
-
-    .btn-cyan {
-      background: var(--cyan-gradient);
-      color: #000;
-      box-shadow: 0 6px 20px var(--cyan-glow);
-    }
-
-    .btn-glass {
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff;
-      border: 1px solid var(--border-glass);
-      backdrop-filter: blur(12px);
+    .btn-gold:active {
+      transform: scale(0.96);
     }
 
     /* =========================================================
-       2. 3D SPATIAL WALKTHROUGH HERO (REAL GAME NET PARALLAX)
+       AUTHKIT-STYLE 3D SPATIAL DECK HERO
        ========================================================= */
-    .hero-spatial-container {
-      margin-top: 30px;
+    .hero-spatial-deck {
       position: relative;
-      perspective: 1400px;
-      transform-style: preserve-3d;
-    }
-
-    .hero-3d-stage {
-      position: relative;
-      width: 100%;
-      height: 640px;
-      border-radius: 32px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 196, 0, 0.3);
-      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.8), 0 0 60px rgba(255, 196, 0, 0.2);
-      transform-style: preserve-3d;
-      will-change: transform;
-      transition: transform 0.15s cubic-bezier(0.1, 0, 0.2, 1);
-      cursor: crosshair;
-    }
-
-    /* Multi-layered Panoramic Atmosphere */
-    .stage-panoramic-bg {
-      position: absolute;
-      top: -10%;
-      left: -10%;
-      width: 120%;
-      height: 120%;
-      object-fit: cover;
-      object-position: center;
-      transform: translateZ(-50px) scale(1.1);
-      transition: transform 0.2s ease-out;
-      filter: brightness(0.9) contrast(1.1);
-    }
-
-    /* Depth Overlay Vignette & Cyber Grid */
-    .stage-vignette {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at center, transparent 30%, rgba(5, 6, 8, 0.8) 95%),
-                  linear-gradient(180deg, rgba(5, 6, 8, 0.4) 0%, transparent 40%, rgba(5, 6, 8, 0.85) 100%);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Interactive 3D Spatial Hotspots */
-    .spatial-hotspot {
-      position: absolute;
-      z-index: 5;
+      min-height: 700px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
-      padding: 10px 18px;
-      background: rgba(10, 14, 24, 0.85);
-      border: 1px solid var(--border-gold);
-      border-radius: 99px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px var(--gold-glow);
-      cursor: pointer;
-      transform-style: preserve-3d;
-      transition: all 0.3s var(--ease-spring);
-      animation: hotspotFloat 3s ease-in-out infinite alternate;
+      justify-content: center;
+      padding: 30px 0;
+      perspective: 1200px;
     }
 
-    .spatial-hotspot:hover {
-      transform: scale(1.1) translateZ(40px) !important;
-      border-color: var(--cyan-primary);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px var(--cyan-glow);
-    }
-
-    .hotspot-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--gold-primary);
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--gold-primary);
-      animation: pulse 1.5s infinite;
-    }
-
-    .hotspot-text h4 {
-      font-size: 13px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .hotspot-text p {
-      font-size: 11px;
-      color: var(--cyan-primary);
-      font-family: var(--font-mono);
-      font-weight: 600;
-    }
-
-    /* Positions of Hotspots inside the Real Game Net */
-    .spot-ps5 {
-      top: 32%;
-      left: 18%;
-      transform: translateZ(30px);
-    }
-
-    .spot-rigs {
-      top: 55%;
-      left: 36%;
-      border-color: var(--border-cyan);
-      transform: translateZ(40px);
-      animation-delay: -1.5s;
-    }
-
-    .spot-mona {
-      bottom: 25%;
-      right: 22%;
-      border-color: var(--border-gold);
-      transform: translateZ(50px);
-      animation-delay: -0.8s;
-    }
-
-    @keyframes hotspotFloat {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-8px); }
-    }
-
-    /* Stage Foreground HUD */
-    .stage-hud-content {
-      position: absolute;
-      bottom: 40px;
-      right: 40px;
-      left: 40px;
-      z-index: 6;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    .stage-hud-content * {
-      pointer-events: all;
-    }
-
-    .hero-title-box {
-      max-width: 650px;
-      background: rgba(6, 8, 14, 0.75);
-      border: 1px solid var(--border-glass);
-      padding: 28px 32px;
-      border-radius: 24px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-    }
-
-    .hero-badge-pill {
+    .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -384,280 +228,281 @@
       font-size: 12px;
       font-weight: 800;
       margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(255, 196, 0, 0.2);
     }
 
-    .hero-title-box h1 {
-      font-size: 48px;
+    .hero-title {
+      font-size: 54px;
       font-weight: 900;
-      line-height: 1.2;
-      margin-bottom: 14px;
+      line-height: 1.15;
+      text-align: center;
+      margin-bottom: 12px;
     }
 
-    .hero-title-box .gold-txt {
+    .hero-title .gold-txt {
       background: linear-gradient(135deg, #ffffff 0%, var(--gold-primary) 60%, #ff8800 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px var(--gold-glow);
+      text-shadow: 0 0 35px var(--gold-glow);
     }
 
-    .hero-title-box p {
-      font-size: 15px;
+    .hero-sub {
+      font-size: 16px;
       color: var(--text-dim);
-      line-height: 1.7;
-      margin-bottom: 22px;
-    }
-
-    .hero-cta-btns {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    /* 3D Walkthrough Control Badge */
-    .walkthrough-control-hud {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: rgba(6, 8, 14, 0.75);
-      border: 1px solid var(--border-glass);
-      padding: 18px 24px;
-      border-radius: 20px;
-      backdrop-filter: blur(20px);
-    }
-
-    .walkthrough-hint {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--cyan-primary);
-    }
-
-    /* =========================================================
-       3. 3D FLOATING GAME CAROUSEL (FC26, TEKKEN 8, MK1, UFC5)
-       ========================================================= */
-    .section-games-3d {
-      margin-top: 80px;
-    }
-
-    .section-header-wrap {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+      text-align: center;
+      max-width: 580px;
       margin-bottom: 36px;
     }
 
-    .section-header-wrap h2 {
-      font-size: 32px;
-      font-weight: 900;
+    /* 3D Stage Deck Container */
+    .deck-stage {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 480px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      color: #fff;
-      margin-bottom: 8px;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transition: transform 0.15s cubic-bezier(0.1, 0, 0.2, 1);
     }
 
-    .section-header-wrap p {
-      font-size: 15px;
-      color: var(--text-dim);
-    }
-
-    .games-3d-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    .game-card-spatial {
-      position: relative;
-      height: 460px;
-      border-radius: 24px;
-      background: var(--bg-glass-card);
-      border: 1px solid var(--border-glass);
-      overflow: hidden;
-      cursor: pointer;
+    /* Individual 3D Card */
+    .spatial-card {
+      position: absolute;
+      width: 380px;
+      height: 450px;
+      border-radius: 28px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 24px;
-      transition: all 0.35s var(--ease-spring);
+      cursor: pointer;
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--border-glass);
+      transform-style: preserve-3d;
+      transition: all 0.5s var(--ease-spring);
+      overflow: hidden;
     }
 
-    .game-card-spatial:hover {
-      transform: translateY(-12px) scale(1.02);
-      border-color: var(--gold-primary);
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 35px var(--gold-glow);
+    .spatial-card.center {
+      background: rgba(13, 18, 32, 0.9);
+      border-color: rgba(255, 196, 0, 0.5);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 196, 0, 0.25);
+      transform: translate3d(0, 0, 50px) scale(1);
+      z-index: 30;
     }
 
-    .game-cover-backdrop {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s var(--ease-spring);
-      z-index: 1;
+    .spatial-card.left-1 {
+      background: rgba(9, 13, 22, 0.8);
+      transform: translate3d(-220px, 0, -100px) rotateY(15deg) scale(0.88);
+      opacity: 0.75;
+      z-index: 20;
     }
 
-    .game-card-spatial:hover .game-cover-backdrop {
-      transform: scale(1.12);
+    .spatial-card.right-1 {
+      background: rgba(9, 13, 22, 0.8);
+      transform: translate3d(220px, 0, -100px) rotateY(-15deg) scale(0.88);
+      opacity: 0.75;
+      z-index: 20;
     }
 
-    .game-gradient-shade {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(5,6,8,0.2) 0%, rgba(5,6,8,0.95) 75%);
-      z-index: 2;
+    .spatial-card.left-2 {
+      background: rgba(9, 13, 22, 0.6);
+      transform: translate3d(-380px, 0, -220px) rotateY(25deg) scale(0.75);
+      opacity: 0.4;
+      z-index: 10;
     }
 
-    .game-card-top-hud {
-      position: relative;
-      z-index: 3;
+    .spatial-card.right-2 {
+      background: rgba(9, 13, 22, 0.6);
+      transform: translate3d(380px, 0, -220px) rotateY(-25deg) scale(0.75);
+      opacity: 0.4;
+      z-index: 10;
+    }
+
+    .card-top-hud {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      z-index: 5;
     }
 
-    .game-tag-pill {
-      font-family: var(--font-en);
+    .card-cat-badge {
+      font-family: var(--font-mono);
       font-size: 11px;
-      font-weight: 800;
-      padding: 6px 12px;
+      font-weight: 700;
+      padding: 5px 12px;
       border-radius: 8px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.6);
       border: 1px solid var(--border-glass);
       color: var(--cyan-primary);
     }
 
-    .game-card-bottom-info {
-      position: relative;
-      z-index: 3;
+    .card-stat-pill {
+      font-family: var(--font-en);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: rgba(255, 196, 0, 0.15);
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
     }
 
-    .game-card-bottom-info h3 {
-      font-size: 22px;
+    .card-img-holder {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+      margin: 12px 0;
+      background: #000;
+    }
+
+    .card-img-holder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease-spring);
+    }
+
+    .spatial-card:hover .card-img-holder img {
+      transform: scale(1.06);
+    }
+
+    .card-bottom-content h3 {
+      font-size: 20px;
       font-weight: 900;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
-    .game-card-bottom-info p {
-      font-size: 13px;
+    .card-bottom-content p {
+      font-size: 12px;
       color: var(--text-dim);
-      margin-bottom: 18px;
       line-height: 1.6;
+      margin-bottom: 12px;
     }
 
-    .game-action-row {
+    .card-action-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .game-active-consoles {
+    .card-rate-txt {
       font-family: var(--font-mono);
       font-size: 14px;
       font-weight: 700;
       color: var(--gold-primary);
     }
 
-    /* =========================================================
-       4. REAL GAME NET HARDWARE PODS
-       ========================================================= */
-    .section-hardware-pods {
-      margin-top: 80px;
+    /* Bottom Pill Switcher (AuthKit Style) */
+    .deck-switcher-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      background: rgba(12, 16, 26, 0.85);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      margin-top: 24px;
     }
 
-    .pods-grid {
+    .switch-btn {
+      padding: 8px 18px;
+      border-radius: 99px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .switch-btn.active {
+      background: var(--gold-gradient);
+      color: #000;
+      font-weight: 900;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    /* =========================================================
+       GAMES ROSTER
+       ========================================================= */
+    .section-title-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin: 80px 0 36px 0;
+    }
+
+    .section-title-row h2 {
+      font-size: 32px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+    }
+
+    .games-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 24px;
     }
 
-    .pod-box {
+    .game-grid-card {
       position: relative;
-      height: 380px;
+      height: 440px;
       border-radius: 24px;
-      background: var(--bg-glass-card);
+      background: var(--bg-card);
       border: 1px solid var(--border-glass);
-      padding: 24px;
+      overflow: hidden;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
-      cursor: pointer;
+      padding: 24px;
       transition: all 0.3s var(--ease-spring);
     }
 
-    .pod-box:hover {
-      border-color: var(--cyan-primary);
+    .game-grid-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px var(--cyan-glow);
+      border-color: var(--gold-primary);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 35px var(--gold-glow);
     }
 
-    .pod-real-img {
+    .game-grid-card img {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.4;
-      transition: all 0.5s var(--ease-spring);
+      transition: transform 0.5s;
       z-index: 1;
     }
 
-    .pod-box:hover .pod-real-img {
-      opacity: 0.6;
-      transform: scale(1.08);
+    .game-grid-card:hover img {
+      transform: scale(1.1);
     }
 
-    .pod-gradient {
+    .game-shade {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(5,6,8,0.2) 0%, rgba(5,6,8,0.95) 80%);
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,6,8,0.2) 0%, rgba(5,6,8,0.95) 75%);
       z-index: 2;
     }
 
-    .pod-inner-top {
-      position: relative;
-      z-index: 3;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .pod-inner-bottom {
-      position: relative;
-      z-index: 3;
-    }
-
-    .pod-inner-bottom h3 {
-      font-size: 20px;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .pod-inner-bottom p {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-
-    /* Mona Floating AI Dock */
+    /* Mona AI Dock */
     .mona-dock {
       position: fixed;
       bottom: 24px;
@@ -666,23 +511,22 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      background: rgba(10, 14, 24, 0.9);
+      background: rgba(12, 16, 26, 0.9);
       border: 1px solid var(--border-gold);
       border-radius: 99px;
       padding: 8px 20px 8px 10px;
       backdrop-filter: blur(25px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px var(--gold-glow);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px var(--gold-glow);
       cursor: pointer;
-      transition: all 0.3s var(--ease-spring);
+      transition: all 0.3s;
     }
 
     .mona-dock:hover {
       transform: scale(1.05) translateY(-4px);
       border-color: var(--cyan-primary);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 35px var(--cyan-glow);
     }
 
-    .mona-dock-img {
+    .mona-dock img {
       width: 44px;
       height: 44px;
       border-radius: 50%;
@@ -690,350 +534,275 @@
       object-fit: cover;
     }
 
-    /* Footer */
-    .spatial-footer {
-      margin-top: 100px;
-      padding: 40px 0;
-      border-top: 1px solid var(--border-glass);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
     @media (max-width: 1024px) {
-      .hero-3d-stage {
-        height: 520px;
-      }
-      .stage-hud-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 20px;
-      }
-      .games-3d-grid {
+      .games-grid {
         grid-template-columns: repeat(2, 1fr);
-      }
-      .pods-grid {
-        grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 640px) {
-      .spatial-header {
-        padding: 0 16px;
-      }
-      .nav-items {
-        display: none;
-      }
-      .hero-3d-stage {
-        height: 480px;
-      }
-      .hero-title-box h1 {
-        font-size: 32px;
-      }
-      .games-3d-grid {
-        grid-template-columns: 1fr;
-      }
+      .header { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero-title { font-size: 36px; }
+      .spatial-card { width: 300px; height: 400px; }
+      .spatial-card.left-1 { transform: translate3d(-120px, 0, -80px) scale(0.85); }
+      .spatial-card.right-1 { transform: translate3d(120px, 0, -80px) scale(0.85); }
+      .spatial-card.left-2, .spatial-card.right-2 { display: none; }
+      .games-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Three.js Starfield Canvas -->
-  <canvas id="webgl-canvas"></canvas>
-  
-  <!-- Dynamic Spotlight -->
-  <div class="ambient-spotlight" id="spotlight"></div>
+  <!-- Conical Overhead Spotlight & Cyber Grid -->
+  <div class="conical-spotlight"></div>
+  <div class="cyber-grid"></div>
+  <div class="pointer-ambient" id="ambient"></div>
 
-  <!-- Content -->
-  <div class="main-wrapper">
+  <div class="wrapper">
     
     <!-- Floating Header -->
-    <header class="spatial-header">
-      <a href="#" class="brand-logo-wrap">
-        <div class="brand-hologram">
+    <header class="header">
+      <a href="#" class="brand-logo">
+        <div class="logo-hologram">
           <i data-lucide="gamepad-2" style="color: var(--gold-primary); width: 24px; height: 24px;"></i>
         </div>
         <div>
-          <div class="brand-name">BAZINO</div>
+          <div class="brand-title">BAZINO</div>
           <div style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--cyan-primary);">
             3D SPATIAL LOUNGE
           </div>
         </div>
       </a>
 
-      <ul class="nav-items">
-        <li><a href="#hero" class="active"><i data-lucide="sparkles" style="width: 16px;"></i> کاوش سالن</a></li>
+      <ul class="nav-links">
+        <li><a href="#hero" class="active"><i data-lucide="sparkles" style="width: 16px;"></i> کاوش سه‌بعدی</a></li>
         <li><a href="#games"><i data-lucide="gamepad" style="width: 16px;"></i> بازی‌ها</a></li>
-        <li><a href="#pods"><i data-lucide="tv" style="width: 16px;"></i> ایستگاه‌های PS5 Pro</a></li>
+        <li><a href="#pods"><i data-lucide="tv" style="width: 16px;"></i> ستاپ‌های PS5 Pro</a></li>
         <li><a href="#tournaments"><i data-lucide="trophy" style="width: 16px;"></i> مسابقات</a></li>
       </ul>
 
-      <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
         <div style="display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(0, 210, 255, 0.08); border: 1px solid var(--border-cyan); border-radius: 99px; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--cyan-primary);">
           <span style="width: 8px; height: 8px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></span>
-          <span>۳۸ / ۴۲ کنسول آنلاین</span>
+          <span>۳۸ / ۴۲ آنلاین</span>
         </div>
-        <a href="#reserve" class="btn-tactile btn-gold">
+        <button class="btn-gold" onclick="alert('🎮 رزرو جایگاه انجام شد.')">
           <i data-lucide="zap" style="width: 16px;"></i>
           <span>رزرو جایگاه</span>
-        </a>
+        </button>
       </div>
     </header>
 
-    <!-- 3D Spatial Walkthrough Hero -->
-    <section class="hero-spatial-container" id="hero">
-      <div class="hero-3d-stage" id="walkthrough-stage">
-        
-        <!-- Real Panoramic Photo of Bazino Game Net Lounge -->
-        <img src="/assets/mona-hero-wide.png" alt="Bazino Game Net Atmosphere" class="stage-panoramic-bg" id="stage-bg">
-        
-        <!-- Vignette & Depth Overlay -->
-        <div class="stage-vignette"></div>
-
-        <!-- Interactive 3D Spatial Hotspots inside the Room -->
-        <div class="spatial-hotspot spot-ps5" onclick="focusHotspot('ps5')">
-          <span class="hotspot-dot"></span>
-          <div class="hotspot-text">
-            <h4>سالن کنسول‌های PS5 Pro</h4>
-            <p>تلویزیون‌های OLED 4K 120Hz</p>
-          </div>
-          <i data-lucide="chevron-left" style="width: 16px; color: var(--gold-primary);"></i>
-        </div>
-
-        <div class="spatial-hotspot spot-rigs" onclick="focusHotspot('rigs')">
-          <span class="hotspot-dot" style="background: var(--cyan-primary); box-shadow: 0 0 12px var(--cyan-primary);"></span>
-          <div class="hotspot-text">
-            <h4>بتل‌استیشن‌های RTX 4090</h4>
-            <p>مانیتورهای ۲۴۰Hz ZOWIE</p>
-          </div>
-          <i data-lucide="chevron-left" style="width: 16px; color: var(--cyan-primary);"></i>
-        </div>
-
-        <div class="spatial-hotspot spot-mona" onclick="talkToMona()">
-          <span class="hotspot-dot" style="background: #ff2a5f; box-shadow: 0 0 12px #ff2a5f;"></span>
-          <div class="hotspot-text">
-            <h4>مونا • هوش مصنوعی کلاب</h4>
-            <p>گفتگو و رزرو آنی</p>
-          </div>
-          <i data-lucide="sparkles" style="width: 16px; color: var(--gold-primary);"></i>
-        </div>
-
-        <!-- Foreground HUD Overlay -->
-        <div class="stage-hud-content">
-          
-          <div class="hero-title-box">
-            <div class="hero-badge-pill">
-              <i data-lucide="compass" style="width: 14px;"></i>
-              <span>کاوش ۳۶۰ درجه و تعاملی سالن گیم‌نت بازینو</span>
-            </div>
-
-            <h1>
-              اگه یه قهرمانی،<br>
-              <span class="gold-txt">این آخرشه.</span>
-            </h1>
-
-            <p>
-              ماوس خود را روی تصویر حرکت دهید تا در فضای واقعی کلاب و سالن‌های گیمینگ بازینو به صورت سه‌بعدی حرکت کنید.
-            </p>
-
-            <div class="hero-cta-btns">
-              <a href="#reserve" class="btn-tactile btn-gold" style="padding: 14px 30px; font-size: 15px;">
-                <i data-lucide="zap" style="width: 18px;"></i>
-                <span>رزرو آنلاین جایگاه</span>
-              </a>
-              <a href="#games" class="btn-tactile btn-glass" style="padding: 14px 24px; font-size: 15px;">
-                <i data-lucide="gamepad" style="width: 18px; color: var(--cyan-primary);"></i>
-                <span>مشاهده بازی‌ها</span>
-              </a>
-            </div>
-          </div>
-
-          <div class="walkthrough-control-hud">
-            <div class="walkthrough-hint">
-              <i data-lucide="mouse-pointer" style="width: 18px;"></i>
-              <span>حرکت ماوس = تغییر زاویه دید سه‌بعدی</span>
-            </div>
-            <div style="font-size: 12px; color: var(--text-muted);">
-              فیزیک پرسپکتیو چندلایه‌ای • Framer Motion Depth
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 3D Game Roster (FC26, Tekken 8, MK1, UFC 5) -->
-    <section class="section-games-3d" id="games">
-      <div class="section-header-wrap">
-        <div>
-          <h2><i data-lucide="gamepad-2" style="color: var(--gold-primary);"></i> عناوین و بازی‌های روز کلاب</h2>
-          <p>بازی‌های اختصاصی لایسنس‌شده بر روی کنسول‌های PS5 Pro و سیستم‌های گیمینگ</p>
-        </div>
-        <a href="#" class="btn-tactile btn-glass">مشاهده آرشیو کامل بازی‌ها</a>
+    <!-- 3D Spatial Deck Hero (AuthKit Style) -->
+    <section class="hero-spatial-deck" id="hero">
+      
+      <div class="hero-badge">
+        <i data-lucide="compass" style="width: 14px;"></i>
+        <span>کاوش تعاملی سه‌بعدی سالن گیم‌نت بازینو</span>
       </div>
 
-      <div class="games-3d-grid">
+      <h1 class="hero-title">
+        اگه یه قهرمانی، <br>
+        <span class="gold-txt">این آخرشه.</span>
+      </h1>
+
+      <p class="hero-sub">
+        ماوس را حرکت دهید تا پرسپکتیو سه‌بعدی سالن را کنترل کنید یا برای بازدید از بخش‌های مختلف، کارت‌ها را انتخاب نمایید.
+      </p>
+
+      <!-- 3D Card Deck -->
+      <div class="deck-stage" id="deck-stage">
         
-        <!-- Game 1: FC 26 -->
-        <div class="game-card-spatial" onclick="quickReserve('EA SPORTS FC 26')">
-          <img src="/assets/fc26.png" class="game-cover-backdrop" alt="FC 26">
-          <div class="game-gradient-shade"></div>
-          <div class="game-card-top-hud">
-            <span class="game-tag-pill">SPORTS & CUP</span>
-            <i data-lucide="trophy" style="color: var(--gold-primary); width: 18px;"></i>
+        <!-- Card 0: Main Lounge -->
+        <div class="spatial-card center" id="card-0" onclick="setCard(0)">
+          <div class="card-top-hud">
+            <span class="card-cat-badge">BAZINO MAIN LOUNGE</span>
+            <span class="card-stat-pill">360° SPATIAL VIEW</span>
           </div>
-          <div class="game-card-bottom-info">
+          <div class="card-img-holder">
+            <img src="/assets/mona-hero-wide.png" alt="Bazino Lounge">
+          </div>
+          <div class="card-bottom-content">
+            <h3>سالن اصلی گیم‌نت بازینو</h3>
+            <p>اتمسفر لوکس نسل نهم با کنسول‌های PS5 Pro، نورپردازی نئونی و حضور مونا.</p>
+            <div class="card-action-bar">
+              <span class="card-rate-txt">۴۲ ایستگاه فعال</span>
+              <button class="btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو سالن</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 1: FC 26 -->
+        <div class="spatial-card right-1" id="card-1" onclick="setCard(1)">
+          <div class="card-top-hud">
+            <span class="card-cat-badge">SPORTS & TOURNAMENT</span>
+            <span class="card-stat-pill" style="border-color: var(--cyan-primary); color: var(--cyan-primary);">۱۴ کنسول فعال</span>
+          </div>
+          <div class="card-img-holder">
+            <img src="/assets/fc26.png" alt="FC 26">
+          </div>
+          <div class="card-bottom-content">
             <h3>EA SPORTS FC 26</h3>
-            <p>شبیه‌ساز نسل جدید فوتبال با مسابقات هفتگی و کمربند قهرمانی بازینو.</p>
-            <div class="game-action-row">
-              <span class="game-active-consoles">۱۴ کنسول در حال اجرا</span>
-              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو سریع</button>
+            <p>شبیه‌ساز فوتبال هایپرموشن با مسابقات هفتگی و جوایز نقدی ۵,۰۰۰ لیر.</p>
+            <div class="card-action-bar">
+              <span class="card-rate-txt">۵۰ ₺ / ساعت</span>
+              <button class="btn-gold" style="padding: 6px 14px; font-size: 12px;">انتخاب بازی</button>
             </div>
           </div>
         </div>
 
-        <!-- Game 2: Tekken 8 -->
-        <div class="game-card-spatial" onclick="quickReserve('TEKKEN 8')">
-          <img src="/assets/tekken8.png" class="game-cover-backdrop" alt="Tekken 8">
-          <div class="game-gradient-shade"></div>
-          <div class="game-card-top-hud">
-            <span class="game-tag-pill" style="color: var(--gold-primary);">PRO FIGHTING</span>
-            <i data-lucide="flame" style="color: var(--crimson-primary); width: 18px;"></i>
+        <!-- Card 2: PS5 Pro VIP -->
+        <div class="spatial-card left-1" id="card-2" onclick="setCard(2)">
+          <div class="card-top-hud">
+            <span class="card-cat-badge">CONSOLE ZONE</span>
+            <span class="card-stat-pill">OLED HDR 120HZ</span>
           </div>
-          <div class="game-card-bottom-info">
-            <h3>TEKKEN 8</h3>
-            <p>مبارزات نفس‌گیر آنریل انجین ۵ با کنترلرهای سفارشی و صدای فراگیر.</p>
-            <div class="game-action-row">
-              <span class="game-active-consoles">۸ کنسول در حال اجرا</span>
-              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">رزرو سریع</button>
+          <div class="card-img-holder">
+            <img src="/assets/hero-setup.jpg" alt="PS5 Pro">
+          </div>
+          <div class="card-bottom-content">
+            <h3>ایستگاه‌های PS5 Pro VIP</h3>
+            <p>تلویزیون‌های ۶۵ اینچ OLED با رفرش‌ریت ۱۲۰ هرتز و دسته‌های سفارشی Edge.</p>
+            <div class="card-action-bar">
+              <span class="card-rate-txt">۵۰ ₺ / ساعت</span>
+              <button class="btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو ستاپ</button>
             </div>
           </div>
         </div>
 
-        <!-- Game 3: Mortal Kombat 1 -->
-        <div class="game-card-spatial" onclick="quickReserve('MORTAL KOMBAT 1')">
-          <img src="/assets/mk1.png" class="game-cover-backdrop" alt="Mortal Kombat 1">
-          <div class="game-gradient-shade"></div>
-          <div class="game-card-top-hud">
-            <span class="game-tag-pill" style="color: var(--crimson-primary);">KOMBAT ARENA</span>
-            <i data-lucide="sword" style="color: var(--crimson-primary); width: 18px;"></i>
+        <!-- Card 3: PC Rigs -->
+        <div class="spatial-card right-2" id="card-3" onclick="setCard(3)">
+          <div class="card-top-hud">
+            <span class="card-cat-badge">ESPORTS RIGS</span>
+            <span class="card-stat-pill" style="border-color: var(--cyan-primary); color: var(--cyan-primary);">RTX 4090 240HZ</span>
           </div>
-          <div class="game-card-bottom-info">
-            <h3>MORTAL KOMBAT 1</h3>
-            <p>فینیشرهای سینمایی 4K با سیستم کامئو و لابی اختصاصی مبارزات کلاب.</p>
-            <div class="game-action-row">
-              <span class="game-active-consoles">۶ کنسول در حال اجرا</span>
-              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو سریع</button>
+          <div class="card-img-holder">
+            <img src="/assets/hero-player.jpg" alt="PC Gaming">
+          </div>
+          <div class="card-bottom-content">
+            <h3>بتل‌استیشن‌های RTX 4090</h3>
+            <p>مانیتورهای ۲۴۰ هرتز ZOWIE با پینگ تک‌رقمی اختصاصی فیبر نوری.</p>
+            <div class="card-action-bar">
+              <span class="card-rate-txt">۶۵ ₺ / ساعت</span>
+              <button class="btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو سیستم</button>
             </div>
           </div>
         </div>
 
-        <!-- Game 4: UFC 5 -->
-        <div class="game-card-spatial" onclick="quickReserve('EA SPORTS UFC 5')">
-          <img src="/assets/ufc5.png" class="game-cover-backdrop" alt="UFC 5">
-          <div class="game-gradient-shade"></div>
-          <div class="game-card-top-hud">
-            <span class="game-tag-pill">MMA COMBAT</span>
-            <i data-lucide="shield" style="color: var(--cyan-primary); width: 18px;"></i>
+        <!-- Card 4: Tekken 8 -->
+        <div class="spatial-card left-2" id="card-4" onclick="setCard(4)">
+          <div class="card-top-hud">
+            <span class="card-cat-badge">FIGHTING ARENA</span>
+            <span class="card-stat-pill" style="border-color: #ff2a5f; color: #ff2a5f;">ARCADE STICK</span>
           </div>
-          <div class="game-card-bottom-info">
-            <h3>EA SPORTS UFC 5</h3>
-            <p>مبارزات واقع‌گرایانه قفس با موتور فراست‌بایت و سیستم آسیب‌دیدگی طبیعی.</p>
-            <div class="game-action-row">
-              <span class="game-active-consoles">۱۰ کنسول در حال اجرا</span>
-              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">رزرو سریع</button>
+          <div class="card-img-holder">
+            <img src="/assets/tekken8.png" alt="Tekken 8">
+          </div>
+          <div class="card-bottom-content">
+            <h3>TEKKEN 8 & MK1</h3>
+            <p>مبارزات نفس‌گیر آنریل انجین ۵ با فایت‌استیک‌های اختصاصی.</p>
+            <div class="card-action-bar">
+              <span class="card-rate-txt">۵۰ ₺ / ساعت</span>
+              <button class="btn-gold" style="padding: 6px 14px; font-size: 12px;">ورود به مبارزه</button>
             </div>
           </div>
         </div>
 
+      </div>
+
+      <!-- Bottom Pill Switcher -->
+      <div class="deck-switcher-pill">
+        <button class="switch-btn active" id="btn-0" onclick="setCard(0)">سالن اصلی</button>
+        <button class="switch-btn" id="btn-1" onclick="setCard(1)">FC 26</button>
+        <button class="switch-btn" id="btn-2" onclick="setCard(2)">PS5 Pro VIP</button>
+        <button class="switch-btn" id="btn-3" onclick="setCard(3)">ریگ‌های PC</button>
+        <button class="switch-btn" id="btn-4" onclick="setCard(4)">تیکن و کامبت</button>
+      </div>
+
+    </section>
+
+    <!-- Games Roster Grid -->
+    <section class="section-title-row" id="games">
+      <div>
+        <h2><i data-lucide="gamepad-2" style="color: var(--gold-primary);"></i> بازی‌های برتر کلاب بازینو</h2>
+        <p style="color: var(--text-dim); font-size: 14px; margin-top: 4px;">عناوین لایسنس‌شده رسمی بر روی کنسول‌های PS5 Pro و ستاپ‌های اختصاصی</p>
       </div>
     </section>
 
-    <!-- Real Hardware Setup Pods -->
-    <section class="section-hardware-pods" id="pods">
-      <div class="section-header-wrap">
-        <div>
-          <h2><i data-lucide="cpu" style="color: var(--cyan-primary);"></i> سالن‌ها و ستاپ‌های گیمینگ بازینو</h2>
-          <p>عکس‌های واقعی از محیط، نورپردازی نئونی و تجهیزات گیم‌نت</p>
+    <div class="games-grid">
+      <div class="game-grid-card" onclick="setCard(1); window.scrollTo({top: 0, behavior: 'smooth'});">
+        <img src="/assets/fc26.png" alt="FC 26">
+        <div class="game-shade"></div>
+        <div style="position: relative; z-index: 3; display: flex; justify-content: space-between;">
+          <span class="card-cat-badge">SPORTS</span>
+          <i data-lucide="trophy" style="color: var(--gold-primary);"></i>
+        </div>
+        <div style="position: relative; z-index: 3;">
+          <h3 style="font-size: 22px; font-weight: 900; color: #fff;">EA SPORTS FC 26</h3>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">۱۴ کنسول فعال • تورنمنت جمعه‌ها</p>
         </div>
       </div>
 
-      <div class="pods-grid">
-        <div class="pod-box">
-          <img src="/assets/hero-setup.jpg" class="pod-real-img" alt="PS5 Pro OLED">
-          <div class="pod-gradient"></div>
-          <div class="pod-inner-top">
-            <span class="game-tag-pill">PS5 PRO ZONE</span>
-            <i data-lucide="tv" style="color: var(--gold-primary);"></i>
-          </div>
-          <div class="pod-inner-bottom">
-            <h3>ایستگاه‌های PS5 Pro</h3>
-            <p>تلویزیون‌های ۶۵ اینچ OLED با رفرش‌ریت ۱۲۰ هرتز، دسته‌های دوئل‌سنس Edge و صندلی‌های چرمی راحتی.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1);">
-              <span style="color: var(--gold-primary); font-family: var(--font-mono); font-weight: 700; font-size: 16px;">۵۰ ₺ / ساعت</span>
-              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو کنسول</button>
-            </div>
-          </div>
+      <div class="game-grid-card" onclick="setCard(4); window.scrollTo({top: 0, behavior: 'smooth'});">
+        <img src="/assets/tekken8.png" alt="Tekken 8">
+        <div class="game-shade"></div>
+        <div style="position: relative; z-index: 3; display: flex; justify-content: space-between;">
+          <span class="card-cat-badge">FIGHTING</span>
+          <i data-lucide="flame" style="color: var(--crimson-primary);"></i>
         </div>
-
-        <div class="pod-box">
-          <img src="/assets/hero-player.jpg" class="pod-real-img" alt="PC Battle Station">
-          <div class="pod-gradient"></div>
-          <div class="pod-inner-top">
-            <span class="game-tag-pill" style="color: var(--gold-primary);">ESPORTS RIG</span>
-            <i data-lucide="monitor" style="color: var(--cyan-primary);"></i>
-          </div>
-          <div class="pod-inner-bottom">
-            <h3>ریگ‌های بتل‌استیشن RTX 4090</h3>
-            <p>مانیتورهای ۲۴۰ هرتز ZOWIE، کیبوردهای مکانیکی ریزر و اتصال اینترنت فیبر نوری اختصاصی.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1);">
-              <span style="color: var(--cyan-primary); font-family: var(--font-mono); font-weight: 700; font-size: 16px;">۶۵ ₺ / ساعت</span>
-              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">رزرو سیستم</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="pod-box">
-          <img src="/assets/games-gear.jpg" class="pod-real-img" alt="VIP Private Room">
-          <div class="pod-gradient"></div>
-          <div class="pod-inner-top">
-            <span class="game-tag-pill" style="color: var(--crimson-primary);">VIP PRIVATE</span>
-            <i data-lucide="crown" style="color: var(--gold-primary);"></i>
-          </div>
-          <div class="pod-inner-bottom">
-            <h3>اتاق اختصاصی VIP & استریم</h3>
-            <p>فضای عایق صوتی برای گروه‌های ۴ تا ۸ نفره به همراه سیستم ضبط و پخش زنده مسابقات.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1);">
-              <span style="color: var(--gold-primary); font-family: var(--font-mono); font-weight: 700; font-size: 16px;">۱۵۰ ₺ / ساعت</span>
-              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو سالن</button>
-            </div>
-          </div>
+        <div style="position: relative; z-index: 3;">
+          <h3 style="font-size: 22px; font-weight: 900; color: #fff;">TEKKEN 8</h3>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">۸ کنسول فعال • فایت‌استیک آرکید</p>
         </div>
       </div>
-    </section>
+
+      <div class="game-grid-card" onclick="setCard(4); window.scrollTo({top: 0, behavior: 'smooth'});">
+        <img src="/assets/mk1.png" alt="Mortal Kombat 1">
+        <div class="game-shade"></div>
+        <div style="position: relative; z-index: 3; display: flex; justify-content: space-between;">
+          <span class="card-cat-badge">KOMBAT</span>
+          <i data-lucide="sword" style="color: var(--crimson-primary);"></i>
+        </div>
+        <div style="position: relative; z-index: 3;">
+          <h3 style="font-size: 22px; font-weight: 900; color: #fff;">MORTAL KOMBAT 1</h3>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">۶ کنسول فعال • فینیشرهای 4K</p>
+        </div>
+      </div>
+
+      <div class="game-grid-card" onclick="setCard(1); window.scrollTo({top: 0, behavior: 'smooth'});">
+        <img src="/assets/ufc5.png" alt="UFC 5">
+        <div class="game-shade"></div>
+        <div style="position: relative; z-index: 3; display: flex; justify-content: space-between;">
+          <span class="card-cat-badge">MMA COMBAT</span>
+          <i data-lucide="shield" style="color: var(--cyan-primary);"></i>
+        </div>
+        <div style="position: relative; z-index: 3;">
+          <h3 style="font-size: 22px; font-weight: 900; color: #fff;">EA SPORTS UFC 5</h3>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">۱۰ کنسول فعال • آسیب‌دیدگی بلادرنگ</p>
+        </div>
+      </div>
+    </div>
 
     <!-- Footer -->
-    <footer class="spatial-footer">
-      <div style="display: flex; align-items: center; gap: 12px; font-family: var(--font-en); font-weight: 800; color: #fff;">
+    <footer style="margin-top: 100px; padding: 40px 0; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px;">
+      <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-en); font-weight: 800; color: #fff;">
         <i data-lucide="gamepad-2" style="color: var(--gold-primary);"></i>
         <span>BAZINO 3D GAMING LOUNGE</span>
       </div>
       <div>
-        <span>© 2026 بازینو کلاب گیمینگ. تمام حقوق محفوظ است.</span>
+        © 2026 بازینو کلاب گیمینگ. تمام حقوق محفوظ است.
       </div>
     </footer>
 
   </div>
 
   <!-- Mona Floating AI Dock -->
-  <div class="mona-dock" onclick="talkToMona()">
-    <img src="/assets/mona-hero-arena.png" class="mona-dock-img" alt="Mona">
+  <div class="mona-dock" onclick="alert('✨ مونا: سلام قهرمان! من مونا هستم. هر سوالی در مورد بازی‌ها یا رزرو سیستم‌ها داری در خدمتم!')">
+    <img src="/assets/mona-hero-wide.png" alt="Mona">
     <div>
-      <h4 style="font-size: 13px; font-weight: 800; color: #fff;">مونا • دستیار بازینو</h4>
-      <p style="font-size: 11px; color: var(--cyan-primary); font-weight: 600;">کلیک برای راهنمایی و رزرو فوری</p>
+      <h4 style="font-size: 13px; font-weight: 800; color: #fff;">مونا • دستیار هوشمند</h4>
+      <p style="font-size: 11px; color: var(--cyan-primary); font-weight: 600;">کلیک برای گفتگو و راهنمایی</p>
     </div>
     <i data-lucide="sparkles" style="color: var(--gold-primary); width: 18px;"></i>
   </div>
@@ -1042,126 +811,66 @@
   <script>
     lucide.createIcons();
 
-    function focusHotspot(type) {
-      if (type === 'ps5') {
-        alert("🎮 بخش PS5 Pro: ۱۴ دستگاه فعال با تلویزیون‌های OLED ۶۵ اینچ و دسته‌های سفارشی هم‌اکنون آماده رزرو هستند.");
-      } else if (type === 'rigs') {
-        alert("⚡ بتل‌استیشن‌های PC: مجهز به کارت گرافیک RTX 4090 و مانیتورهای ۲۴۰ هرتز مسابقاتی.");
+    let curIdx = 0;
+    const cards = [
+      document.getElementById('card-0'),
+      document.getElementById('card-1'),
+      document.getElementById('card-2'),
+      document.getElementById('card-3'),
+      document.getElementById('card-4')
+    ];
+
+    const cardClasses = ['center', 'right-1', 'left-1', 'right-2', 'left-2'];
+
+    function setCard(idx) {
+      curIdx = idx;
+      
+      // Update buttons
+      for (let i = 0; i < 5; i++) {
+        const btn = document.getElementById(`btn-${i}`);
+        if (i === idx) btn.classList.add('active');
+        else btn.classList.remove('active');
       }
+
+      // Update card 3D classes
+      cards.forEach((c, i) => {
+        const offset = (i - idx + 5) % 5;
+        c.className = 'spatial-card';
+        if (offset === 0) c.classList.add('center');
+        else if (offset === 1) c.classList.add('right-1');
+        else if (offset === 2) c.classList.add('right-2');
+        else if (offset === 3) c.classList.add('left-2');
+        else if (offset === 4) c.classList.add('left-1');
+      });
     }
 
-    function quickReserve(gameName) {
-      alert(`🎮 رزرو جایگاه برای بازی ${gameName}: درخواست شما ثبت شد. مونا اطلاعات ستاپ را برای شما ارسال می‌کند.`);
-    }
-
-    function talkToMona() {
-      alert("✨ مونا: سلام قهرمان! من مونا هستم. هر سوالی در مورد بازی‌ها، سیستم‌ها یا تورنمنت‌های بازینو داری در خدمتم!");
-    }
-
-    // =========================================================
-    // 3D SPATIAL WALKTHROUGH MOUSE PARALLAX (LERP PHYSICS)
-    // =========================================================
-    const stage = document.getElementById('walkthrough-stage');
-    const stageBg = document.getElementById('stage-bg');
-    let stageBounds = stage.getBoundingClientRect();
+    // 3D Perspective Tilt Physics
+    const stage = document.getElementById('deck-stage');
+    let bounds = stage.getBoundingClientRect();
 
     window.addEventListener('resize', () => {
-      stageBounds = stage.getBoundingClientRect();
+      bounds = stage.getBoundingClientRect();
     });
-
-    let sMouseX = 0, sMouseY = 0;
-    let sCurrX = 0, sCurrY = 0;
 
     window.addEventListener('mousemove', (e) => {
-      // Global spotlight
-      document.getElementById('spotlight').style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.getElementById('spotlight').style.setProperty('--mouse-y', `${e.clientY}px`);
+      document.getElementById('ambient').style.setProperty('--mx', `${e.clientX}px`);
+      document.getElementById('ambient').style.setProperty('--my', `${e.clientY}px`);
 
-      // Stage 3D Parallax Calculation
-      const x = e.clientX - stageBounds.left;
-      const y = e.clientY - stageBounds.top;
+      const x = e.clientX - bounds.left;
+      const y = e.clientY - bounds.top;
 
-      if (x >= -200 && x <= stageBounds.width + 200 && y >= -200 && y <= stageBounds.height + 200) {
-        sMouseX = (x / stageBounds.width - 0.5) * 2;
-        sMouseY = (y / stageBounds.height - 0.5) * 2;
+      if (x >= -200 && x <= bounds.width + 200 && y >= -200 && y <= bounds.height + 200) {
+        const xPct = (x / bounds.width - 0.5) * 2;
+        const yPct = (y / bounds.height - 0.5) * 2;
+
+        const rotX = -yPct * 12;
+        const rotY = xPct * 12;
+
+        stage.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
       } else {
-        sMouseX = 0;
-        sMouseY = 0;
+        stage.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
       }
     });
-
-    function smoothParallaxLoop() {
-      requestAnimationFrame(smoothParallaxLoop);
-
-      // Lerp easing (Emil Kowalski fluid physics)
-      sCurrX += (sMouseX - sCurrX) * 0.08;
-      sCurrY += (sMouseY - sCurrY) * 0.08;
-
-      const rotX = -sCurrY * 12;
-      const rotY = sCurrX * 12;
-
-      stage.style.transform = `perspective(1400px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.01, 1.01, 1.01)`;
-      
-      // Counter parallax for panoramic background
-      const panX = -sCurrX * 25;
-      const panY = -sCurrY * 18;
-      stageBg.style.transform = `translateZ(-50px) translate3d(${panX}px, ${panY}px, 0) scale(1.15)`;
-    }
-    smoothParallaxLoop();
-
-    // =========================================================
-    // THREE.JS STARFIELD PARTICLES
-    // =========================================================
-    const canvas = document.getElementById('webgl-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    camera.position.z = 25;
-
-    const count = 1200;
-    const geom = new THREE.BufferGeometry();
-    const pos = new Float32Array(count * 3);
-    const cols = new Float32Array(count * 3);
-
-    const cGold = new THREE.Color('#ffc400');
-    const cCyan = new THREE.Color('#00d2ff');
-    const cWhite = new THREE.Color('#ffffff');
-
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 80;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 60;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
-
-      const r = Math.random();
-      const c = r < 0.4 ? cGold : r < 0.8 ? cCyan : cWhite;
-      cols[i * 3] = c.r;
-      cols[i * 3 + 1] = c.g;
-      cols[i * 3 + 2] = c.b;
-    }
-
-    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geom.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-
-    const particles = new THREE.Points(geom, new THREE.PointsMaterial({
-      size: 0.25,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.75,
-      blending: THREE.AdditiveBlending
-    }));
-    scene.add(particles);
-
-    function renderParticles() {
-      requestAnimationFrame(renderParticles);
-      particles.rotation.y += 0.0008;
-      particles.rotation.x = sCurrY * 0.15;
-      particles.rotation.y = sCurrX * 0.15;
-      renderer.render(scene, camera);
-    }
-    renderParticles();
   </script>
 </body>
 </html>
