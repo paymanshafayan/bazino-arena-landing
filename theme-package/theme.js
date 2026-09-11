@@ -32,7 +32,7 @@
 (function () {
   var SDK = (typeof window !== 'undefined') ? window.BazinoThemeSDK : null;
   if (!SDK || !SDK.registerComponent) return;
-  var R = SDK.React;
+  var R = (SDK && SDK.React) ? SDK.React : (typeof window !== 'undefined' ? window.React : null);
   if (!R) return;
 
   /* 4.5.5 — shared logout/session helpers.
@@ -1380,14 +1380,27 @@
     );
   }
 
-  SDK.registerComponent('home', function () {
-    return {
-      apiVersion: 2,
-      render: function (props) {
-        return R.createElement(ArenaHome, props);
+  function makeFactory(Component) {
+    var fn = function (props) {
+      if (arguments.length === 0) {
+        return {
+          apiVersion: 2,
+          render: function (p) {
+            return R.createElement(Component, p || {});
+          }
+        };
       }
+      return R.createElement(Component, props || {});
     };
-  });
+    fn.apiVersion = 2;
+    fn.render = function (props) {
+      return R.createElement(Component, props || {});
+    };
+    return fn;
+  }
+
+  SDK.registerComponent('home', makeFactory(ArenaHome));
+  SDK.registerComponent('hero', makeFactory(ArenaHome));
 
 
   /* ── HEADER region (SDK v2) — reference-design header ─────────────
@@ -1620,12 +1633,5 @@
     );
   }
 
-  SDK.registerComponent('header', function () {
-    return {
-      apiVersion: 2,
-      render: function (props) {
-        return R.createElement(ArenaHeader, props);
-      }
-    };
-  });
+  SDK.registerComponent('header', makeFactory(ArenaHeader));
 })();

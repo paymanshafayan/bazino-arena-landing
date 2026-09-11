@@ -99,6 +99,8 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+clip6_frames/
+Clip6.mp4
 hub/reference/pdf-pages/
 
 # Database
@@ -112,3 +114,7 @@ hub/reference/pdf-pages/
 # Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json
 .project-config.json
+
+# Local inspection artifacts
+Clip6.mp4
+clip6_frames/
