@@ -1,0 +1,19 @@
+{
+  "name": "Bazino 3D Dimension",
+  "id": "bazino-3d-dimension",
+  "version": "1.0.0",
+  "sdkVersion": 2,
+  "author": "Bazino Gaming Lounge",
+  "description": "3D Spatial Card Deck and Walkthrough Theme for Bazino Game Net Portal featuring real club atmosphere, OLED setups, and live game roster.",
+  "colors": {
+    "primary": "#FFC400",
+    "bg": "#050608",
+    "card": "#0C101A",
+    "cyan": "#00D2FF",
+    "crimson": "#FF2A5F"
+  },
+  "regions": [
+    "home",
+    "header"
+  ]
+}
