@@ -76,12 +76,11 @@ python3 hub/analysis/compare.py hub/reference/brackets-ref-crop.png hub/previews
 
 فونت‌ها باندل محلی: `@fontsource/orbitron` + `@fontsource/rajdhani` (در package.json).
 
-## وضعیت (2026-09-07)
+## وضعیت (2026-09-08 — تکمیل نهایی قالب Hub)
 
 - دموی قالب کامل Hub روی `/hub` مطابق PDF + تصمیم‌های ۱۶گانه ساخته شد (`hub/theme/`).
 - براکت زنده روی `/brackets` و `/hub/events/brackets`.
-- فیکس‌های سشن ۰۱a07c28: خطای tsc (NeonWire)، sticky footer (حذف باند خالی زیر فوتر)،
-  **حذف نقشه OSM از Contact** (PDF §6/تصمیم #11 → کارت موقعیت + لینک Google Maps، بدون هیچ iframe)،
-  رنگ کارت‌های Events مطابق §22 PDF، حذف «VIEW DETAIL» از Weekly.
-- تبدیل به قالب نصبی پورتال و اتصال به `layoutMode: 'hub'` کار بعدی سمت پورتال است —
-  پرامپت کامل: `portal-prompt-hub-theme-fa.md` در ریشه‌ی ریپو.
+- **کاورهای بازی با کیفیت بالا (8K):** تمام کاورهای مسابقات (`FC 26`, `UFC 5`, `MORTAL KOMBAT 1`, `TEKKEN 8`) با تصاویر سینمایی و وضوح بالا بازتولید و جایگزین شدند.
+- **کارت چهارم SYSTEMS & GEAR:** به گرید صفحه Games (`/hub/games`) به همراه استایل نئونی گلد و تصویر اختصاصی اضافه شد (پشتیبانی از رزرو کنترلر اضافه ۲۵ لیر/ساعت و انواع سیستم‌ها).
+- فیکس‌های سشن‌های قبل: ریسپانسیو هدر موبایل، درخت ۳۲ نفره کامل بدون سرریز، sticky footer، حذف کامل PayTR از UI قالب، نوار روزهای باقی‌مانده فصل، شروع در حالت مهمان، صفحات Privacy/Rules و حالت‌های Loading/Empty/Error.
+- تایپ‌چک و بیلد کاملاً سبز.

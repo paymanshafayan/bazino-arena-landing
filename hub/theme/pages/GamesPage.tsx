@@ -4,9 +4,10 @@ import { SYSTEMS } from "../data";
 import { useHub } from "../HubContext";
 import kids from "../assets/games-kids.jpg";
 import adults from "../assets/games-adults.jpg";
+import gear from "../assets/games-gear.jpg";
 import requests from "../assets/games-requests.jpg";
 
-type View = "pick" | "kids" | "adults" | "requests";
+type View = "pick" | "kids" | "adults" | "gear" | "requests";
 
 export default function GamesPage() {
   const [view, setView] = useState<View>("pick");
@@ -16,7 +17,12 @@ export default function GamesPage() {
   const { flash, setAuthOpen, user } = useHub();
 
   const list = useMemo(
-    () => SYSTEMS.filter((s) => view === "kids" ? s.group === "kids" || s.group === "any" : s.group !== "kids"),
+    () =>
+      view === "kids"
+        ? SYSTEMS.filter((s) => s.group === "kids" || s.group === "any")
+        : view === "adults"
+          ? SYSTEMS.filter((s) => s.group === "adults")
+          : SYSTEMS,
     [view],
   );
   const selected = SYSTEMS.find((s) => s.id === sys) ?? SYSTEMS[0];
@@ -25,7 +31,7 @@ export default function GamesPage() {
   const pay = () => {
     if (!user) {
       setAuthOpen(true, "otp");
-      flash("Login with OTP to pay");
+      flash("Login with OTP to hold your station");
       return;
     }
     flash(`Bay held · ${total} ₺ · ${selected.name} · ${hours}h · pay cash or card at the desk (demo)`);
@@ -38,7 +44,7 @@ export default function GamesPage() {
           <button className="hub-back" type="button" onClick={() => setView("pick")}>← BACK TO GAMES</button>
         )}
         <h1>GAMES <em>& RESERVE</em></h1>
-        <p>KIDS · ADULTS · REQUESTS · STATIONS LIVE</p>
+        <p>KIDS · ADULTS · SYSTEMS & GEAR · STATIONS LIVE</p>
       </section>
 
       {view === "pick" && (
@@ -53,6 +59,11 @@ export default function GamesPage() {
             <p>Action, sports, racing and more. 85" and 65" bays with two pads included.</p>
             <span className="hub-tri-cta hub-neon-box hub-neon-box--magenta">RESERVE →</span>
           </button>
+          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--gold" style={{ backgroundImage: `url(${gear})`, backgroundPosition: "50% 50%" }} onClick={() => { setView("gear"); setSys("extra"); }}>
+            <h2>SYSTEMS & GEAR</h2>
+            <p>Extra wireless controllers (25 ₺/h), pro headsets and custom station setups.</p>
+            <span className="hub-tri-cta hub-neon-box hub-neon-box--gold">EXPLORE & ADD →</span>
+          </button>
           <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--cyan" style={{ backgroundImage: `url(${requests})`, backgroundPosition: "86% 48%" }} onClick={() => setView("requests")}>
             <h2>GAME REQUESTS</h2>
             <p>Suggest new games and join the community library.</p>
@@ -61,7 +72,7 @@ export default function GamesPage() {
         </section>
       )}
 
-      {(view === "kids" || view === "adults") && (
+      {(view === "kids" || view === "adults" || view === "gear") && (
         <section className="hub-reserve">
           <div className="hub-sys">
             {list.map((s) => (
@@ -75,7 +86,7 @@ export default function GamesPage() {
             ))}
           </div>
           <aside className="hub-pay hub-neon-box hub-neon-box--gold">
-            <h3>{view === "kids" ? "KIDS BAY" : "ADULT BAY"}</h3>
+            <h3>{view === "kids" ? "KIDS BAY" : view === "adults" ? "ADULT BAY" : "SYSTEM / GEAR"}</h3>
             <p style={{ color: "#7f8fc0", marginTop: 0 }}>{selected.name}</p>
             <div className="hub-hours">
               {[1, 2, 3, 4, 5].map((h) => (
