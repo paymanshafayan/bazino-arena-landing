@@ -35,5 +35,7 @@ console.log('minified theme.js OK — regions: ' + regions.join(','));
 # entries as files, which breaks install (EEXIST on assets subdirs); .gitkeep
 # excluded for the same reason (zero-byte stray file).
 (cd "$STAGE" && rm -f "$ROOT/bazino-arena-theme.zip" && zip -q -r -D "$ROOT/bazino-arena-theme.zip" theme.json theme.css theme.js CHANGELOG.md assets -x "*.gitkeep")
-echo "built bazino-arena-theme.zip v$VER:"
+mkdir -p "$ROOT/client/public"
+cp "$ROOT/bazino-arena-theme.zip" "$ROOT/client/public/bazino-arena-theme.zip"
+echo "built bazino-arena-theme.zip v$VER and synced to client/public:"
 unzip -l "$ROOT/bazino-arena-theme.zip" | tail -4

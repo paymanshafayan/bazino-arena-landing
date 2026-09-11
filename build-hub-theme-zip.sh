@@ -26,5 +26,11 @@ console.log('minified hub theme.js OK');
 " "$STAGE/theme.js"
 
 (cd "$STAGE" && rm -f "$ROOT/bazino-hub-theme.zip" && zip -q -r -D "$ROOT/bazino-hub-theme.zip" theme.json theme.css theme.js CHANGELOG.md assets -x "*.gitkeep")
+<<<<<<< HEAD
 echo "built bazino-hub-theme.zip v$VER:"
+=======
+mkdir -p "$ROOT/client/public"
+cp "$ROOT/bazino-hub-theme.zip" "$ROOT/client/public/bazino-hub-theme.zip"
+echo "built bazino-hub-theme.zip v$VER and synced to client/public:"
+>>>>>>> 97e1797 (fix(packages): sync public theme zip files with root releases and ensure build scripts auto-sync)
 unzip -l "$ROOT/bazino-hub-theme.zip" | tail -4
