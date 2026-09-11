@@ -1,147 +1,255 @@
 #!/usr/bin/env node
 /**
- * CDP Browser Bridge — Chrome DevTools Protocol Client for Arena Agent
- * Connects directly to Chrome remote debugging port or Cloudflare tunnel.
-<<<<<<< HEAD
- *
- * Usage:
- *   node cdp_bridge.mjs <cdp_url> list
- *   node cdp_bridge.mjs <cdp_url> navigate <url>
- *   node cdp_bridge.mjs <cdp_url> screenshot <output_path>
- *   node cdp_bridge.mjs <cdp_url> eval <javascript_expression>
-=======
->>>>>>> 0e5bf34 (feat: Add CDP live verification dashboard, endpoint, and final installable theme ZIP packages)
+ * Standalone Node 22 Chrome DevTools Protocol (CDP) Bridge Client
+ * Communicates with Chrome remote debugging endpoint via HTTP & WebSocket.
  */
 
-import fs from 'node:fs';
+import fs from "node:fs";
+import path from "node:path";
 
-const [cdpBaseUrl, command, arg1] = process.argv.slice(2);
+const [,, endpointArg, commandArg, ...restArgs] = process.argv;
 
-if (!cdpBaseUrl) {
-  console.log('Usage: node cdp_bridge.mjs <cdp_url> [list | navigate <url> | screenshot <path> | eval <js>]');
-  process.exit(1);
+if (!endpointArg || !commandArg) {
+  console.log(`
+Usage:
+  node cdp_bridge.mjs <endpoint-url> <command> [args...]
+
+Commands:
+  list                      List all open target pages
+  version                   Get Chrome version metadata
+  navigate <url> [targetId] Navigate page to URL
+  eval <js-code> [targetId] Evaluate JS expression
+  screenshot [out] [tgtId]  Capture PNG screenshot
+  call <method> [jsonParams] [tgtId] Send raw CDP command
+
+Examples:
+  node cdp_bridge.mjs http://127.0.0.1:9222 list
+  node cdp_bridge.mjs http://127.0.0.1:9222 screenshot screenshot.png
+`);
+  process.exit(0);
 }
 
-const cleanBase = cdpBaseUrl.replace(/\/+$/, '');
+function normalizeHttpUrl(raw) {
+  let url = raw.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = `http://${url}`;
+  }
+  return url.replace(/\/+$/, "");
+}
 
-async function getTabs() {
-  const res = await fetch(`${cleanBase}/json/list`);
-  if (!res.ok) throw new Error(`Failed to fetch /json/list: ${res.status} ${res.statusText}`);
+const baseUrl = normalizeHttpUrl(endpointArg);
+const command = commandArg.toLowerCase();
+
+async function fetchJson(pathName) {
+  const targetUrl = `${baseUrl}${pathName.startsWith("/") ? pathName : `/${pathName}`}`;
+  const res = await fetch(targetUrl, {
+    headers: {
+      "Host": "localhost:9222",
+      "User-Agent": "Bazino-CDP-Client/1.0"
+    }
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} ${res.statusText} from ${targetUrl}`);
+  }
   return await res.json();
 }
 
-function resolveWsUrl(rawWsUrl) {
-<<<<<<< HEAD
-  // If Chrome returned ws://localhost:9222/devtools/page/... but we are connecting via https://xyz.trycloudflare.com
-=======
->>>>>>> 0e5bf34 (feat: Add CDP live verification dashboard, endpoint, and final installable theme ZIP packages)
-  const u = new URL(rawWsUrl);
-  const baseU = new URL(cleanBase);
-  u.protocol = baseU.protocol === 'https:' ? 'wss:' : 'ws:';
-  u.host = baseU.host;
-  return u.toString();
+async function getTargets() {
+  try {
+    return await fetchJson("/json/list");
+  } catch {
+    return await fetchJson("/json");
+  }
 }
 
-class CdpSession {
-  constructor(wsUrl) {
-    this.wsUrl = wsUrl;
-    this.ws = null;
-    this.id = 1;
-    this.pending = new Map();
-  }
-
-  async connect() {
-    return new Promise((resolve, reject) => {
-      this.ws = new WebSocket(this.wsUrl);
-      this.ws.onopen = () => resolve();
-      this.ws.onerror = (err) => reject(err);
-      this.ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.id && this.pending.has(data.id)) {
-            const { resolve: res, reject: rej } = this.pending.get(data.id);
-            this.pending.delete(data.id);
-            if (data.error) rej(new Error(data.error.message || JSON.stringify(data.error)));
-            else res(data.result);
-          }
-        } catch (e) {
-          console.error('[CDP Message Parse Error]', e);
-        }
-      };
-    });
-  }
-
-  async send(method, params = {}) {
-    const id = this.id++;
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify({ id, method, params }));
-    });
-  }
-
-  close() {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+function createCdpSession(wsUrl) {
+  return new Promise((resolve, reject) => {
+    let finalWsUrl = wsUrl;
+    if (baseUrl.startsWith("https://")) {
+      finalWsUrl = wsUrl.replace(/^ws:\/\//i, "wss://");
     }
-  }
+
+    const ws = new WebSocket(finalWsUrl);
+    let idCounter = 1;
+    const pending = new Map();
+
+    ws.onopen = () => {
+      resolve({
+        send: (method, params = {}) => {
+          return new Promise((res, rej) => {
+            const id = idCounter++;
+            pending.set(id, { res, rej });
+            ws.send(JSON.stringify({ id, method, params }));
+          });
+        },
+        close: () => ws.close()
+      });
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.id && pending.has(msg.id)) {
+          const { res, rej } = pending.get(msg.id);
+          pending.delete(msg.id);
+          if (msg.error) {
+            rej(new Error(msg.error.message || JSON.stringify(msg.error)));
+          } else {
+            res(msg.result);
+          }
+        }
+      } catch (err) {
+        console.error("[CDP Parse Error]", err);
+      }
+    };
+
+    ws.onerror = (err) => reject(err);
+  });
 }
 
 async function main() {
-  const tabs = await getTabs();
-  const pageTabs = tabs.filter(t => t.type === 'page' || !t.type);
-
-  if (command === 'list' || !command) {
-    console.log(`Found ${pageTabs.length} open tab(s):`);
-    pageTabs.forEach((t, i) => {
-      console.log(`  [${i + 1}] ${t.title || 'Untitled'} — ${t.url} (id: ${t.id})`);
-    });
-    return;
-  }
-
-  const targetTab = pageTabs[0];
-  if (!targetTab) {
-    throw new Error('No open page tab found in Chrome.');
-  }
-
-  const wsUrl = resolveWsUrl(targetTab.webSocketDebuggerUrl);
-  console.log(`Connecting to CDP target: ${targetTab.title} (${wsUrl})...`);
-  const session = new CdpSession(wsUrl);
-  await session.connect();
-
   try {
-    if (command === 'navigate') {
-      const targetUrl = arg1 || 'http://localhost:3000';
-      console.log(`Navigating to ${targetUrl}...`);
-      await session.send('Page.enable');
-      await session.send('Page.navigate', { url: targetUrl });
-      await new Promise(r => setTimeout(r, 2000));
-      console.log('Navigation complete.');
-    } else if (command === 'screenshot') {
-      const outPath = arg1 || 'screenshot.png';
-      console.log(`Capturing browser screenshot to ${outPath}...`);
-      await session.send('Page.enable');
-      const res = await session.send('Page.captureScreenshot', {
-        format: 'png',
-        captureBeyondViewport: false
-      });
-      const buffer = Buffer.from(res.data, 'base64');
-      fs.writeFileSync(outPath, buffer);
-      console.log(`✓ Real browser screenshot saved successfully: ${outPath} (${buffer.length} bytes)`);
-    } else if (command === 'eval') {
-      const expr = arg1 || 'document.title';
-      console.log(`Evaluating: ${expr}...`);
-      const res = await session.send('Runtime.evaluate', { expression: expr, returnByValue: true });
-      console.log('Result:', res.result?.value);
-    } else {
-      console.log(`Unknown command: ${command}`);
+    switch (command) {
+      case "version": {
+        const ver = await fetchJson("/json/version");
+        console.log(JSON.stringify(ver, null, 2));
+        break;
+      }
+
+      case "list": {
+        const targets = await getTargets();
+        console.log(JSON.stringify(targets, null, 2));
+        break;
+      }
+
+      case "screenshot": {
+        const outPath = restArgs[0] || "cdp-screenshot.png";
+        const explicitTargetId = restArgs[1];
+        const targets = await getTargets();
+        const pages = targets.filter((t) => t.type === "page" || !t.type);
+
+        if (pages.length === 0) {
+          throw new Error("No active page target found in Chrome.");
+        }
+
+        const target = explicitTargetId
+          ? pages.find((p) => p.id === explicitTargetId) || pages[0]
+          : pages[0];
+
+        if (!target?.webSocketDebuggerUrl) {
+          throw new Error(`Target ${target?.id || "unknown"} has no webSocketDebuggerUrl.`);
+        }
+
+        const session = await createCdpSession(target.webSocketDebuggerUrl);
+        await session.send("Page.enable");
+        
+        const shotResult = await session.send("Page.captureScreenshot", {
+          format: "png",
+          quality: 100,
+          fromSurface: true,
+          captureBeyondViewport: true
+        });
+
+        session.close();
+
+        if (!shotResult?.data) {
+          throw new Error("No screenshot data received from CDP.");
+        }
+
+        const buffer = Buffer.from(shotResult.data, "base64");
+        const resolvedPath = path.resolve(process.cwd(), outPath);
+        fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
+        fs.writeFileSync(resolvedPath, buffer);
+
+        console.log(JSON.stringify({
+          success: true,
+          path: resolvedPath,
+          sizeBytes: buffer.length,
+          targetId: target.id,
+          targetTitle: target.title,
+          targetUrl: target.url
+        }, null, 2));
+        break;
+      }
+
+      case "navigate": {
+        const navUrl = restArgs[0];
+        const explicitTargetId = restArgs[1];
+        if (!navUrl) throw new Error("Missing URL for navigate command.");
+
+        const targets = await getTargets();
+        const pages = targets.filter((t) => t.type === "page" || !t.type);
+        const target = explicitTargetId
+          ? pages.find((p) => p.id === explicitTargetId) || pages[0]
+          : pages[0];
+
+        if (!target?.webSocketDebuggerUrl) throw new Error("No webSocketDebuggerUrl on target.");
+
+        const session = await createCdpSession(target.webSocketDebuggerUrl);
+        await session.send("Page.enable");
+        const result = await session.send("Page.navigate", { url: navUrl });
+        session.close();
+
+        console.log(JSON.stringify({ success: true, targetId: target.id, result }, null, 2));
+        break;
+      }
+
+      case "eval": {
+        const jsCode = restArgs[0];
+        const explicitTargetId = restArgs[1];
+        if (!jsCode) throw new Error("Missing JS expression to evaluate.");
+
+        const targets = await getTargets();
+        const pages = targets.filter((t) => t.type === "page" || !t.type);
+        const target = explicitTargetId
+          ? pages.find((p) => p.id === explicitTargetId) || pages[0]
+          : pages[0];
+
+        if (!target?.webSocketDebuggerUrl) throw new Error("No webSocketDebuggerUrl on target.");
+
+        const session = await createCdpSession(target.webSocketDebuggerUrl);
+        await session.send("Runtime.enable");
+        const evalResult = await session.send("Runtime.evaluate", {
+          expression: jsCode,
+          returnByValue: true,
+          awaitPromise: true
+        });
+        session.close();
+
+        console.log(JSON.stringify({ success: true, result: evalResult?.result?.value }, null, 2));
+        break;
+      }
+
+      case "call": {
+        const method = restArgs[0];
+        const paramsRaw = restArgs[1];
+        const explicitTargetId = restArgs[2];
+        if (!method) throw new Error("Missing CDP method.");
+
+        const params = paramsRaw ? JSON.parse(paramsRaw) : {};
+        const targets = await getTargets();
+        const pages = targets.filter((t) => t.type === "page" || !t.type);
+        const target = explicitTargetId
+          ? pages.find((p) => p.id === explicitTargetId) || pages[0]
+          : pages[0];
+
+        if (!target?.webSocketDebuggerUrl) throw new Error("No webSocketDebuggerUrl on target.");
+
+        const session = await createCdpSession(target.webSocketDebuggerUrl);
+        const result = await session.send(method, params);
+        session.close();
+
+        console.log(JSON.stringify({ success: true, method, result }, null, 2));
+        break;
+      }
+
+      default:
+        throw new Error(`Unknown command: ${command}`);
     }
-  } finally {
-    session.close();
+  } catch (err) {
+    console.error(JSON.stringify({ error: err.message || String(err) }));
+    process.exit(1);
   }
 }
 
-main().catch(err => {
-  console.error('[CDP Error]', err.message);
-  process.exit(1);
-});
+main();
