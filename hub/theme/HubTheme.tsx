@@ -1,8 +1,11 @@
 import { Route, Switch } from "wouter";
 import HomePage from "./pages/HomePage";
 import GamesPage from "./pages/GamesPage";
+import PricesPage from "./pages/PricesPage";
+import GalleryPage from "./pages/GalleryPage";
+import AboutPage from "./pages/AboutPage";
 import { EventsHubPage, RegisterEventPage, SeasonPage, SpecialPage, WeeklyPage } from "./pages/EventsPages";
-import { BlogPage, ChatPage, ClubPage, ContactPage, FoodPage, Hub404, PrivacyPage, ProfilePage, RulesPage, ShopPage } from "./pages/MiscPages";
+import { ContactPage, FoodPage, Hub404, PrivacyPage, ProfilePage, RulesPage, ShopPage } from "./pages/MiscPages";
 import BracketDemo from "../bracket-demo/BracketDemo";
 
 export default function HubTheme() {
@@ -16,11 +19,12 @@ export default function HubTheme() {
       <Route path="/hub/events/season" component={SeasonPage} />
       <Route path="/hub/events/register" component={RegisterEventPage} />
       <Route path="/hub/events/brackets" component={BracketDemo} />
+      <Route path="/hub/gallery" component={GalleryPage} />
+      <Route path="/hub/prices" component={PricesPage} />
       <Route path="/hub/shop" component={ShopPage} />
       <Route path="/hub/food" component={FoodPage} />
-      <Route path="/hub/club" component={ClubPage} />
-      <Route path="/hub/blog" component={BlogPage} />
-      <Route path="/hub/chat" component={ChatPage} />
+      <Route path="/hub/about" component={AboutPage} />
+      <Route path="/hub/club" component={AboutPage} />
       <Route path="/hub/profile" component={ProfilePage} />
       <Route path="/hub/contact" component={ContactPage} />
       <Route path="/hub/rules" component={RulesPage} />

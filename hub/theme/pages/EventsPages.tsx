@@ -9,223 +9,518 @@ import ufc5 from "../../bracket-demo/covers/ufc5.png";
 import mk1 from "../../bracket-demo/covers/mk1.png";
 import tekken8 from "../../bracket-demo/covers/tekken8.png";
 import banner from "../../bracket-demo/covers/banner-bracket.jpg";
-import hero from "../../design-system/assets/hero-setup.jpg";
 
 const COVERS: Record<string, string> = { fc26, ufc5, mk1, tekken8 };
 
-function Hero({ title, em, line, back }: { title: string; em?: string; line: string; back?: boolean }) {
-  return (
-    <section className="hub-page-hero" style={{ backgroundImage: `url(${hero})` }}>
-      {back && <Link href="/hub/events" className="hub-back">← BACK TO EVENTS</Link>}
-      <h1>{title}{em && <> <em>{em}</em></>}</h1>
-      <p>{line}</p>
-    </section>
-  );
-}
-
+// ── EVENTS HUB PAGE ────────────────────────────────────────────────
 export function EventsHubPage() {
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="EVENTS" line="PLAY · COMPETE · EARN CREDITS · BE A LEGEND" />
-      <section className="hub-evgrid">
-        <article className="hub-evcard hub-neon-box hub-neon-box--purple is-purple">
-          <header><HubIcon.Calendar size={22} /><span><b>WEEKLY TOURNAMENTS</b><small>Regular weekly competition</small></span></header>
-          <div className="hub-evart"><img src={fc26} alt="" /></div>
-          <div className="hub-evlist">
-            <span>32 Players</span><span>Knockout format</span><span>Every Saturday</span><span>Earn credits</span>
+      
+      {/* Top Header */}
+      <section className="hub-section-top-nav">
+        <div className="hub-section-header-group">
+          <div className="hub-header-icon-wrap" style={{ color: "#ff2db0" }}>
+            <HubIcon.Trophy size={40} />
           </div>
-          <Link href="/hub/events/weekly" className="hub-evcta">VIEW TOURNAMENTS →</Link>
+          <h1 className="hub-list-title hub-title-magenta">EVENTS</h1>
+          <p className="hub-list-subtitle">PLAY • COMPETE • EARN • BE A LEGEND</p>
+          <div className="hub-events-subbar">
+            <span>TOURNAMENTS</span>
+            <span>|</span>
+            <span>SEASON RANKINGS</span>
+            <span>|</span>
+            <span>SPECIAL EVENTS</span>
+            <span>|</span>
+            <span>REAL PLAYERS</span>
+            <span>|</span>
+            <span>REAL PRIZES</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 Large 3D Event Portals */}
+      <section className="hub-events-4portals">
+        
+        {/* 1. Weekly Tournaments */}
+        <article className="hub-eportal-card hub-eportal--magenta">
+          <header className="hub-eportal-head">
+            <HubIcon.Calendar size={24} />
+            <div>
+              <b>WEEKLY TOURNAMENTS</b>
+              <small>Regular weekly competition</small>
+            </div>
+          </header>
+          <div className="hub-eportal-art">
+            <img src={fc26} alt="FC26" />
+          </div>
+          <div className="hub-eportal-specs">
+            <span>👥 32 Players</span>
+            <span>🏆 Knockout Format</span>
+            <span>📅 Every Saturday</span>
+            <span>🎮 Different Games</span>
+            <span>⭐ Earn Rewards</span>
+          </div>
+          <p className="hub-eportal-blurb">
+            Join our weekly tournaments, show your skills and compete for rewards!
+          </p>
+          <Link href="/hub/events/weekly" className="hub-eportal-btn">
+            <span>VIEW TOURNAMENTS</span>
+            <span>→</span>
+          </Link>
         </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--magenta is-magenta">
-          <header><HubIcon.Star size={22} /><span><b>SPECIAL EVENTS</b><small>Big competitions & showcases</small></span></header>
-          <div className="hub-evart"><img src={ufc5} alt="" /></div>
-          <div className="hub-evlist">
-            <span>Unique tournaments</span><span>Bigger prizes</span><span>Special rules & formats</span><span>Invitation cups</span>
+
+        {/* 2. Special Events */}
+        <article className="hub-eportal-card hub-eportal--cyan">
+          <header className="hub-eportal-head">
+            <HubIcon.Trophy size={24} />
+            <div>
+              <b>SPECIAL EVENTS</b>
+              <small>Big competitions & unique cups</small>
+            </div>
+          </header>
+          <div className="hub-eportal-art">
+            <img src={ufc5} alt="Special" />
           </div>
-          <Link href="/hub/events/special" className="hub-evcta">VIEW EVENTS →</Link>
+          <div className="hub-eportal-specs">
+            <span>🏆 Unique Tournaments</span>
+            <span>💰 Bigger Prizes</span>
+            <span>🎮 Different Games</span>
+            <span>⚙️ Special Rules & Formats</span>
+            <span>👑 Exclusive Cups</span>
+          </div>
+          <p className="hub-eportal-blurb">
+            Take part in our special events and experience the biggest tournaments at Bazino!
+          </p>
+          <Link href="/hub/events/special" className="hub-eportal-btn">
+            <span>VIEW EVENTS</span>
+            <span>→</span>
+          </Link>
         </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--green is-green">
-          <header><HubIcon.Users size={22} /><span><b>SEASON RANKING</b><small>Spring · Summer · Autumn · Winter</small></span></header>
-          <div className="hub-evart" style={{ background: "radial-gradient(circle at 50% 40%, rgba(234,176,61,0.35), #0b1020)" }}>
-            <LaurelTrophy size={72} />
+
+        {/* 3. Season Ranking */}
+        <article className="hub-eportal-card hub-eportal--green">
+          <header className="hub-eportal-head">
+            <HubIcon.Users size={24} />
+            <div>
+              <b>SEASON RANKING</b>
+              <small>Spring • Summer • Autumn • Winter</small>
+            </div>
+          </header>
+          <div className="hub-eportal-art hub-eportal-crown-art">
+            <LaurelTrophy size={80} />
           </div>
-          <div className="hub-evlist">
-            <span>Live season standings</span><span>Earn season points</span><span>Win season rewards</span><span>Be the season champion</span>
+          <div className="hub-eportal-specs">
+            <span>📊 Live Season Rankings</span>
+            <span>⭐ Earn Points</span>
+            <span>🎁 Win Season Rewards</span>
+            <span>👥 Compare with Other Players</span>
+            <span>👑 Be the Season Champion</span>
           </div>
-          <Link href="/hub/events/season" className="hub-evcta">VIEW RANKING →</Link>
+          <p className="hub-eportal-blurb">
+            Compete all season, collect points and climb the leaderboard. Make your name in Bazino history!
+          </p>
+          <Link href="/hub/events/season" className="hub-eportal-btn">
+            <span>VIEW RANKINGS</span>
+            <span>→</span>
+          </Link>
         </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--gold is-gold">
-          <header><HubIcon.Trophy size={22} /><span><b>TOURNAMENT BRACKETS</b><small>Live & past results</small></span></header>
-          <div className="hub-evart"><img src={banner} alt="" /></div>
-          <div className="hub-evlist">
-            <span>Current tournament draw</span><span>Full 32-player brackets</span><span>Match results</span><span>TV overlay ready</span>
+
+        {/* 4. Tournament Brackets */}
+        <article className="hub-eportal-card hub-eportal--gold">
+          <header className="hub-eportal-head">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffd700" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="6" height="4" rx="1"/><rect x="3" y="17" width="6" height="4" rx="1"/><rect x="15" y="10" width="6" height="4" rx="1"/><path d="M9 5h3v14H9M12 12h3"/></svg>
+            <div>
+              <b>TOURNAMENT BRACKETS</b>
+              <small>Live & Past Tournament Results</small>
+            </div>
+          </header>
+          <div className="hub-eportal-art">
+            <img src={banner} alt="Brackets" />
           </div>
-          <Link href="/hub/events/brackets" className="hub-evcta">VIEW BRACKETS →</Link>
-        </article>
-        <article className="hub-evcard hub-neon-box hub-neon-box--cyan is-cyan">
-          <header><HubIcon.Gamepad size={22} /><span><b>REGISTER</b><small>Join the next weekly</small></span></header>
-          <div className="hub-evart" style={{ backgroundImage: `url(${mk1})` }} />
-          <div className="hub-evlist">
-            <span>Pick a title</span><span>Pay 150 ₺ entry at the desk</span><span>Name on the bracket</span><span>Show up, play, advance</span>
+          <div className="hub-eportal-specs">
+            <span>🔴 Current Tournament (Live)</span>
+            <span>📅 Next Tournament</span>
+            <span>🌳 Full Tournament Brackets</span>
+            <span>📋 Match Results</span>
+            <span>👑 Players & Winners</span>
           </div>
-          <Link href="/hub/events/register" className="hub-evcta">REGISTER →</Link>
+          <p className="hub-eportal-blurb">
+            Follow the current tournament, see live results and explore all past tournaments with full brackets.
+          </p>
+          <Link href="/hub/events/brackets" className="hub-eportal-btn">
+            <span>VIEW BRACKETS</span>
+            <span>→</span>
+          </Link>
         </article>
+
       </section>
     </HubPage>
   );
 }
 
+// ── WEEKLY TOURNAMENTS PAGE ────────────────────────────────────────
 export function WeeklyPage() {
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="WEEKLY" em="TOURNAMENTS" line="PLAY · COMPETE · EARN CREDITS · BE A LEGEND" back />
-      <section className="hub-rows">
-        {WEEKLY.map((w) => (
-          <article key={w.title} className={`hub-row hub-neon-box hub-neon-box--${w.tone}`}>
-            <img src={COVERS[w.cover]} alt="" />
-            <div>
-              <h3>{w.title}</h3>
-              <p>{w.blurb}</p>
-              <div className="hub-tags">{w.tags.map((t) => <i key={t}>{t}</i>)}</div>
-              {/* PDF §11 — schedule, time, entry fee and prizes all live on the card. */}
-              <div className="hub-row-facts">
-                <span><HubIcon.Calendar size={13} /> {w.when} · {w.date}</span>
-                <span><HubIcon.Clock size={13} /> {w.time}</span>
-                <span><HubIcon.Users size={13} /> MAX {w.max} PLAYERS</span>
+      
+      {/* Header */}
+      <section className="hub-section-top-nav">
+        <Link href="/hub/events" className="hub-back-btn">
+          ← BACK TO EVENTS
+        </Link>
+        <div className="hub-section-header-group">
+          <div className="hub-header-icon-wrap" style={{ color: "#ff2db0" }}>
+            <HubIcon.Calendar size={36} />
+          </div>
+          <h1 className="hub-list-title hub-title-magenta">WEEKLY TOURNAMENTS</h1>
+          <p className="hub-list-subtitle">PLAY • COMPETE • EARN CREDITS • BE A LEGEND</p>
+        </div>
+      </section>
+
+      {/* Tournament Rows */}
+      <section className="hub-tournament-rows-container">
+        {WEEKLY.map((w, idx) => (
+          <article key={idx} className="hub-tournament-row-card hub-tcard-glow-magenta">
+            
+            {/* Game Art */}
+            <div className="hub-trow-art">
+              <img src={COVERS[w.cover]} alt={w.title} />
+            </div>
+
+            {/* Info */}
+            <div className="hub-trow-info">
+              <h3 className="hub-trow-title">{w.title}</h3>
+              <p className="hub-trow-blurb">{w.blurb}</p>
+              <div className="hub-game-tags">
+                {w.tags.map((t, tIdx) => (
+                  <span key={tIdx} className="hub-genre-pill">{t}</span>
+                ))}
               </div>
             </div>
-            <div className="hub-row-meta">
-              <div className="hub-stat is-fee"><b>{w.fee}</b><small>ENTRY FEE</small></div>
-              <div className="hub-stat is-gold"><b>{w.first}</b><small>1ST PRIZE</small></div>
-              <div className="hub-stat"><b>{w.second}</b><small>2ND</small></div>
-              <div className="hub-stat"><b>{w.third}</b><small>3RD</small></div>
-              <div className="hub-stat"><HubIcon.Trophy size={16} /><b>{w.prize}</b><small>CREDITS</small></div>
+
+            {/* Stat Blocks */}
+            <div className="hub-trow-stats">
+              <div className="hub-stat-box">
+                <span className="hub-stat-icon">📅</span>
+                <b>{w.when}</b>
+              </div>
+              <div className="hub-stat-box">
+                <span className="hub-stat-icon">👥</span>
+                <b>MAX {w.max} PLAYERS</b>
+              </div>
+              <div className="hub-stat-box hub-stat-box-gold">
+                <span className="hub-stat-icon">🏆</span>
+                <b>PRIZE {w.prize}</b>
+              </div>
             </div>
+
+            {/* Action */}
+            <div className="hub-trow-action">
+              <Link href="/hub/events/brackets" className="hub-btn-view-details">
+                <span>VIEW DETAILS</span>
+                <span>→</span>
+              </Link>
+            </div>
+
           </article>
         ))}
       </section>
+
     </HubPage>
   );
 }
 
+// ── SPECIAL EVENTS PAGE ───────────────────────────────────────────
 export function SpecialPage() {
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="SPECIAL" em="EVENTS" line="BIGGER GAMES · HIGHER PRIZES · RARE MOMENTS" back />
-      <section className="hub-rows">
-        {SPECIAL.map((w) => (
-          <article key={w.title} className="hub-row hub-neon-box hub-neon-box--magenta">
-            <img src={COVERS[w.cover]} alt="" />
-            <div>
-              <h3>{w.title}</h3>
-              <p>{w.blurb}</p>
-              <div className="hub-tags">{w.tags.map((t) => <i key={t}>{t}</i>)}</div>
-              <small style={{ color: "#7f8fc0" }}>{w.date} · {w.max} PLAYERS</small>
+      
+      {/* Header */}
+      <section className="hub-section-top-nav">
+        <Link href="/hub/events" className="hub-back-btn">
+          ← BACK TO EVENTS
+        </Link>
+        <div className="hub-section-header-group">
+          <div className="hub-header-icon-wrap" style={{ color: "#00e5ff" }}>
+            <HubIcon.Trophy size={36} />
+          </div>
+          <h1 className="hub-list-title hub-title-cyan">SPECIAL EVENTS</h1>
+          <p className="hub-list-subtitle">BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS</p>
+          <small style={{ color: "#cbd5e1" }}>Unique tournaments, limited in time. Don't miss the action!</small>
+        </div>
+      </section>
+
+      {/* Special Event Rows with Cash Prizes */}
+      <section className="hub-tournament-rows-container">
+        {SPECIAL.map((s, idx) => (
+          <article key={idx} className="hub-special-row-card hub-tcard-glow-cyan">
+            
+            {/* Game Art */}
+            <div className="hub-trow-art">
+              <img src={COVERS[s.cover]} alt={s.title} />
             </div>
-            <div className="hub-row-meta">
-              <div className="hub-stat"><b>{w.fee}</b><small>ENTRY</small></div>
-              <div className="hub-stat"><b>{w.first}</b><small>1ST</small></div>
-              <div className="hub-stat"><b>{w.second}</b><small>2ND</small></div>
-              <div className="hub-stat"><b>{w.third}</b><small>3RD</small></div>
-              <div className="hub-stat"><b>+10 BC</b><small>PLAY</small></div>
+
+            {/* Info */}
+            <div className="hub-trow-info">
+              <h3 className="hub-trow-title">{s.title}</h3>
+              <p className="hub-trow-blurb">{s.blurb}</p>
+              <div className="hub-game-tags">
+                {s.tags.map((t, tIdx) => (
+                  <span key={tIdx} className="hub-genre-pill hub-genre-pill--special">{t}</span>
+                ))}
+              </div>
+              <div className="hub-special-meta-row">
+                <span>📅 {s.date}</span>
+                <span>⏱️ {s.time}</span>
+                <span>👥 {s.max} PLAYERS</span>
+              </div>
             </div>
+
+            {/* Entry Fee & BC Bonus */}
+            <div className="hub-fee-col">
+              <div className="hub-fee-badge">
+                <small>ENTRY FEE</small>
+                <b>{s.fee}</b>
+              </div>
+              <div className="hub-bc-bonus-badge">
+                <span>🎁 {s.bcReward}</span>
+                <small>For Participation</small>
+              </div>
+            </div>
+
+            {/* Podium Prizes Matrix */}
+            <div className="hub-prizes-podium-matrix">
+              <div className="hub-podium-prize hub-prize-1st">
+                <span className="hub-prize-trophy">🥇 1ST PLACE</span>
+                <b>{s.first}</b>
+              </div>
+              <div className="hub-podium-prize hub-prize-2nd">
+                <span className="hub-prize-trophy">🥈 2ND PLACE</span>
+                <b>{s.second}</b>
+              </div>
+              <div className="hub-podium-prize hub-prize-3rd">
+                <span className="hub-prize-trophy">🥉 3RD PLACE</span>
+                <b>{s.third}</b>
+              </div>
+            </div>
+
           </article>
         ))}
       </section>
+
     </HubPage>
   );
 }
 
+// ── SEASON RANKING PAGE (3-Column Layout) ──────────────────────────
 export function SeasonPage() {
-  const [season, setSeason] = useState<(typeof SEASONS)[number]>("SUMMER");
-  const window = SEASON_WINDOWS[season];
-  const left = daysLeft(window.end);
+  const [season, setSeason] = useState<(typeof SEASONS)[number]>("SPRING");
+  const win = SEASON_WINDOWS[season];
+  const left = daysLeft(win.end);
+
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="SEASON" em="RANKING" line="EARN POINTS · CLIMB THE LEADERBOARD · BECOME THE SEASON CHAMPION" back />
-      <div className="hub-season-tabs">
-        {SEASONS.map((s) => (
-          <button key={s} type="button" className={s === season ? "is-on" : ""} onClick={() => setSeason(s)}>{s}</button>
-        ))}
-      </div>
-      {/* PDF §13 — countdown of the days left in the running season. */}
-      <div className="hub-season-clock hub-neon-box hub-neon-box--gold">
-        <span><small>SEASON</small><b>{season}</b></span>
-        <span><small>WINDOW</small><b>{window.from} – {window.to}</b></span>
-        <span className="is-count"><small>DAYS LEFT</small><b>{left}</b></span>
-        <span><small>POINTS RESET</small><b>AT SEASON END</b></span>
-      </div>
-      <section className="hub-season">
-        <aside className="hub-box hub-neon-box hub-neon-box--purple hub-pts">
-          <h3>POINT SYSTEM</h3>
-          <article className="hub-neon-box hub-neon-box--cyan">
-            <b>WEEKLY TOURNAMENTS</b>
-            <ul><li>1st Place <b>5 Points</b></li><li>2nd Place <b>2 Points</b></li><li>3rd Place <b>1 Point</b></li></ul>
-          </article>
-          <article className="hub-neon-box hub-neon-box--magenta">
-            <b>SPECIAL EVENTS</b>
-            <ul><li>1st Place <b>10 Points</b></li><li>2nd Place <b>4 Points</b></li><li>3rd Place <b>2 Points</b></li></ul>
-          </article>
-          <p style={{ color: "#7f8fc0", fontSize: 12 }}>Season points rank the champion. They are not Bazino Credits / wallet cash.</p>
-        </aside>
-        <div className="hub-box hub-neon-box">
-          <h3>SEASON LEADERBOARD · {season}</h3>
-          <table className="hub-lb">
-            <thead><tr><th>#</th><th>PLAYER</th><th>GAME</th><th>PTS</th></tr></thead>
-            <tbody>
-              {LEADERBOARD.map((r) => (
-                <tr key={r.rank} className={r.rank <= 3 ? `is-${r.rank}` : ""}>
-                  <td>{r.rank}</td>
-                  <td style={{ display: "flex", gap: 8, alignItems: "center" }}><HubAvatar name={r.name} size={22} /> {r.name} <small style={{ color: "#3ccaf5" }}>{r.tag}</small></td>
-                  <td>{r.game}</td>
-                  <td><b>{r.pts}</b></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      
+      {/* Header */}
+      <section className="hub-section-top-nav">
+        <Link href="/hub/events" className="hub-back-btn">
+          ← BACK TO EVENTS
+        </Link>
+        <div className="hub-section-header-group">
+          <div className="hub-header-icon-wrap" style={{ color: "#00ff88" }}>
+            <HubIcon.Users size={36} />
+          </div>
+          <h1 className="hub-list-title hub-title-green">SEASON RANKING</h1>
+          <p className="hub-list-subtitle">EARN POINTS • CLIMB THE LEADERBOARD • BECOME THE SEASON CHAMPION</p>
         </div>
-        <aside className="hub-box hub-neon-box hub-neon-box--gold hub-top3">
-          <h3>TOP 3</h3>
-          {LEADERBOARD.slice(0, 3).map((r) => (
-            <article key={r.rank} className="hub-neon-box hub-neon-box--gold">
-              <HubAvatar name={r.name} size={44} ring="gold" />
-              <div><small>#{r.rank}</small><b>{r.name}</b><span>{r.pts} Points</span></div>
-            </article>
-          ))}
-        </aside>
       </section>
+
+      {/* Season Tabs & Countdown Bar */}
+      <div className="hub-season-nav-bar">
+        <div className="hub-season-tabs">
+          {SEASONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`hub-season-tab ${s === season ? "is-active" : ""}`}
+              onClick={() => setSeason(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <div className="hub-season-meta-badge">
+          <span>{season} SEASON | {win.from} - {win.to}</span>
+          <span className="hub-season-countdown">⏱️ SEASON ENDS IN {left} DAYS</span>
+        </div>
+      </div>
+
+      {/* 3-Column Season Layout */}
+      <section className="hub-season-3col-layout">
+        
+        {/* Left Column: Point System */}
+        <div className="hub-season-left-col">
+          <div className="hub-points-system-card">
+            <h3 className="hub-ps-title">
+              <span>📊</span>
+              <span>POINT SYSTEM</span>
+            </h3>
+            <p className="hub-ps-sub">Earn season points by ranking in tournaments.</p>
+            
+            <div className="hub-ps-group">
+              <h4>📅 WEEKLY TOURNAMENTS</h4>
+              <div className="hub-ps-row"><span>🥇 1st Place</span><b>5 Points</b></div>
+              <div className="hub-ps-row"><span>🥈 2nd Place</span><b>2 Points</b></div>
+              <div className="hub-ps-row"><span>🥉 3rd Place</span><b>1 Point</b></div>
+            </div>
+
+            <div className="hub-ps-group hub-ps-group-special">
+              <h4>⭐ SPECIAL EVENTS</h4>
+              <div className="hub-ps-row"><span>🥇 1st Place</span><b>10 Points</b></div>
+              <div className="hub-ps-row"><span>🥈 2nd Place</span><b>4 Points</b></div>
+              <div className="hub-ps-row"><span>🥉 3rd Place</span><b>2 Points</b></div>
+            </div>
+
+            <div className="hub-ps-motto">
+              <HubIcon.Gamepad size={28} />
+              <div>
+                <b>Play More</b>
+                <b>Earn More</b>
+                <small>Be the Champion!</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Center Column: Season Leaderboard Table */}
+        <div className="hub-season-center-col">
+          <div className="hub-leaderboard-card">
+            <div className="hub-lb-head">
+              <h3 className="hub-lb-title">
+                <span>🏆</span>
+                <span>SEASON LEADERBOARD</span>
+              </h3>
+              <span className="hub-lb-meta">FC26 • PS5 • 1v1</span>
+            </div>
+
+            <table className="hub-lb-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>PLAYER</th>
+                  <th>BZN ID</th>
+                  <th>POINTS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {LEADERBOARD.map((p) => {
+                  const isTop1 = p.rank === 1;
+                  const isTop2 = p.rank === 2;
+                  const isTop3 = p.rank === 3;
+                  return (
+                    <tr
+                      key={p.rank}
+                      className={`hub-lb-row ${isTop1 ? "is-rank1" : isTop2 ? "is-rank2" : isTop3 ? "is-rank3" : ""}`}
+                    >
+                      <td className="hub-lb-rank">
+                        {isTop1 ? "👑 1" : isTop2 ? "🥈 2" : isTop3 ? "🥉 3" : p.rank}
+                      </td>
+                      <td className="hub-lb-player">
+                        <div className="hub-player-chip">
+                          <HubAvatar name={p.name} size={30} ring={isTop1 ? "gold" : isTop2 ? "cyan" : isTop3 ? "magenta" : "none"} />
+                          <b>{p.name}</b>
+                        </div>
+                      </td>
+                      <td className="hub-lb-id">{p.tag}</td>
+                      <td className="hub-lb-pts">
+                        <b>{p.pts}</b>
+                        <small>POINTS</small>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right Column: Current Season Top 3 Podium Cards */}
+        <div className="hub-season-right-col">
+          <div className="hub-top3-podium-card">
+            <h3 className="hub-top3-title">
+              <span>👑</span>
+              <span>CURRENT SEASON TOP 3</span>
+            </h3>
+
+            {/* 1st Place */}
+            <div className="hub-podium-player-card hub-podium-card-1st">
+              <div className="hub-podium-crown">👑 1ST PLACE</div>
+              <div className="hub-podium-avatar-wrap">
+                <HubAvatar name="ArmanK" size={64} ring="gold" />
+              </div>
+              <h4 className="hub-podium-name">ArmanK</h4>
+              <span className="hub-podium-tag">#BZN1024</span>
+              <div className="hub-podium-score">48 Points</div>
+            </div>
+
+            {/* 2nd Place */}
+            <div className="hub-podium-player-card hub-podium-card-2nd">
+              <div className="hub-podium-crown">🥈 2ND PLACE</div>
+              <div className="hub-podium-avatar-wrap">
+                <HubAvatar name="RezaB" size={54} ring="cyan" />
+              </div>
+              <h4 className="hub-podium-name">RezaB</h4>
+              <span className="hub-podium-tag">#BZN0876</span>
+              <div className="hub-podium-score">42 Points</div>
+            </div>
+
+            {/* 3rd Place */}
+            <div className="hub-podium-player-card hub-podium-card-3rd">
+              <div className="hub-podium-crown">🥉 3RD PLACE</div>
+              <div className="hub-podium-avatar-wrap">
+                <HubAvatar name="Mahan10" size={54} ring="magenta" />
+              </div>
+              <h4 className="hub-podium-name">Mahan10</h4>
+              <span className="hub-podium-tag">#BZN0341</span>
+              <div className="hub-podium-score">35 Points</div>
+            </div>
+
+            <div className="hub-podium-quote">
+              <p>“Same Games Bigger Legends”</p>
+              <small>BAZINO</small>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
     </HubPage>
   );
 }
 
 export function RegisterEventPage() {
-  const { flash, user, setAuthOpen } = useHub();
-  const [game, setGame] = useState("FC 26");
   return (
     <HubPage activeNav="EVENTS">
-      <Hero title="REGISTER" em="TO PLAY" line="NAME ON THE BRACKET · 150 ₺ AT THE DESK · SHOW UP" back />
-      <form
-        className="hub-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!user) { setAuthOpen(true, "otp"); return; }
-          flash(`Seat held for ${user.displayName} · ${game} · pay 150 ₺ at the desk (demo)`);
-        }}
-      >
-        <div className="hub-field">
-          <label>TOURNAMENT</label>
-          <select value={game} onChange={(e) => setGame(e.target.value)}>
-            {WEEKLY.map((w) => <option key={w.game}>{w.game}</option>)}
-          </select>
+      <section className="hub-section-top-nav">
+        <Link href="/hub/events" className="hub-back-btn">
+          ← BACK TO EVENTS
+        </Link>
+        <div className="hub-section-header-group">
+          <h1 className="hub-list-title hub-title-cyan">TOURNAMENT REGISTRATION</h1>
+          <p className="hub-list-subtitle">JOIN THE NEXT WEEKLY OR SPECIAL CHAMPIONSHIP</p>
         </div>
-        <div className="hub-field">
-          <label>GAMERTAG ON BRACKET</label>
-          <input defaultValue={user?.displayName ?? ""} placeholder="ArmanK" />
+      </section>
+      <div className="hub-request-card" style={{ maxWidth: 640, margin: "0 auto" }}>
+        <p style={{ color: "#cbd5e1", lineHeight: 1.8 }}>
+          To register for upcoming weekly tournaments or special events, select your tournament from the list or visit the front desk at Bazino Gaming Club.
+        </p>
+        <div style={{ marginTop: 24, display: "flex", gap: 16 }}>
+          <Link href="/hub/events/weekly" className="hub-req-submit-btn">
+            VIEW WEEKLY TOURNAMENTS →
+          </Link>
         </div>
-        <button className="hub-cta" type="submit">HOLD MY SEAT</button>
-        {/* PDF §23 — payments are cash / card machine at the club, never online. */}
-        <p className="hub-form-note">Entry fee 150 ₺ — paid in cash or by card at the desk when you check in.</p>
-      </form>
+      </div>
     </HubPage>
   );
 }

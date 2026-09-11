@@ -1,123 +1,318 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { Link } from "wouter";
 import { HubPage } from "../../design-system/chrome";
-import { SYSTEMS } from "../data";
+import { HubIcon } from "../../design-system/icons";
+import { ADULT_GAMES, KIDS_GAMES } from "../data";
 import { useHub } from "../HubContext";
-import kids from "../assets/games-kids.jpg";
-import adults from "../assets/games-adults.jpg";
-import requests from "../assets/games-requests.jpg";
 
-type View = "pick" | "kids" | "adults" | "requests";
+type View = "categories" | "kids" | "adults" | "requests";
 
 export default function GamesPage() {
-  const [view, setView] = useState<View>("pick");
-  const [sys, setSys] = useState("tv85");
-  const [hours, setHours] = useState(2);
-  const [game, setGame] = useState("");
-  const { flash, setAuthOpen, user } = useHub();
+  const [view, setView] = useState<View>("categories");
+  const [reqTitle, setReqTitle] = useState("");
+  const [reqPlatform, setReqPlatform] = useState("PS5");
+  const [reqReason, setReqReason] = useState("");
+  const { flash } = useHub();
 
-  const list = useMemo(
-    () => SYSTEMS.filter((s) => view === "kids" ? s.group === "kids" || s.group === "any" : s.group !== "kids"),
-    [view],
-  );
-  const selected = SYSTEMS.find((s) => s.id === sys) ?? SYSTEMS[0];
-  const total = selected.rate * hours;
-
-  const pay = () => {
-    if (!user) {
-      setAuthOpen(true, "otp");
-      flash("Login with OTP to pay");
-      return;
-    }
-    flash(`Bay held · ${total} ₺ · ${selected.name} · ${hours}h · pay cash or card at the desk (demo)`);
+  const handleReqSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reqTitle.trim()) return;
+    flash(`🎮 Game request submitted: "${reqTitle}" (${reqPlatform})`);
+    setReqTitle("");
+    setReqReason("");
+    setView("categories");
   };
 
   return (
     <HubPage activeNav="GAMES">
-      <section className="hub-page-hero" style={{ backgroundImage: `url(${adults})` }}>
-        {view !== "pick" && (
-          <button className="hub-back" type="button" onClick={() => setView("pick")}>← BACK TO GAMES</button>
-        )}
-        <h1>GAMES <em>& RESERVE</em></h1>
-        <p>KIDS · ADULTS · REQUESTS · STATIONS LIVE</p>
-      </section>
+      
+      {/* ── CATEGORIES HUB VIEW ─────────────────────────────────────── */}
+      {view === "categories" && (
+        <section className="hub-games-hub">
+          <div className="hub-games-hub-header">
+            <div className="hub-games-icon-top">
+              <HubIcon.Gamepad size={44} />
+            </div>
+            <h1 className="hub-games-hub-title">GAMES</h1>
+            <p className="hub-games-hub-sub">CHOOSE A CATEGORY</p>
+          </div>
 
-      {view === "pick" && (
-        <section className="hub-tri">
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--green" style={{ backgroundImage: `url(${kids})`, backgroundPosition: "54% 45%" }} onClick={() => { setView("kids"); setSys("kids"); }}>
-            <h2>KIDS</h2>
-            <p>Fun & safe games for younger players. Stations with family-friendly titles.</p>
-            <span className="hub-tri-cta hub-neon-box hub-neon-box--green">RESERVE →</span>
-          </button>
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--magenta" style={{ backgroundImage: `url(${adults})`, backgroundPosition: "30% 50%" }} onClick={() => { setView("adults"); setSys("tv85"); }}>
-            <h2>ADULTS</h2>
-            <p>Action, sports, racing and more. 85" and 65" bays with two pads included.</p>
-            <span className="hub-tri-cta hub-neon-box hub-neon-box--magenta">RESERVE →</span>
-          </button>
-          <button type="button" className="hub-tri-card hub-neon-box hub-neon-box--cyan" style={{ backgroundImage: `url(${requests})`, backgroundPosition: "86% 48%" }} onClick={() => setView("requests")}>
-            <h2>GAME REQUESTS</h2>
-            <p>Suggest new games and join the community library.</p>
-            <span className="hub-tri-cta hub-neon-box">SUGGEST →</span>
-          </button>
+          <div className="hub-category-deck">
+            
+            {/* 1. KIDS GAMES CARD */}
+            <div
+              className="hub-cat-card hub-cat-card--kids"
+              onClick={() => setView("kids")}
+            >
+              <div className="hub-cat-bg hub-cat-bg-kids" />
+              <div className="hub-cat-overlay" />
+              <div className="hub-cat-top-tag">
+                <span className="hub-cat-tag-icon">🎮</span>
+                <span>KIDS</span>
+              </div>
+              <div className="hub-cat-content">
+                <h3 className="hub-cat-title">KIDS</h3>
+                <p className="hub-cat-desc">Fun & safe games for younger players</p>
+                <div className="hub-cat-circle-btn">→</div>
+              </div>
+            </div>
+
+            {/* 2. ADULTS GAMES CARD */}
+            <div
+              className="hub-cat-card hub-cat-card--adults"
+              onClick={() => setView("adults")}
+            >
+              <div className="hub-cat-bg hub-cat-bg-adults" />
+              <div className="hub-cat-overlay" />
+              <div className="hub-cat-top-tag">
+                <span className="hub-cat-tag-icon">⚡</span>
+                <span>ADULTS</span>
+              </div>
+              <div className="hub-cat-content">
+                <h3 className="hub-cat-title">ADULTS</h3>
+                <p className="hub-cat-desc">Action, sports, racing and more</p>
+                <div className="hub-cat-circle-btn">→</div>
+              </div>
+            </div>
+
+            {/* 3. GAME REQUESTS CARD */}
+            <div
+              className="hub-cat-card hub-cat-card--requests"
+              onClick={() => setView("requests")}
+            >
+              <div className="hub-cat-bg hub-cat-bg-requests" />
+              <div className="hub-cat-overlay" />
+              <div className="hub-cat-top-tag">
+                <span className="hub-cat-tag-icon">💬</span>
+                <span>COMMUNITY</span>
+              </div>
+              <div className="hub-cat-content">
+                <h3 className="hub-cat-title">GAME REQUESTS</h3>
+                <p className="hub-cat-desc">Suggest new games and join the community</p>
+                <div className="hub-cat-circle-btn">→</div>
+              </div>
+            </div>
+
+          </div>
         </section>
       )}
 
-      {(view === "kids" || view === "adults") && (
-        <section className="hub-reserve">
-          <div className="hub-sys">
-            {list.map((s) => (
-              <button key={s.id} type="button" className={`hub-neon-box ${sys === s.id ? "is-on hub-neon-box--cyan" : ""}`} onClick={() => setSys(s.id)}>
-                <span>
-                  <b>{s.name}</b>
-                  <small style={{ display: "block", color: "#7f8fc0" }}>{s.size} · {s.pads} controller{s.pads > 1 ? "s" : ""} included</small>
-                </span>
-                <b>{s.rate} ₺/h</b>
-              </button>
+      {/* ── KIDS GAMES VIEW ─────────────────────────────────────────── */}
+      {view === "kids" && (
+        <section className="hub-games-list-section">
+          <div className="hub-section-top-nav">
+            <button
+              type="button"
+              className="hub-back-btn"
+              onClick={() => setView("categories")}
+            >
+              ← BACK TO GAMES
+            </button>
+            <div className="hub-section-header-group">
+              <div className="hub-header-icon-wrap" style={{ color: "#00e5ff" }}>
+                <HubIcon.Gamepad size={36} />
+              </div>
+              <h1 className="hub-list-title hub-title-cyan">KIDS GAMES</h1>
+              <p className="hub-list-subtitle">FUN & SAFE GAMES FOR YOUNGER PLAYERS</p>
+            </div>
+            <div className="hub-neon-slogan-corner">
+              <span>Good Games</span>
+              <b>Good People</b>
+            </div>
+          </div>
+
+          <div className="hub-game-rows-container">
+            {KIDS_GAMES.map((g, i) => (
+              <article key={i} className="hub-game-row-card hub-card-glow-cyan">
+                
+                {/* Left: Game Banner */}
+                <div className="hub-game-banner">
+                  <div className="hub-game-poster-mock" style={{ background: `linear-gradient(135deg, hsl(${i * 45 + 180}, 75%, 25%), hsl(${i * 45 + 210}, 85%, 15%))` }}>
+                    <span className="hub-game-logo-tx">{g.title}</span>
+                  </div>
+                </div>
+
+                {/* Center: Details & Genre Tags */}
+                <div className="hub-game-info-col">
+                  <h3 className="hub-game-row-title">{g.title}</h3>
+                  <div className="hub-game-tags">
+                    {g.genre.map((tag, tIdx) => (
+                      <span key={tIdx} className="hub-genre-pill">{tag}</span>
+                    ))}
+                  </div>
+                  <p className="hub-game-row-desc">{g.desc}</p>
+                </div>
+
+                {/* Right: PEGI Badges & Console Meta */}
+                <div className="hub-game-meta-col">
+                  <div className="hub-pegi-badge" style={{ backgroundColor: g.pegiColor }}>
+                    <span className="hub-pegi-num">{g.pegi.replace('PEGI ', '')}</span>
+                    <span className="hub-pegi-sub">{g.pegi}<br/><small>Suitable for all ages</small></span>
+                  </div>
+                  <div className="hub-meta-specs">
+                    <div className="hub-spec-item">
+                      <span>👥</span>
+                      <span>{g.players}</span>
+                    </div>
+                    <div className="hub-spec-item">
+                      <span>🎮</span>
+                      <span>{g.console}</span>
+                    </div>
+                    <div className="hub-spec-item">
+                      <span>🌐</span>
+                      <span>{g.mode}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </article>
             ))}
           </div>
-          <aside className="hub-pay hub-neon-box hub-neon-box--gold">
-            <h3>{view === "kids" ? "KIDS BAY" : "ADULT BAY"}</h3>
-            <p style={{ color: "#7f8fc0", marginTop: 0 }}>{selected.name}</p>
-            <div className="hub-hours">
-              {[1, 2, 3, 4, 5].map((h) => (
-                <button key={h} type="button" className={hours === h ? "is-on" : ""} onClick={() => setHours(h)}>{h}h</button>
-              ))}
-            </div>
-            <div className="hub-pay-total">{total} ₺</div>
-            <p style={{ color: "#7f8fc0", fontSize: 12 }}>Cash or card at the desk — no online payment. Extra pad +25 ₺ per hour.</p>
-            <button className="hub-pay-go" type="button" onClick={pay}>HOLD MY BAY</button>
-            <p style={{ fontSize: 11, color: "#5f6da6" }}>Show your booking code at the desk and pay there.</p>
-          </aside>
         </section>
       )}
 
-      {view === "requests" && (
-        <form
-          className="hub-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            flash(`Request saved: ${game || "untitled"}`);
-            setGame("");
-          }}
-        >
-          <div className="hub-field">
-            <label>GAME TITLE</label>
-            <input value={game} onChange={(e) => setGame(e.target.value)} placeholder="e.g. Street Fighter 6" />
+      {/* ── ADULTS GAMES VIEW ───────────────────────────────────────── */}
+      {view === "adults" && (
+        <section className="hub-games-list-section">
+          <div className="hub-section-top-nav">
+            <button
+              type="button"
+              className="hub-back-btn"
+              onClick={() => setView("categories")}
+            >
+              ← BACK TO GAMES
+            </button>
+            <div className="hub-section-header-group">
+              <div className="hub-header-icon-wrap" style={{ color: "#ff2db0" }}>
+                <HubIcon.Gamepad size={36} />
+              </div>
+              <h1 className="hub-list-title hub-title-magenta">ADULTS GAMES</h1>
+              <p className="hub-list-subtitle">ACTION • SPORTS • RACING • AND MORE - NEXT LEVEL GAMING AT BAZINO</p>
+            </div>
+            <div className="hub-neon-slogan-corner">
+              <span>Good Games</span>
+              <b>Good People</b>
+            </div>
           </div>
-          <div className="hub-field">
-            <label>PLATFORM</label>
-            <select defaultValue="ps5">
-              <option value="ps5">PS5</option>
-              <option value="xbox">Xbox Series X</option>
-              <option value="switch">Nintendo</option>
-            </select>
+
+          <div className="hub-game-rows-container">
+            {ADULT_GAMES.map((g, i) => (
+              <article key={i} className="hub-game-row-card hub-card-glow-magenta">
+                
+                {/* Left: Game Banner */}
+                <div className="hub-game-banner">
+                  <div className="hub-game-poster-mock" style={{ background: `linear-gradient(135deg, hsl(${i * 45 + 320}, 75%, 22%), hsl(${i * 45 + 350}, 85%, 12%))` }}>
+                    <span className="hub-game-logo-tx">{g.title}</span>
+                  </div>
+                </div>
+
+                {/* Center: Details & Genre Tags */}
+                <div className="hub-game-info-col">
+                  <h3 className="hub-game-row-title">{g.title}</h3>
+                  <div className="hub-game-tags">
+                    {g.genre.map((tag, tIdx) => (
+                      <span key={tIdx} className="hub-genre-pill hub-genre-pill--adult">{tag}</span>
+                    ))}
+                  </div>
+                  <p className="hub-game-row-desc">{g.desc}</p>
+                </div>
+
+                {/* Right: PEGI Badges & Console Meta */}
+                <div className="hub-game-meta-col">
+                  <div className="hub-pegi-badge" style={{ backgroundColor: g.pegiColor }}>
+                    <span className="hub-pegi-num">{g.pegi.replace('PEGI ', '')}</span>
+                    <span className="hub-pegi-sub">{g.pegi}<br/><small>Suitable for ages {g.pegi.replace('PEGI ', '')}+</small></span>
+                  </div>
+                  <div className="hub-meta-specs">
+                    <div className="hub-spec-item">
+                      <span>👥</span>
+                      <span>{g.players}</span>
+                    </div>
+                    <div className="hub-spec-item">
+                      <span>🎮</span>
+                      <span>{g.console}</span>
+                    </div>
+                    <div className="hub-spec-item">
+                      <span>🌐</span>
+                      <span>{g.mode}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </article>
+            ))}
           </div>
-          <div className="hub-field">
-            <label>WHY WE SHOULD ADD IT</label>
-            <textarea rows={4} placeholder="Players, mode, weekly potential…" />
-          </div>
-          <button className="hub-cta" type="submit">SEND REQUEST</button>
-        </form>
+        </section>
       )}
+
+      {/* ── GAME REQUESTS FORM VIEW ─────────────────────────────────── */}
+      {view === "requests" && (
+        <section className="hub-requests-section">
+          <div className="hub-section-top-nav">
+            <button
+              type="button"
+              className="hub-back-btn"
+              onClick={() => setView("categories")}
+            >
+              ← BACK TO GAMES
+            </button>
+            <div className="hub-section-header-group">
+              <div className="hub-header-icon-wrap" style={{ color: "#ffd700" }}>
+                <HubIcon.Gamepad size={36} />
+              </div>
+              <h1 className="hub-list-title hub-title-gold">GAME REQUESTS</h1>
+              <p className="hub-list-subtitle">SUGGEST NEW GAMES & EXPAND THE BAZINO GAMING LIBRARY</p>
+            </div>
+          </div>
+
+          <div className="hub-request-card">
+            <form onSubmit={handleReqSubmit} className="hub-req-form">
+              <div className="hub-form-field">
+                <label>GAME TITLE</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Street Fighter 6, Black Myth: Wukong"
+                  value={reqTitle}
+                  onChange={(e) => setReqTitle(e.target.value)}
+                  className="hub-req-input"
+                />
+              </div>
+
+              <div className="hub-form-field">
+                <label>TARGET PLATFORM</label>
+                <select
+                  value={reqPlatform}
+                  onChange={(e) => setReqPlatform(e.target.value)}
+                  className="hub-req-select"
+                >
+                  <option value="PS5">PlayStation 5</option>
+                  <option value="PS5 Pro">PlayStation 5 Pro</option>
+                  <option value="Xbox Series X">Xbox Series X</option>
+                  <option value="PC">PC Gaming Rig</option>
+                </select>
+              </div>
+
+              <div className="hub-form-field">
+                <label>WHY SHOULD WE ADD THIS GAME?</label>
+                <textarea
+                  rows={4}
+                  placeholder="Tell us about tournament potential, multiplayer fun, or community demand…"
+                  value={reqReason}
+                  onChange={(e) => setReqReason(e.target.value)}
+                  className="hub-req-textarea"
+                />
+              </div>
+
+              <button type="submit" className="hub-req-submit-btn">
+                <span>SUBMIT GAME REQUEST</span>
+                <span>→</span>
+              </button>
+            </form>
+          </div>
+        </section>
+      )}
+
     </HubPage>
   );
 }

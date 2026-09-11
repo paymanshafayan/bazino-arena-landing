@@ -69,7 +69,7 @@
 
 5) **تصمیم‌های ۱۶گانه (مستند و لازم‌الاجرا — متن کامل در hub/PORTAL-PDF-DECISIONS.md):**
    - ناوبری: HOME · GAMES · EVENTS · SHOP · FOOD & DRINKS · CLUB · BLOG · CHAT (بدون Gallery/Prices/About)
-   - Games: سه کارت KIDS / ADULTS / GAME REQUESTS + جریان رزرو منتقل‌شده به داخل همین صفحه (رزرو بدون پرداخت آنلاین؛ پرداخت در محل)
+   - Games: چهار کارت KIDS / ADULTS / SYSTEMS & GEAR / GAME REQUESTS + جریان رزرو منتقل‌شده به داخل همین صفحه (رزرو بدون پرداخت آنلاین؛ پرداخت در محل)
    - Events: ۵ بخش (Weekly / Special / Season / Brackets / Register)
    - Shop و Food: ظاهر «COMING SOON» برای مهمان؛ منطق سفارش/ادمین/ایستگاه پورتال حفظ شود (وقتی فعال شد)
    - صفحه‌ی Gallery ساخته نشود؛ صفحه‌ی Prices جداگانه نباشد (تعرفه همان Games/رزرو)؛ About نباشد

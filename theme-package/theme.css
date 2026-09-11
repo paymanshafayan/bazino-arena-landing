@@ -107,8 +107,12 @@ body[data-theme='bazino-arena'] .app-bg-main {
   background-attachment: scroll;
 }
 
-/* ---------- 3) shell / root surfaces ---------- */
+/* ---------- 3) shell / root surfaces & standard portal schema classes ---------- */
 .theme-bazino-arena,
+.theme-bazino-arena .theme-hero,
+.theme-bazino-arena .theme-card,
+.theme-bazino-arena .theme-header,
+.theme-bazino-arena .theme-footer,
 .theme-bazino-arena .app-shell,
 .theme-bazino-arena .page-shell,
 .theme-bazino-arena .tab-content,
@@ -117,6 +121,66 @@ body[data-theme='bazino-arena'] .app-bg-main {
 .theme-bazino-arena .admin-shell {
   background-color: var(--dark-bg-color);
   color: var(--bz-text);
+}
+
+.theme-card,
+.theme-bazino-arena .theme-card {
+  background: var(--dark-card-color);
+  border: 1px solid var(--bz-border);
+  color: var(--bz-text);
+}
+
+.theme-hero,
+.theme-bazino-arena .theme-hero {
+  background: var(--dark-bg-color);
+  color: var(--bz-text);
+}
+
+.theme-header,
+.theme-bazino-arena .theme-header {
+  background: rgba(6, 8, 14, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--bz-border);
+}
+
+.theme-footer,
+.theme-bazino-arena .theme-footer {
+  background: var(--dark-bg-color);
+  border-top: 1px solid var(--bz-border);
+}
+
+.theme-btn,
+.theme-bazino-arena .theme-btn {
+  background: var(--primary-color);
+  color: #000;
+  border-radius: 4px;
+}
+
+.theme-box,
+.theme-bazino-arena .theme-box {
+  background: var(--dark-card-color);
+  border: 1px solid var(--bz-border);
+  border-radius: 8px;
+}
+
+.theme-frame,
+.theme-bazino-arena .theme-frame {
+  border: 1px solid var(--bz-border);
+}
+
+.theme-badge,
+.theme-bazino-arena .theme-badge {
+  color: var(--primary-color);
+}
+
+.theme-title,
+.theme-bazino-arena .theme-title {
+  color: var(--bz-text);
+}
+
+.theme-sub,
+.theme-bazino-arena .theme-sub {
+  color: var(--bz-muted);
 }
 
 .theme-bazino-arena ::selection { background: var(--bz-primary-selection); color: var(--bz-text-invert); }
