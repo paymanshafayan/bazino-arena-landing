@@ -1,6 +1,6 @@
 /*
  * BAZINO 3D DIMENSION THEME — SDK v2 theme.js
- * Implements 3D spatial card deck hero and header for Bazino Game Net portal.
+ * Implements 6-station interactive virtual tour hero and header for Bazino Game Net portal.
  */
 (function () {
   var SDK = (typeof window !== 'undefined') ? window.BazinoThemeSDK : null;
@@ -21,10 +21,10 @@
     return R.createElement('header', { className: 'b3d-header' },
       R.createElement('a', { href: '/', className: 'b3d-logo' },
         R.createElement('div', { className: 'b3d-logo-mark' }, 'B'),
-        R.createElement('div', { className: 'b3d-logo-text' }, 'BAZINO 3D')
+        R.createElement('div', { className: 'b3d-logo-text' }, 'BAZINO PRO')
       ),
       R.createElement('nav', { className: 'b3d-nav' },
-        R.createElement('a', { href: '/', className: 'is-active' }, safeString(props, 'nav.home', 'خانه سه‌بعدی')),
+        R.createElement('a', { href: '/', className: 'is-active' }, safeString(props, 'nav.home', 'تور مجازی سالن')),
         R.createElement('a', { href: '/games' }, safeString(props, 'nav.games', 'بازی‌ها')),
         R.createElement('a', { href: '/reservations' }, safeString(props, 'nav.reservations', 'کنسول‌های PS5')),
         R.createElement('a', { href: '/tournaments' }, safeString(props, 'nav.tournaments', 'مسابقات')),
@@ -36,98 +36,124 @@
     );
   }
 
-  // ── HOME COMPONENT (3D DECK) ──────────────────────────────────
+  // ── HOME COMPONENT (INTERACTIVE VIRTUAL TOUR) ─────────────────
   function HomeFactory(props) {
     var stateHook = R.useState(0);
     var activeIdx = stateHook[0];
     var setActiveIdx = stateHook[1];
 
-    var cards = [
+    var tourStations = [
+      {
+        id: 'grid',
+        title: 'کاتالوگ ۹ بازی برتر PS5',
+        subtitle: 'God of War, Spider-Man, EA FC 26, Black Ops 6',
+        badge: 'OLED 4K 120HZ',
+        img: '/assets/tour/tour-01-grid.webp',
+        glow: '#00d2ff',
+        tag: 'استیشن ۰۱'
+      },
+      {
+        id: 'ronaldinho',
+        title: 'استیشن اختصاصی رونالدینیو ۱۰',
+        subtitle: 'والپیپر هنری Joga Bonito با سیستم نورپردازی کهربایی',
+        badge: 'JOGA BONITO VIP',
+        img: '/assets/tour/tour-02-ronaldinho.webp',
+        glow: '#ffc400',
+        tag: 'استیشن ۰۲'
+      },
+      {
+        id: 'bazinopro',
+        title: 'نشان سلطنتی بازینو پرو',
+        subtitle: 'لوگوی سه‌بعدی تاج طلایی با ذرات معلق آتشین',
+        badge: 'ROYAL CROWN',
+        img: '/assets/tour/tour-03-bazinopro.webp',
+        glow: '#ffd700',
+        tag: 'استیشن ۰۳'
+      },
+      {
+        id: 'sport',
+        title: 'استیج نمایش مسابقات ورزشی',
+        subtitle: 'نمایش رویدادهای زنده با نورپردازی یخی اقیانوسی',
+        badge: 'ICE AMBILIGHT',
+        img: '/assets/tour/tour-04-sport.webp',
+        glow: '#38bdf8',
+        tag: 'استیشن ۰۴'
+      },
+      {
+        id: 'dock',
+        title: 'کنسول دیواری PS5 و داک RGB',
+        subtitle: 'دسته‌های DualSense روی پایه شارژ با بار نوری RGB و نور سرخابی',
+        badge: 'DUALSENSE RGB',
+        img: '/assets/tour/tour-05-dock.webp',
+        glow: '#ff2a5f',
+        tag: 'استیشن ۰۵'
+      },
       {
         id: 'lounge',
-        title: 'سالن اصلی گیم‌نت بازینو',
-        desc: 'اتمسفر لوکس نسل نهم با کنسول‌های PS5 Pro، نورپردازی نئونی و حضور مونا',
-        cat: 'BAZINO MAIN LOUNGE',
-        badge: '360° SPATIAL',
-        img: '/assets/mona-hero-wide.png'
-      },
-      {
-        id: 'fc26',
-        title: 'EA SPORTS FC 26',
-        desc: 'شبیه‌ساز نسل جدید فوتبال با مسابقات هفتگی و جوایز نقدی ۵,۰۰۰ لیر',
-        cat: 'SPORTS & CUP',
-        badge: '۱۴ کنسول فعال',
-        img: '/assets/fc26.png'
-      },
-      {
-        id: 'ps5',
-        title: 'ایستگاه‌های PS5 Pro VIP',
-        desc: 'تلویزیون‌های ۶۵ اینچ OLED با رفرش‌ریت ۱۲۰ هرتز و دسته‌های DualSense Edge',
-        cat: 'CONSOLE ZONE',
-        badge: 'OLED HDR 120HZ',
-        img: '/assets/hero-setup.jpg'
-      },
-      {
-        id: 'pc',
-        title: 'ریگ‌های گیمینگ RTX 4090',
-        desc: 'سیستم‌های بتل‌استیشن با مانیتورهای ۲۴۰ هرتز ZOWIE و پینگ تک‌رقمی فیبر نوری',
-        cat: 'ESPORTS ARENA',
-        badge: '240HZ PRO GEAR',
-        img: '/assets/hero-player.jpg'
-      },
-      {
-        id: 'tekken',
-        title: 'TEKKEN 8 & MORTAL KOMBAT 1',
-        desc: 'مبارزات حرفه‌ای با فایت‌استیک‌های آرکید سفارشی و رندرهای آنریل ۵',
-        cat: 'FIGHTING ARENA',
-        badge: 'ARCADE STICK',
-        img: '/assets/tekken8.png'
+        title: 'نمای پانورامای استیشن‌های بازینو',
+        subtitle: 'ردیف استیشن‌های گیمینگ دیواری با کنترل هوشمند روشنایی',
+        badge: '14 PRIVATE BAYS',
+        img: '/assets/tour/tour-06-lounge.webp',
+        glow: '#ffc400',
+        tag: 'استیشن ۰۶'
       }
     ];
 
+    var current = tourStations[activeIdx] || tourStations[0];
+
     return R.createElement('div', { className: 'theme-bazino-3d-dimension' },
-      // 3D Hero Section
+      // Virtual Tour Hero Section
       R.createElement('section', { className: 'b3d-hero' },
-        R.createElement('div', { className: 'b3d-conical-light' }),
+        R.createElement('div', {
+          className: 'b3d-conical-light',
+          style: { background: 'radial-gradient(ellipse 80% 50% at 50% 0%, ' + current.glow + '33 0%, transparent 80%)' }
+        }),
+        R.createElement('div', { style: { marginBottom: '16px' } },
+          R.createElement('span', { className: 'b3d-tag-gold' }, 'BAZINO PRO LOUNGE')
+        ),
         R.createElement('h1', { className: 'b3d-hero-title' },
           'اگه یه قهرمانی، ',
           R.createElement('br'),
           R.createElement('span', { className: 'b3d-hero-gold' }, 'این آخرشه.')
         ),
         R.createElement('p', { className: 'b3d-hero-sub' },
-          'کاوش ۳ بعدی فضای سالن گیم‌نت بازینو — برای جابه‌جایی و انتخاب بخش‌ها روی کارت‌ها کلیک کنید.'
+          'استیشن‌های دیواری اختصاصی PS5 Pro با نمایشگرهای غول‌پیکر 4K، داک‌های شارژ DualSense با نورپردازی RGB و سیستم امبیلایت هماهنگ در ایسکله قبرس شمالی.'
         ),
         
-        // 3D Deck Container
-        R.createElement('div', { className: 'b3d-deck-stage' },
-          cards.map(function (c, idx) {
-            var offset = (idx - activeIdx + 5) % 5;
-            var cls = 'b3d-card';
-            if (offset === 0) cls += ' is-center';
-            else if (offset === 1) cls += ' is-right';
-            else if (offset === 4) cls += ' is-left';
-            else cls += ' is-left'; // background card
-
-            return R.createElement('div', {
-              key: c.id,
-              className: cls,
-              onClick: function () { setActiveIdx(idx); }
-            },
-              R.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', zIndex: 5 } },
-                R.createElement('span', { style: { fontSize: '11px', color: '#00d2ff', fontWeight: 'bold' } }, c.cat),
-                R.createElement('span', { style: { fontSize: '11px', color: '#ffc400', fontWeight: 'bold' } }, c.badge)
-              ),
-              R.createElement('img', { src: c.img, alt: c.title, className: 'b3d-card-img' }),
-              R.createElement('div', { style: { zIndex: 5 } },
-                R.createElement('h3', { className: 'b3d-card-title' }, c.title),
-                R.createElement('p', { className: 'b3d-card-desc' }, c.desc),
-                R.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)' } },
-                  R.createElement('span', { style: { color: '#ffc400', fontWeight: 'bold', fontSize: '13px' } }, 'بازینو کلاب'),
-                  R.createElement('button', { className: 'b3d-btn-gold', style: { padding: '6px 14px', fontSize: '12px' } }, 'رزرو جایگاه')
-                )
+        // Interactive Tour Stage Card
+        R.createElement('div', { className: 'b3d-tour-container' },
+          R.createElement('div', {
+            className: 'b3d-tour-card',
+            style: { borderColor: current.glow, boxShadow: '0 25px 60px rgba(0,0,0,0.85), 0 0 40px ' + current.glow + '44' }
+          },
+            R.createElement('div', { className: 'b3d-tour-card-head' },
+              R.createElement('span', { style: { color: current.glow, fontWeight: 'bold', fontSize: '12px' } }, current.tag),
+              R.createElement('span', { className: 'b3d-badge-pill', style: { backgroundColor: current.glow } }, current.badge)
+            ),
+            R.createElement('div', { className: 'b3d-tour-img-wrap' },
+              R.createElement('img', { src: current.img, alt: current.title, className: 'b3d-tour-img' }),
+              R.createElement('div', { className: 'b3d-tour-caption' },
+                R.createElement('h3', { className: 'b3d-tour-title' }, current.title),
+                R.createElement('p', { className: 'b3d-tour-desc' }, current.subtitle)
               )
-            );
-          })
+            ),
+            // 6-Step Station Switcher Buttons
+            R.createElement('div', { className: 'b3d-tour-nav-grid' },
+              tourStations.map(function (st, idx) {
+                var isSel = activeIdx === idx;
+                return R.createElement('button', {
+                  key: st.id,
+                  type: 'button',
+                  onClick: function () { setActiveIdx(idx); },
+                  className: 'b3d-tour-btn' + (isSel ? ' is-active' : ''),
+                  style: isSel ? { borderColor: st.glow, boxShadow: '0 0 15px ' + st.glow + '66' } : {}
+                },
+                  R.createElement('span', { style: { color: isSel ? st.glow : '#94a3b8', fontWeight: '900', fontSize: '11px' } }, '0' + (idx + 1)),
+                  R.createElement('span', { style: { fontSize: '9px', color: '#cbd5e1' } }, st.id.toUpperCase())
+                );
+              })
+            )
+          )
         )
       ),
 

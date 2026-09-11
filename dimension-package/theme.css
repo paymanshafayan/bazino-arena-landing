@@ -130,14 +130,27 @@ body[data-theme='bazino-3d-dimension'],
   box-shadow: 0 6px 20px var(--bz3d-gold-glow);
 }
 
-/* ── 3D HERO SPATIAL DECK ────────────────────────────────────────── */
+.theme-bazino-3d-dimension .b3d-tag-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 196, 0, 0.12);
+  border: 1px solid rgba(255, 196, 0, 0.35);
+  color: #ffc400;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* ── VIRTUAL TOUR HERO ───────────────────────────────────────────── */
 .theme-bazino-3d-dimension .b3d-hero {
   position: relative;
   max-width: 1360px;
   margin: 0 auto;
   padding: 40px 24px 80px 24px;
   text-align: center;
-  perspective: 1200px;
 }
 
 .theme-bazino-3d-dimension .b3d-conical-light {
@@ -146,10 +159,10 @@ body[data-theme='bazino-3d-dimension'],
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 900px;
-  height: 400px;
+  max-width: 1000px;
+  height: 450px;
   pointer-events: none;
-  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 196, 0, 0.18) 0%, rgba(0, 210, 255, 0.08) 40%, transparent 80%);
+  transition: background 0.5s ease;
   z-index: 0;
 }
 
@@ -174,87 +187,106 @@ body[data-theme='bazino-3d-dimension'],
   z-index: 2;
   font-size: 16px;
   color: var(--bz3d-text-dim);
-  max-width: 580px;
+  max-width: 620px;
   margin: 0 auto 40px auto;
   line-height: 1.7;
 }
 
-/* 3D Deck Container */
-.theme-bazino-3d-dimension .b3d-deck-stage {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  height: 480px;
+/* Tour Container */
+.theme-bazino-3d-dimension .b3d-tour-container {
+  max-width: 720px;
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
+  position: relative;
+  z-index: 10;
 }
 
-.theme-bazino-3d-dimension .b3d-card {
-  position: absolute;
-  width: 380px;
-  height: 450px;
-  border-radius: 28px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
+.theme-bazino-3d-dimension .b3d-tour-card {
+  background: rgba(13, 18, 28, 0.95);
   backdrop-filter: blur(25px);
   border: 1px solid var(--bz3d-border-glass);
-  transform-style: preserve-3d;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
-  box-sizing: border-box;
+  border-radius: 28px;
+  padding: 24px;
+  transition: all 0.4s ease;
 }
 
-.theme-bazino-3d-dimension .b3d-card.is-center {
-  background: rgba(13, 18, 32, 0.92);
-  border-color: rgba(255, 196, 0, 0.5);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 196, 0, 0.25);
-  transform: translate3d(0, 0, 50px) scale(1);
-  z-index: 30;
+.theme-bazino-3d-dimension .b3d-tour-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
 }
 
-.theme-bazino-3d-dimension .b3d-card.is-left {
-  background: rgba(9, 13, 22, 0.8);
-  transform: translate3d(-220px, 0, -100px) rotateY(15deg) scale(0.88);
-  opacity: 0.75;
-  z-index: 20;
+.theme-bazino-3d-dimension .b3d-badge-pill {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #050608;
 }
 
-.theme-bazino-3d-dimension .b3d-card.is-right {
-  background: rgba(9, 13, 22, 0.8);
-  transform: translate3d(220px, 0, -100px) rotateY(-15deg) scale(0.88);
-  opacity: 0.75;
-  z-index: 20;
-}
-
-.theme-bazino-3d-dimension .b3d-card-img {
+.theme-bazino-3d-dimension .b3d-tour-img-wrap {
+  position: relative;
   width: 100%;
-  height: 220px;
-  border-radius: 18px;
-  object-fit: cover;
-  margin: 12px 0;
-  border: 1px solid var(--bz3d-border-glass);
+  height: 320px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 20px;
 }
 
-.theme-bazino-3d-dimension .b3d-card-title {
-  font-size: 20px;
+.theme-bazino-3d-dimension .b3d-tour-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+
+.theme-bazino-3d-dimension .b3d-tour-caption {
+  position: absolute;
+  bottom: 0;
+  inset-x: 0;
+  padding: 20px;
+  background: linear-gradient(0deg, rgba(8,11,18,0.95) 0%, transparent 100%);
+  text-align: right;
+}
+
+.theme-bazino-3d-dimension .b3d-tour-title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
   font-weight: 900;
   color: #fff;
-  margin: 0 0 4px 0;
-  text-align: right;
 }
 
-.theme-bazino-3d-dimension .b3d-card-desc {
+.theme-bazino-3d-dimension .b3d-tour-desc {
+  margin: 0;
   font-size: 12px;
-  color: var(--bz3d-text-dim);
-  line-height: 1.6;
-  margin: 0 0 12px 0;
-  text-align: right;
+  color: #cbd5e1;
+}
+
+.theme-bazino-3d-dimension .b3d-tour-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.theme-bazino-3d-dimension .b3d-tour-btn {
+  padding: 10px 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.theme-bazino-3d-dimension .b3d-tour-btn:hover,
+.theme-bazino-3d-dimension .b3d-tour-btn.is-active {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ── 3D GAMES ROSTER ─────────────────────────────────────────────── */
