@@ -16,6 +16,7 @@ import HubTheme from "../../hub/theme/HubTheme";
 import { HubProvider } from "../../hub/theme/HubContext";
 import ThemeHarness from "./pages/ThemeHarness";
 import CdpVerificationPage from "./pages/CdpVerificationPage";
+import Dimension3DPage from "./pages/Dimension3DPage";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
@@ -24,6 +25,8 @@ function Router() {
   return (
     <HubProvider>
       <Switch>
+        <Route path="/3d" component={Dimension3DPage} />
+        <Route path="/dimension" component={Dimension3DPage} />
         <Route path="/verify-cdp" component={CdpVerificationPage} />
         <Route path="/theme-harness" component={ThemeHarness} />
         <Route path="/brackets" component={BracketDemo} />
