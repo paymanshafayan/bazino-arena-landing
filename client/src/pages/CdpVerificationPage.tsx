@@ -7,7 +7,11 @@ interface ChromeTab {
   url: string;
   webSocketDebuggerUrl?: string;
   devtoolsFrontendUrl?: string;
+<<<<<<< HEAD
   type: string;
+=======
+  type?: string;
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
 }
 
 export default function CdpVerificationPage() {
@@ -19,6 +23,7 @@ export default function CdpVerificationPage() {
   const [capturedImages, setCapturedImages] = useState<{ [key: string]: string }>({});
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
+<<<<<<< HEAD
   // Probe localhost:9222 from browser
   const scanCdp = async () => {
     setConnecting(true);
@@ -44,12 +49,36 @@ export default function CdpVerificationPage() {
       console.error(err);
       setErrorMsg(
         `Could not reach Chrome CDP on http://localhost:${cdpPort}/json directly from browser. Error: ${err.message}. Make sure Chrome is running with --remote-debugging-port=${cdpPort} --remote-allow-origins=*`
+=======
+  // Scan Chrome tabs via server-side endpoint /api/cdp/tabs
+  const scanCdp = async () => {
+    setConnecting(true);
+    setStatusMsg(`Connecting to Chrome CDP via server relay (Port ${cdpPort})...`);
+    setErrorMsg("");
+    try {
+      const res = await fetch(`/api/cdp/tabs?port=${encodeURIComponent(cdpPort)}`);
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `Server returned HTTP ${res.status}`);
+      }
+
+      const list: ChromeTab[] = Array.isArray(data.tabs) ? data.tabs : [];
+      const pageTabs = list.filter((t) => t.type === "page" || !t.type);
+      setTabs(pageTabs);
+      setStatusMsg(`Connected successfully! Found ${pageTabs.length} active page tabs.`);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(
+        `Server could not reach Chrome CDP on 127.0.0.1:${cdpPort}. Error: ${err.message}. Make sure Chrome is running with --remote-debugging-port=${cdpPort} --remote-allow-origins=*`
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
       );
     } finally {
       setConnecting(false);
     }
   };
 
+<<<<<<< HEAD
   // Capture screenshot via WebSocket CDP protocol
   const captureTabCdp = async (tab: ChromeTab, themeTargetName: string) => {
     if (!tab.webSocketDebuggerUrl) {
@@ -93,15 +122,48 @@ export default function CdpVerificationPage() {
         setErrorMsg("WebSocket connection error to Chrome DevTools port.");
         console.error("WS error:", e);
       };
+=======
+  // Capture screenshot via server-side /api/cdp/command
+  const captureTabCdp = async (tab: ChromeTab, themeTargetName: string) => {
+    setStatusMsg(`Capturing screenshot for tab "${tab.title}" via server-side CDP bridge...`);
+    try {
+      const outFileName = `${themeTargetName}.png`;
+      const res = await fetch("/api/cdp/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          port: cdpPort,
+          command: "screenshot",
+          arg1: outFileName,
+          arg2: tab.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "CDP command execution failed");
+      }
+
+      const cacheBustUrl = `/${outFileName}?t=${Date.now()}`;
+      setCapturedImages((prev) => ({ ...prev, [themeTargetName]: cacheBustUrl }));
+      setStatusMsg(`Screenshot captured and verified successfully for ${themeTargetName}!`);
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
     } catch (err: any) {
       setErrorMsg(`CDP capture failed: ${err.message}`);
     }
   };
 
+<<<<<<< HEAD
   // Browser Screen/Tab Grabber API
   const captureDisplayMedia = async (themeTargetName: string) => {
     try {
       setStatusMsg("Select the Bazino Portal tab or window in the prompt...");
+=======
+  // Browser Screen/Tab Grabber API (Direct DisplayMedia fallback)
+  const captureDisplayMedia = async (themeTargetName: string) => {
+    try {
+      setStatusMsg("Select the Bazino Portal tab or window in the browser prompt...");
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: { displaySurface: "browser" } as any,
       });
@@ -164,7 +226,10 @@ export default function CdpVerificationPage() {
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     // Attempt auto-scan on page load
+=======
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
     scanCdp();
   }, []);
 
@@ -235,7 +300,11 @@ export default function CdpVerificationPage() {
               </span>
               <div>
                 <h2 className="text-lg font-bold text-white">اتصال به Chrome CDP و اسکن تب‌های باز</h2>
+<<<<<<< HEAD
                 <p className="text-xs text-slate-400">اتصال مستقیم مرورگر کلاینت به پورت دیباگ لوکال کروم</p>
+=======
+                <p className="text-xs text-slate-400">اتصال سرور رله به پورت دیباگ کروم از طریق API های امن سرور</p>
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
               </div>
             </div>
 
@@ -261,7 +330,11 @@ export default function CdpVerificationPage() {
           {/* Tab List */}
           {tabs.length > 0 ? (
             <div className="space-y-3">
+<<<<<<< HEAD
               <p className="text-xs text-slate-400">تب‌های شناسایی شده در مرورگر کروم شما:</p>
+=======
+              <p className="text-xs text-slate-400">تب‌های شناسایی شده در مرورگر کروم:</p>
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {tabs.map((tab) => (
                   <div
@@ -300,7 +373,11 @@ export default function CdpVerificationPage() {
           ) : (
             <div className="p-4 rounded-xl bg-slate-900/40 border border-dashed border-slate-800 text-center space-y-2">
               <p className="text-xs text-slate-400">
+<<<<<<< HEAD
                 هنوز تبی متصل نشده است. می‌توانید از روش‌های زیر جهت ثبت آنی و بدون نیاز به فلگ کروم استفاده نمایید:
+=======
+                هنوز تبی متصل نشده است. پس از اجرای پل یا کروم با پورت 9222 روی Scan Tabs کلیک کنید یا از روش‌های زیر استفاده نمایید:
+>>>>>>> ffd4f80 (fix(cdp): implement robust server-side CDP proxy endpoints and eliminate mixed-content in verification UI)
               </p>
             </div>
           )}

@@ -3,8 +3,12 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+
+const execAsync = promisify(exec);
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -34,7 +38,6 @@ function trimLogFile(logPath: string, maxSize: number) {
     const keptLines: string[] = [];
     let keptBytes = 0;
 
-    // Keep newest lines (from end) that fit within 60% of maxSize
     const targetSize = TRIM_TARGET_BYTES;
     for (let i = lines.length - 1; i >= 0; i--) {
       const lineBytes = Buffer.byteLength(`${lines[i]}\n`, "utf-8");
@@ -55,25 +58,15 @@ function writeToLogFile(source: LogSource, entries: unknown[]) {
   ensureLogDir();
   const logPath = path.join(LOG_DIR, `${source}.log`);
 
-  // Format entries with timestamps
   const lines = entries.map((entry) => {
     const ts = new Date().toISOString();
     return `[${ts}] ${JSON.stringify(entry)}`;
   });
 
-  // Append to log file
   fs.appendFileSync(logPath, `${lines.join("\n")}\n`, "utf-8");
-
-  // Trim if exceeds max size
   trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
 }
 
-/**
- * Vite plugin to collect browser debug logs
- * - POST /__manus__/logs: Browser sends logs, written directly to files
- * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
- * - Auto-trimmed when exceeding 1MB (keeps newest entries)
- */
 function vitePluginManusDebugCollector(): Plugin {
   return {
     name: "manus-debug-collector",
@@ -98,14 +91,12 @@ function vitePluginManusDebugCollector(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      // POST /__manus__/logs: Browser sends logs (written directly to files)
       server.middlewares.use("/__manus__/logs", (req, res, next) => {
         if (req.method !== "POST") {
           return next();
         }
 
         const handlePayload = (payload: any) => {
-          // Write logs directly to files
           if (payload.consoleLogs?.length > 0) {
             writeToLogFile("browserConsole", payload.consoleLogs);
           }
@@ -203,10 +194,91 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-function vitePluginScreenshotSaver(): Plugin {
+function vitePluginCdpServer(): Plugin {
   return {
-    name: "screenshot-saver",
+    name: "cdp-server-middleware",
     configureServer(server: ViteDevServer) {
+      // GET /api/cdp/tabs
+      server.middlewares.use("/api/cdp/tabs", async (req, res) => {
+        if (req.method !== "GET") {
+          res.writeHead(405, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        const urlObj = new URL(req.url || "", `http://${req.headers.host || "localhost"}`);
+        const port = urlObj.searchParams.get("port") || "9222";
+
+        try {
+          let listRes;
+          try {
+            listRes = await fetch(`http://127.0.0.1:${port}/json/list`, {
+              headers: { Host: "localhost:9222" },
+            });
+          } catch {
+            listRes = await fetch(`http://127.0.0.1:${port}/json`, {
+              headers: { Host: "localhost:9222" },
+            });
+          }
+
+          if (!listRes.ok) {
+            throw new Error(`Chrome returned HTTP ${listRes.status}`);
+          }
+
+          const tabs = await listRes.json();
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: true, tabs }));
+        } catch (err: any) {
+          res.writeHead(502, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: err.message || String(err) }));
+        }
+      });
+
+      // POST /api/cdp/command
+      server.middlewares.use("/api/cdp/command", (req, res) => {
+        if (req.method !== "POST") {
+          res.writeHead(405, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk) => {
+          body += chunk.toString();
+        });
+
+        req.on("end", async () => {
+          try {
+            const data = JSON.parse(body);
+            const { port = "9222", command, arg1, arg2 } = data;
+            if (!command) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Missing command parameter" }));
+              return;
+            }
+
+            const cdpScriptPath = path.resolve(PROJECT_ROOT, "cdp_bridge.mjs");
+            const args = [command, arg1, arg2].filter(Boolean).map((a) => `"${String(a).replace(/"/g, '\\"')}"`).join(" ");
+            const cmd = `node "${cdpScriptPath}" "http://127.0.0.1:${port}" ${args}`;
+
+            const { stdout, stderr } = await execAsync(cmd, { timeout: 25000 });
+            let parsedStdout;
+            try {
+              parsedStdout = JSON.parse(stdout);
+            } catch {
+              parsedStdout = stdout.trim();
+            }
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, result: parsedStdout, stderr: stderr ? stderr.trim() : undefined }));
+          } catch (e: any) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: e.message || String(e) }));
+          }
+        });
+      });
+
+      // POST /api/save-screenshot
       server.middlewares.use("/api/save-screenshot", (req, res) => {
         if (req.method !== "POST") {
           res.writeHead(405, { "Content-Type": "application/json" });
@@ -231,11 +303,11 @@ function vitePluginScreenshotSaver(): Plugin {
 
             const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
             const buffer = Buffer.from(cleanBase64, "base64");
-            
+
             const targetPaths = [
               path.resolve(PROJECT_ROOT, `hub/previews/${name}.png`),
               path.resolve(PROJECT_ROOT, `client/public/${name}.png`),
-              path.resolve(PROJECT_ROOT, `${name}.png`)
+              path.resolve(PROJECT_ROOT, `${name}.png`),
             ];
 
             for (const p of targetPaths) {
@@ -243,12 +315,9 @@ function vitePluginScreenshotSaver(): Plugin {
               fs.writeFileSync(p, buffer);
             }
 
-            console.log(`[Screenshot Saver] Successfully saved ${name}.png (${buffer.length} bytes) to target paths.`);
-
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: true, size: buffer.length, name }));
-          } catch (e) {
-            console.error("[Screenshot Saver] Error saving screenshot:", e);
+          } catch (e: any) {
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: String(e) }));
           }
@@ -258,7 +327,15 @@ function vitePluginScreenshotSaver(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy(), vitePluginScreenshotSaver()];
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+  vitePluginStorageProxy(),
+  vitePluginCdpServer(),
+];
 
 export default defineConfig({
   plugins,
@@ -277,14 +354,12 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    strictPort: false, // Will find next available port if 3000 is busy
+    strictPort: false,
     host: true,
-    // Manus Preview serves the app through an HTTPS reverse proxy, but the
-    // sandbox does not expose a stable public HMR socket endpoint. Disable
-    // HMR to prevent the client from attempting localhost WebSocket connects.
     hmr: false,
     allowedHosts: [
       ".e2b.app",
+      ".arena.site",
       ".manuspre.computer",
       ".manus.computer",
       ".manus-asia.computer",
