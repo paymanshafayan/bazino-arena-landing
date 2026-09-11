@@ -23,13 +23,15 @@ import {
   Clock,
   ShieldCheck,
   Gamepad2,
-  Volume2,
   Monitor,
-  Flame,
   Tv,
+  Crown,
+  Layers,
+  Flame,
+  Maximize2,
+  Compass,
 } from "lucide-react";
 
-import monaHeroWide from "/assets/mona-hero-wide.png";
 import slideFc26 from "../../../hub/bracket-demo/covers/fc26.png";
 import slideUfc5 from "../../../hub/bracket-demo/covers/ufc5.png";
 import slideMk1 from "../../../hub/bracket-demo/covers/mk1.png";
@@ -66,7 +68,7 @@ const FlagGB: React.FC<{ className?: string }> = ({ className }) => {
 
 const FlagRU: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 3 2" className={className} aria-hidden="true">
-    <rect width="3" height="2" fill="#fff" />
+    <rect width="3" height="0.667" fill="#fff" />
     <rect y="0.667" width="3" height="0.667" fill="#0039a6" />
     <rect y="1.333" width="3" height="0.667" fill="#d52b1e" />
   </svg>
@@ -75,8 +77,8 @@ const FlagRU: React.FC<{ className?: string }> = ({ className }) => (
 const FlagTR: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 30 20" className={className} aria-hidden="true">
     <rect width="30" height="20" fill="#e30a17" />
-    <circle cx="11.25" cy="10" r="5" fill="#fff" />
-    <circle cx="12.5" cy="10" r="4" fill="#e30a17" />
+    <circle cx="10.5" cy="10" r="5" fill="#fff" />
+    <circle cx="11.75" cy="10" r="4" fill="#e30a17" />
     <polygon fill="#fff" points="17.5,10 15.1,10.8 16.6,8.7 16.6,11.3 15.1,9.2" transform="rotate(0 16.3 10)" />
   </svg>
 );
@@ -105,8 +107,8 @@ function TiltCard({ children, className = "", maxTilt = 8 }: TiltCardProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x, { stiffness: 220, damping: 22 });
-  const mouseYSpring = useSpring(y, { stiffness: 220, damping: 22 });
+  const mouseXSpring = useSpring(x, { stiffness: 240, damping: 24 });
+  const mouseYSpring = useSpring(y, { stiffness: 240, damping: 24 });
 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [`${maxTilt}deg`, `-${maxTilt}deg`]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [`-${maxTilt}deg`, `${maxTilt}deg`]);
@@ -129,14 +131,77 @@ function TiltCard({ children, className = "", maxTilt = 8 }: TiltCardProps) {
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       className={`perspective-container transition-transform duration-300 ${className}`}
     >
-      <div style={{ transform: "translateZ(16px)" }} className="w-full h-full">
+      <div style={{ transform: "translateZ(20px)" }} className="w-full h-full">
         {children}
       </div>
     </motion.div>
   );
 }
 
-// ── DATA SOURCES & COPY ────────────────────────────────────────────
+// ── REAL BAZINO PRO LOUNGE TOUR FRAMES (Extracted from 33.2s Video) ──
+const tourFrames = [
+  {
+    id: "grid",
+    title: "کاتالوگ ۹ بازی برتر PS5",
+    subtitle: "God of War, Spider-Man, EA FC 26, Black Ops 6",
+    badge: "OLED 4K 120HZ",
+    image: "/assets/tour/tour-01-grid.webp",
+    glowColor: "#00d2ff",
+    glowRgba: "rgba(0, 210, 255, 0.45)",
+    tag: "گرید بازی‌های نسل ۹",
+  },
+  {
+    id: "ronaldinho",
+    title: "استیشن اختصاصی رونالدینیو ۱۰",
+    subtitle: "والپیپر هنری Joga Bonito با سیستم نورپردازی کهربایی",
+    badge: "JOGA BONITO VIP",
+    image: "/assets/tour/tour-02-ronaldinho.webp",
+    glowColor: "#ffc400",
+    glowRgba: "rgba(255, 196, 0, 0.45)",
+    tag: "نورپردازی گرم کهربایی",
+  },
+  {
+    id: "bazinopro",
+    title: "نشان سلطنتی بازینو پرو",
+    subtitle: "لوگوی سه‌بعدی تاج طلایی با ذرات معلق آتشین",
+    badge: "ROYAL CROWN",
+    image: "/assets/tour/tour-03-bazinopro.webp",
+    glowColor: "#ffd700",
+    glowRgba: "rgba(255, 215, 0, 0.55)",
+    tag: "لوگوی رسمی BAZINO PRO",
+  },
+  {
+    id: "sport",
+    title: "استیج نمایش مسابقات ورزشی",
+    subtitle: "نمایش رویدادهای زنده با نورپردازی یخی اقیانوسی",
+    badge: "ICE AMBILIGHT",
+    image: "/assets/tour/tour-04-sport.webp",
+    glowColor: "#38bdf8",
+    glowRgba: "rgba(56, 189, 248, 0.45)",
+    tag: "استیشن مسابقات",
+  },
+  {
+    id: "dock",
+    title: "کنسول دیواری PS5 و داک RGB",
+    subtitle: "دسته‌های DualSense روی پایه شارژ با بار نوری مالتی‌کالر و نور سرخابی",
+    badge: "DUALSENSE RGB",
+    image: "/assets/tour/tour-05-dock.webp",
+    glowColor: "#ff2a5f",
+    glowRgba: "rgba(255, 42, 95, 0.5)",
+    tag: "داک شارژ ال‌ای‌دی",
+  },
+  {
+    id: "lounge",
+    title: "نمای پانورامای استیشن‌های بازینو",
+    subtitle: "ردیف استیشن‌های گیمینگ دیواری با کنترل هوشمند روشنایی",
+    badge: "14 PRIVATE BAYS",
+    image: "/assets/tour/tour-06-lounge.webp",
+    glowColor: "#ffc400",
+    glowRgba: "rgba(255, 196, 0, 0.45)",
+    tag: "راهروی VIP سالن",
+  },
+];
+
 const tournamentGames = [
   { key: "football", cover: slideFc26, title: "FC 26 CHAMPIONSHIP", genre: "1V1 KNOCKOUT", prize: "$500 PRIZE POOL", time: "SAT 20:00", activePlayers: "32/32" },
   { key: "tactical", cover: slideUfc5, title: "UFC 5 OCTAGON FIGHT", genre: "MMA / SINGLE ELIM", prize: "$350 PRIZE POOL", time: "SUN 20:30", activePlayers: "16/16" },
@@ -146,7 +211,7 @@ const tournamentGames = [
 
 const copy: Record<Lang, {
   nav: { arena: string; stations: string; tournaments: string; lounge: string; visit: string };
-  hero: { kicker: string; titleLine1: string; titleLine2: string; subtitle: string; primaryCta: string; secondaryCta: string; monaTag: string };
+  hero: { kicker: string; titleLine1: string; titleLine2: string; subtitle: string; primaryCta: string; secondaryCta: string; loungeBadge: string };
   customizer: { index: string; title: string; subtitle: string; lightingLabel: string; consoleLabel: string; audioLabel: string; hospitalityLabel: string };
   bracket: { index: string; title: string; subtitle: string; liveBadge: string; viewBracket: string };
   telemetry: { index: string; title: string; subtitle: string; radarLabel: string; verifiedBadge: string; rows: Array<{ round: string; match: string; score: string; mode: string }> };
@@ -156,15 +221,15 @@ const copy: Record<Lang, {
   footer: { copyright: string; portalLink: string; privacyLink: string };
 }> = {
   fa: {
-    nav: { arena: "تالار اصلی", stations: "سفارشی‌ساز", tournaments: "براکت مسابقات", lounge: "کافه و لانژ", visit: "مسیریابی" },
+    nav: { arena: "تور مجازی سالن", stations: "سفارشی‌ساز", tournaments: "براکت مسابقات", lounge: "کافه و لانژ", visit: "مسیریابی" },
     hero: {
-      kicker: "فصل ۰۱ • ایسکله، قبرس شمالی",
+      kicker: "فصل ۰۱ • تور مجازی سالن اختصاصی بازینو پرو",
       titleLine1: "اگه یه قهرمانی،",
       titleLine2: "این آخرشه.",
-      subtitle: "برترین تجربه گیمینگ کنسولی با استیشن‌های مجهز PS5 و Xbox Series X، نمایشگرهای غول‌پیکر ۸۵ اینچ 4K و اتمسفر لوکس هتل ویستا ماره.",
-      primaryCta: "رزرو جایگاه",
-      secondaryCta: "کشف آرنا",
-      monaTag: "مونا • اینفلوئنسر رسمی بازینو",
+      subtitle: "استیشن‌های دیواری اختصاصی PS5 Pro با نمایشگرهای غول‌پیکر 4K، داک‌های شارژ DualSense با نورپردازی RGB و سیستم امبیلایت هماهنگ در ایسکله قبرس شمالی.",
+      primaryCta: "رزرو جایگاه در سالن",
+      secondaryCta: "سفارشی‌سازی استیشن",
+      loungeBadge: "BAZINO PRO LOUNGE",
     },
     customizer: {
       index: "فصل ۰۲ / سفارشی‌سازی شب بازی",
@@ -178,104 +243,104 @@ const copy: Record<Lang, {
     bracket: {
       index: "فصل ۰۳ / سیگنال مسابقات",
       title: "درخت زنده مسابقات قهرمانی.",
-      subtitle: "جدول حذفی هفتگی با جوایز نقدی، امتیازات فصلی و پخش زنده روی استیج اصلی.",
-      liveBadge: "مسابقه هفتگی ۳۲ نفره • شنبه‌ها ۲۰:۰۰",
-      viewBracket: "مشاهده براکت مسابقه",
+      subtitle: "ثبت‌نام زنده در براکت ۳۲ نفره FC 26 و TEKKEN 8 با جوایز نقدی هفتگی.",
+      liveBadge: "۳۲ بازیکن • شنبه ساعت ۲۰:۰۰",
+      viewBracket: "مشاهده براکت رسمی",
     },
     telemetry: {
-      index: "فصل ۰۴ / تله‌متری و لیدربورد",
-      title: "سیگنال راندهای تأییدشده.",
-      subtitle: "ثبت زنده نتایج مسابقات، رادار اسکن کلاب و پینگ پایدار استیشن‌ها.",
-      radarLabel: "رادار اسکن زنده آرنا",
-      verifiedBadge: "داده‌های رسمی تأییدشده",
+      index: "فصل ۰۴ / تله‌متری و آمار زنده",
+      title: "سیگنال‌های زنده استیج مسابقات.",
+      subtitle: "پایش لحظه‌ای سرعت اتصال، پینگ استیشن‌ها و نتایج زنده دور نهایی.",
+      radarLabel: "پایش زنده استیج",
+      verifiedBadge: "تایید شده رسمی",
       rows: [
-        { round: "راند ۰۷", match: "ArmanK در برابر Mahan10", score: "۵ — ۳", mode: "فینال FC 26" },
-        { round: "راند ۰۶", match: "Kasra در برابر RezaB", score: "۳ — ۱", mode: "نیمه‌نهایی UFC 5" },
-        { round: "راند ۰۵", match: "NimaPro در برابر AliGameR", score: "۴ — ۲", mode: "فینال TEKKEN 8" },
+        { round: "دور ۷ (فینال)", match: "آرمان ک. مقابل ماهان ۱۰", score: "۵ — ۳", mode: "FC 26 قهرمانی" },
+        { round: "دور ۶ (نیمه‌نهایی)", match: "کسری مقابل رضا ب.", score: "۳ — ۱", mode: "UFC 5 اوکتاگون" },
+        { round: "دور ۵ (فینال)", match: "نیما پرو مقابل علی گیمر", score: "۴ — ۲", mode: "تکن ۸ فایت استیک" },
       ],
     },
     lounge: {
-      index: "فصل ۰۵ / لانژ شبانه و کافه",
-      title: "ریتم VIP. مکث کافه.",
-      subtitle: "طراحی‌شده برای لحظات بین راندها. مبلمان راحتی چرمی، نوشیدنی‌های خنک و تجدید قوا برای قهرمانی.",
+      index: "فصل ۰۵ / نایت لانژ و بار اختصاصی",
+      title: "اتمسفر VIP. طعم بازی در استراحتگاه.",
+      subtitle: "فضایی لوکس با مبلمان چرمی، سرو نوشیدنی‌های انرژی‌زا و بار اختصاصی برای راند‌های استراحت.",
       amenities: [
-        { title: "جایگاه‌های اختصاصی VIP", desc: "آکوستیک ایزوله و بدون نویز با کنترل شخصی نور." },
-        { title: "سرویس داخل استیشن", desc: "سفارش مستقیم نوشیدنی و میان‌وعده بدون وقفه در بازی." },
-        { title: "پخش زنده رویدادهای بزرگ", desc: "نمایش مسابقات فوتبال و ورزش‌های الکترونیک." },
+        { title: "جایگاه‌های خصوصی VIP", desc: "ایزولاسیون صوتی، نمایشگر OLED اختصاصی و مبلمان ارگونومیک چرم." },
+        { title: "سرو مستقیم پای استیشن", desc: "سفارش آنلاین انواع قهوه اسپشیالتی و موکتیل بدون توقف بازی." },
+        { title: "ویدئووال پخش زنده اسپورتی", desc: "تماشای همزمان مسابقات لیگ قهرمانان و تورنمنت‌های بین‌المللی." },
       ],
     },
     entry: {
-      index: "فصل ۰۶ / مراحل ورود",
-      title: "سه قدم. یک شب خاطره‌انگیز.",
-      subtitle: "کنسول خود را انتخاب کنید، آنلاین رزرو کنید و با حضور در کلاب بازی را آغاز کنید.",
+      index: "فصل ۰۶ / پروتکل ورود ۳ مرحله‌ای",
+      title: "سه قدم تا نشستن پشت فرمان قهرمانی.",
+      subtitle: "انتخاب جایگاه، دریافت کد نوبت آنی و تحویل کنسول در سالن هتل ویستا ماره.",
       steps: [
-        { num: "۰۱", title: "انتخاب استیشن و کنسول", desc: "انتخاب از میان PS5 Haptic، Xbox Series X یا جایگاه ۸۵ اینچ VIP." },
-        { num: "۰۲", title: "رزرو آسان با کد رهگیری", desc: "ثبت سریع نوبت آنلاین — پرداخت حضوری نقد/کارت در دسک کلاب." },
-        { num: "۰۳", title: "شروع مسابقه و هیجان", desc: "حضور همراه دوستان، دریافت دسته‌های پرو و شروع رقابت." },
+        { num: "۰۱", title: "انتخاب استیشن", desc: "انتخاب بین PS5 Haptic، Xbox Series X یا ستاپ‌های اختصاصی ۸۵ اینچ." },
+        { num: "۰۲", title: "تثبیت نوبت آنلاین", desc: "دریافت کد رزرو آنی بدون نیاز به پرداخت اولیه — تسویه در کانتر سالن." },
+        { num: "۰۳", title: "ورود به آرنا", desc: "حضور در سالن، تحویل کنترلر اختصاصی و شروع رقابت در جدول قهرمانان." },
       ],
     },
     visit: {
-      index: "فصل ۰۷ / دسترسی و کارت عضویت",
-      title: "شب بازی در ایسکله.",
-      subtitle: "هتل ویستا ماره، لانگ بیچ، ایسکله، قبرس شمالی.",
+      index: "فصل ۰۷ / لوکیشن و کارت عضویت دیجیتال",
+      title: "گیم‌نایت در ایسکله، قبرس شمالی.",
+      subtitle: "هتل لوکس ویستا ماره، خیابان ساحلی لانگ‌بیچ، ایسکله.",
       locationName: "هتل ویستا ماره • ایسکله",
-      mapsCta: "مسیریابی با گوگل مپس",
-      digitalPassTitle: "کارت دیجیتال عضویت بازینو",
-      digitalPassDesc: "برای دریافت کارت عضویت، مشاهده براکت‌ها و رزرو سریع اسکن کنید.",
+      mapsCta: "مسیریابی در گوگل مپس",
+      digitalPassTitle: "عضویت دیجیتال کلاب بازینو",
+      digitalPassDesc: "اسکن کیو‌آرکد برای دریافت پاس دیجیتال، مشاهده براکت‌ها و دسترسی به تخفیف‌های ویژه.",
     },
     footer: {
-      copyright: "بازینو • آرنای اسطوره‌های گیمینگ",
+      copyright: "بازینو • تالار اساطیر گیمینگ",
       portalLink: "پورتال رسمی بازینو",
       privacyLink: "حریم خصوصی",
     },
   },
   en: {
-    nav: { arena: "Arena", stations: "Customizer", tournaments: "Brackets", lounge: "Lounge", visit: "Find Us" },
+    nav: { arena: "VIRTUAL TOUR", stations: "CUSTOMIZER", tournaments: "BRACKETS", lounge: "LOUNGE", visit: "VISIT" },
     hero: {
-      kicker: "CHAPTER 01 • ISKELE, CYPRUS",
+      kicker: "CHAPTER 01 • BAZINO PRO LOUNGE VIRTUAL TOUR",
       titleLine1: "IF YOU ARE A CHAMP,",
       titleLine2: "THIS IS IT.",
-      subtitle: "High-octane console gaming with PS5 & Xbox Series X stations, giant 85\" 4K screens and VIP hospitality at Hotel VistaMare.",
-      primaryCta: "RESERVE A BAY",
-      secondaryCta: "EXPLORE ARENA",
-      monaTag: "Mona • Official Bazino Influencer",
+      subtitle: "Wall-mounted PS5 Pro gaming bays with 4K OLED displays, RGB charging docks, and dynamic room ambilight in Long Beach, Iskele.",
+      primaryCta: "RESERVE VIP BAY",
+      secondaryCta: "CUSTOMIZE RIG",
+      loungeBadge: "BAZINO PRO LOUNGE",
     },
     customizer: {
-      index: "CHAPTER 02 / STATION CONFIGURATOR",
-      title: "BUILD YOUR GAME NIGHT.",
-      subtitle: "Select your console, ambient neon lighting, and VIP hospitality in real-time.",
-      lightingLabel: "NEON AMBIENT GLOW",
-      consoleLabel: "COMPETITION CONSOLE",
-      audioLabel: "AUDIO PRESET",
-      hospitalityLabel: "IN-BAY SERVICE",
+      index: "CHAPTER 02 / BATTLESTATION CUSTOMIZER",
+      title: "ENGINEER YOUR NIGHT.",
+      subtitle: "Select your console hardware, ambient room luminesce, and VIP cafe service live.",
+      lightingLabel: "NEON AMBIENT PALETTE",
+      consoleLabel: "TOURNAMENT RIG",
+      audioLabel: "AUDIO CALIBRATION",
+      hospitalityLabel: "IN-SEAT VIP SERVICE",
     },
     bracket: {
       index: "CHAPTER 03 / TOURNAMENT SIGNAL",
       title: "LIVE CHAMPIONSHIP BRACKET.",
-      subtitle: "Weekly knockout brackets with cash prizes, verified leaderboard points and main-stage broadcast.",
-      liveBadge: "32-PLAYER BRACKET • SATURDAY 20:00",
-      viewBracket: "VIEW MATCH BRACKET",
+      subtitle: "Weekly knockout stages for FC 26 & TEKKEN 8 with cash pools and live arena projection.",
+      liveBadge: "32 PLAYERS • SAT 20:00",
+      viewBracket: "OPEN LIVE BRACKET",
     },
     telemetry: {
-      index: "CHAPTER 04 / TELEMETRY & RADAR",
-      title: "VERIFIED MATCH SIGNALS.",
-      subtitle: "Real-time match telemetry, live radar arena scan and ultra-low station latency.",
-      radarLabel: "LIVE ARENA RADAR SCAN",
-      verifiedBadge: "OFFICIAL VERIFIED DATA",
+      index: "CHAPTER 04 / TELEMETRY & LIVE RADAR",
+      title: "VERIFIED ARENA FEED.",
+      subtitle: "Live telemetry from all 12 bays, tracking station ping, frame latency, and leaderboard matches.",
+      radarLabel: "LIVE ARENA RADAR",
+      verifiedBadge: "OFFICIAL SIGNAL",
       rows: [
         { round: "ROUND 07", match: "ArmanK vs Mahan10", score: "5 — 3", mode: "FC 26 GRAND FINAL" },
         { round: "ROUND 06", match: "Kasra vs RezaB", score: "3 — 1", mode: "UFC 5 SEMI-FINAL" },
-        { round: "ROUND 05", match: "NimaPro vs AliGameR", score: "4 — 2", mode: "TEKKEN 8 FINAL" },
+        { round: "ROUND 05", match: "NimaPro vs AliGameR", score: "4 — 2", mode: "TEKKEN 8 FIGHT" },
       ],
     },
     lounge: {
-      index: "CHAPTER 05 / NIGHT LOUNGE & CAFE",
-      title: "VIP RHYTHM. CAFE PAUSE.",
-      subtitle: "Designed for the moments between rounds. Relax in leather VIP bays, order refreshments and reset for victory.",
+      index: "CHAPTER 05 / NIGHT LOUNGE & VIP BAR",
+      title: "VIP PACE. CAFE RESPITE.",
+      subtitle: "Designed for round intervals. Relax in Italian leather seating with curated espresso and mocktails.",
       amenities: [
-        { title: "Private VIP Bays", desc: "Acoustically treated quiet bays with custom lighting." },
-        { title: "In-Bay Cafe Service", desc: "Order gourmet snacks and cold energy drinks directly to your console." },
-        { title: "Live Esports Wall", desc: "Live broadcasts of premier sports and international tournaments." },
+        { title: "Private Acoustic Bays", desc: "Acoustically isolated zones with customizable ambient neon." },
+        { title: "Seat-Side Ordering", desc: "Full cafe and kitchen menu delivered without pausing your match." },
+        { title: "Esports Broadcast Wall", desc: "Live multi-stream wall broadcasting premier global tournaments." },
       ],
     },
     entry: {
@@ -304,15 +369,15 @@ const copy: Record<Lang, {
     },
   },
   tr: {
-    nav: { arena: "Arena", stations: "Özelleştirici", tournaments: "Braketler", lounge: "Lounge", visit: "Konum" },
+    nav: { arena: "Sanal Tur", stations: "Özelleştirici", tournaments: "Braketler", lounge: "Lounge", visit: "Konum" },
     hero: {
-      kicker: "BÖLÜM 01 • İSKELE, KIBRIS",
+      kicker: "BÖLÜM 01 • BAZINO PRO SALONU SANAL TURU",
       titleLine1: "ŞAMPİYONSAN,",
       titleLine2: "İŞTE BURASI.",
-      subtitle: "PS5 ve Xbox Series X deneyimi, 85 inç 4K dev ekranlar ve Hotel VistaMare'de VIP gaming lounge atmosferi.",
+      subtitle: "Duvara monte PS5 Pro istasyonları, 4K OLED ekranlar, RGB DualSense şarj yuvaları ve dinamik ambilight aydınlatma.",
       primaryCta: "YERİNİ AYIR",
-      secondaryCta: "ARENAYI KEŞFET",
-      monaTag: "Mona • Resmi Bazino Influencerı",
+      secondaryCta: "İSTASYONU ÖZELLEŞTİR",
+      loungeBadge: "BAZINO PRO SALONU",
     },
     customizer: {
       index: "BÖLÜM 02 / İSTASYON YAPILANDIRICI",
@@ -345,7 +410,7 @@ const copy: Record<Lang, {
     lounge: {
       index: "BÖLÜM 05 / NIGHT LOUNGE & KAFE",
       title: "VIP RİTMİ. KAFE MOLASI.",
-      subtitle: "Raund araları için özel olarak tasarlandı. VIP koltuklarda dinlenin, içeceğinizi yudumlayın.",
+      subtitle: "Raund araları برای dinlenme. Deri koltuklarda özel kahve ve içecekler.",
       amenities: [
         { title: "Özel VIP İstasyonları", desc: "Akustik izolasyonlu sakin ortam ve ayarlanabilir ışıklandırma." },
         { title: "İstasyona Servis", desc: "Oyunu bölmeden içecek ve atıştırmalık siparişi." },
@@ -378,75 +443,75 @@ const copy: Record<Lang, {
     },
   },
   ru: {
-    nav: { arena: "Арена", stations: "Конфигуратор", tournaments: "Сетки", lounge: "Лаунж", visit: "Как найти" },
+    nav: { arena: "Виртуальный тур", stations: "Конфигуратор", tournaments: "Сетки", lounge: "Лаунж", visit: "Как найти" },
     hero: {
-      kicker: "ГЛАВА 01 • ИСКЕЛЕ, КИПР",
+      kicker: "ГЛАВА 01 • ВИРТУАЛЬНЫЙ ТУР ПО BAZINO PRO",
       titleLine1: "ЕСЛИ ТЫ ЧЕМПИОН,",
       titleLine2: "ТЕБЕ СЮДА.",
-      subtitle: "Консольные станции PS5 и Xbox Series X, 85-дюймовые 4K экраны и VIP атмосфера в отеле VistaMare.",
+      subtitle: "Настенные станции PS5 Pro с экранами 4K OLED, зарядными доками RGB и динамической подсветкой в отеле VistaMare.",
       primaryCta: "ЗАБРОНИРОВАТЬ",
-      secondaryCta: "ОТКРЫТЬ АРЕНУ",
-      monaTag: "Мона • Официальный амбассадор Bazino",
+      secondaryCta: "НАСТРОИТЬ МЕСТО",
+      loungeBadge: "BAZINO PRO LOUNGE",
     },
     customizer: {
-      index: "ГЛАВА 02 / КОНФИГУРАТОР СТАНЦИИ",
-      title: "СОЗДАЙ СВОЙ ИГРОВОЙ ВЕЧЕР.",
-      subtitle: "Выбирайте консоль, неоновую подсветку и сервис в реальном времени.",
+      index: "ГЛАВА 02 / КОНФИГУРАТОР МЕСТА",
+      title: "НАСТРОЙ СВОЙ МАТЧ.",
+      subtitle: "Выбирайте консоль, подсветку и напитки прямо к игровому месту.",
       lightingLabel: "НЕОНОВАЯ ПОДСВЕТКА",
-      consoleLabel: "КОНСОЛЬ",
-      audioLabel: "АУДИО РЕЖИМ",
-      hospitalityLabel: "СЕРВИС К СТАНЦИИ",
+      consoleLabel: "ИГРОВАЯ КОНСОЛЬ",
+      audioLabel: "ПРОФИЛЬ ЗВУКА",
+      hospitalityLabel: "ОБСЛУЖИВАНИЕ У МЕСТА",
     },
     bracket: {
-      index: "ГЛАВА 03 / СИГНАЛ ТУРНИРОВ",
-      title: "ЖИВАЯ ТУРНИРНАЯ СЕТКА.",
-      subtitle: "Еженедельные турниры на выбывание с денежными призами и трансляцией.",
-      liveBadge: "32 ИГРОКА • СУББОТА 20:00",
-      viewBracket: "СЕТКА ТУРНИРА",
+      index: "ГЛАВА 03 / ТУРНИРНАЯ СЕТКА",
+      title: "СЕТКА ЧЕМПИОНАТА ОНЛАЙН.",
+      subtitle: "Еженедельные турниры на 32 игрока с призовым фондом по FC 26 и TEKKEN 8.",
+      liveBadge: "32 ИГРОКА • СБ 20:00",
+      viewBracket: "СМОТРЕТЬ СЕТКУ",
     },
     telemetry: {
-      index: "ГЛАВА 04 / ТЕЛЕМЕТРИЯ И РАДАР",
-      title: "ПОДТВЕРЖДЕННЫЕ СИГНАЛЫ.",
-      subtitle: "Статистика матчей, радар сканирования клуба и ультранизкий пинг.",
-      radarLabel: "РАДАР СКАНИРОВАНИЯ АРЕНЫ",
-      verifiedBadge: "ОФИЦИАЛЬНЫЕ ДАННЫЕ",
+      index: "ГЛАВА 04 / ТЕЛЕМЕТРИЯ АРЕНЫ",
+      title: "ПРЯМАЯ ТЕЛЕМЕТРИЯ.",
+      subtitle: "Мониторинг пинга консолей, задержки ввода и результатов матчей.",
+      radarLabel: "РАДАР АРЕНЫ",
+      verifiedBadge: "ОФИЦИАЛЬНЫЙ СИГНАЛ",
       rows: [
-        { round: "РАУНД 07", match: "ArmanK против Mahan10", score: "5 — 3", mode: "ГРАНД-ФИНАЛ FC 26" },
-        { round: "РАУНД 06", match: "Kasra против RezaB", score: "3 — 1", mode: "ПОЛУФИНАЛ UFC 5" },
-        { round: "РАУНД 05", match: "NimaPro против AliGameR", score: "4 — 2", mode: "ФИНАЛ TEKKEN 8" },
+        { round: "РАУНД 07", match: "ArmanK vs Mahan10", score: "5 — 3", mode: "FC 26 ФИНАЛ" },
+        { round: "РАУНД 06", match: "Kasra vs RezaB", score: "3 — 1", mode: "UFC 5 ПОЛУФИНАЛ" },
+        { round: "РАУНД 05", match: "NimaPro vs AliGameR", score: "4 — 2", mode: "TEKKEN 8 ФИНАЛ" },
       ],
     },
     lounge: {
-      index: "ГЛАВА 05 / НОЧНОЙ ЛАУНЖ И КАФЕ",
-      title: "РИТМ VIP. ПАУЗА В КАФЕ.",
-      subtitle: "Создано для времени между раундами. Отдыхайте в кожаных креслах и заказывайте напитки.",
+      index: "ГЛАВА 05 / VIP ЛАУНЖ И КАФЕ",
+      title: "VIP ЛАУНЖ. КАФЕ-ЗОНА.",
+      subtitle: "Итальянские кожаные кресла, напитки и трансляции киберспорта в перерывах.",
       amenities: [
-        { title: "Приватные VIP Зоны", desc: "Акустический комфорт и регулируемое освещение." },
-        { title: "Сервис к станции", desc: "Заказ закусок и напитков прямо к игровому месту." },
-        { title: "Киберспортивный экран", desc: "Трансляции главных матчей на центральной стене." },
+        { title: "VIP Лаунж Зоны", desc: "Акустическая изоляция и регулируемая подсветка." },
+        { title: "Заказ прямо к консоли", desc: "Свежий кофе и закуски без отрыва от игры." },
+        { title: "Стена Киберспорта", desc: "Прямые трансляции мировых чемпионатов." },
       ],
     },
     entry: {
-      index: "ГЛАВА 06 / ПРАВИЛА ВХОДА",
-      title: "ТРИ ШАГА. ОДНА ЛЕГЕНДАРНАЯ НОЧЬ.",
-      subtitle: "Выберите консоль, забронируйте место и приходите в клуб.",
+      index: "ГЛАВА 06 / ТРИ ШАГА К ИГРЕ",
+      title: "ТРИ ШАГА. ОДИН НЕЗАБЫВАЕМЫЙ ВЕЧЕР.",
+      subtitle: "Выбери консоль, забронируй онлайн и начни матч в клубе.",
       steps: [
-        { num: "01", title: "ВЫБЕРИТЕ СТАНЦИЮ", desc: "PS5 Haptic, Xbox Series X или 85\" VIP Зал." },
-        { num: "02", title: "ЗАБРОНИРУЙТЕ", desc: "Мгновенный код брони — оплата на ресепшн." },
-        { num: "03", title: "НАЧНИТЕ ИГРУ", desc: "Приходите с друзьями, берите геймпады и побеждайте." },
+        { num: "01", title: "ВЫБЕРИ СТАНЦИЮ", desc: "PS5 Haptic, Xbox Series X или 85\" VIP зал." },
+        { num: "02", title: "ЗАБРОНИРУЙ", desc: "Моментальный код — оплата на ресепшн при входе." },
+        { num: "03", title: "НАЧНИ МАТЧ", desc: "Приходи с друзьями и побеждай в таблице лидеров." },
       ],
     },
     visit: {
-      index: "ГЛАВА 07 / ЛОКАЦИЯ И ЦИФРОВАЯ КАРТА",
-      title: "ИГРОВАЯ НОЧЬ В ИСКЕЛЕ.",
-      subtitle: "Отель VistaMare, Лонг-Бич, Искеле, Северный Кипр.",
-      locationName: "Отель VistaMare • Искеле",
-      mapsCta: "ОТКРЫТЬ НА GOOGLE MAPS",
+      index: "ГЛАВА 07 / ЛОКАЦИЯ И ЦИФРОВОЙ ПРОПУСК",
+      title: "ИГРОВОЙ ВЕЧЕР В ИСКЕЛЕ.",
+      subtitle: "Hotel VistaMare, Long Beach, Искеле, Северный Кипр.",
+      locationName: "Hotel VistaMare • Искеле",
+      mapsCta: "ОТКРЫТЬ В GOOGLE MAPS",
       digitalPassTitle: "ЦИФРОВАЯ КАРТА BAZINO",
-      digitalPassDesc: "Сканируйте для доступа к профилю, сетке турниров и быстрой брони.",
+      digitalPassDesc: "Отсканируйте для получения карты и быстрого бронирования.",
     },
     footer: {
-      copyright: "BAZINO • АРЕНА ЛЕГЕНД",
+      copyright: "BAZINO • ARENA OF LEGENDS",
       portalLink: "Официальный портал",
       privacyLink: "Конфиденциальность",
     },
@@ -459,14 +524,33 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
 
-  // ── INTERACTIVE SANDBOX CUSTOMIZER STATE (AuthKit Style) ─────────
+  // ── HERO VIRTUAL TOUR POINTER ENGINE (Framer Motion) ──────────────
+  const [activeTourIndex, setActiveTourIndex] = useState(0);
+  const heroRef = useRef<HTMLDivElement | null>(null);
+
+  // Pointer tracking motion values
+  const pointerX = useMotionValue(0.1);
+  const smoothPointerX = useSpring(pointerX, { stiffness: 260, damping: 28 });
+
+  // Handle pointer / mouse scrubbing across hero stage
+  const handleHeroPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    pointerX.set(ratio);
+    
+    // Calculate 0..5 index based on ratio
+    const nextIdx = Math.min(tourFrames.length - 1, Math.floor(ratio * tourFrames.length));
+    if (nextIdx !== activeTourIndex) {
+      setActiveTourIndex(nextIdx);
+    }
+  };
+
+  // ── INTERACTIVE SANDBOX CUSTOMIZER STATE ──────────────────────────
   const [activeLighting, setActiveLighting] = useState<"gold" | "cyan" | "magenta" | "emerald">("gold");
   const [activeConsole, setActiveConsole] = useState<"ps5" | "xbox" | "focus85">("ps5");
   const [activeAudio, setActiveAudio] = useState<"spatial" | "dolby">("spatial");
   const [vipCafeActive, setVipCafeActive] = useState(true);
-
-  // ── HERO 3D CARD STACK STATE ────────────────────────────────────
-  const [heroStackIndex, setHeroStackIndex] = useState(0);
 
   const [user, setUser] = useState<{ username: string } | null>(() => {
     try {
@@ -509,11 +593,7 @@ export default function Home() {
     setAuthUsername("");
   };
 
-  const heroStackCards = [
-    { id: "ps5", title: "PS5 HAPTIC BAY", badge: "85\" 4K 120Hz", spec: "DualSense Pro • 12ms Ping", image: gamesAdults, color: "#ffc400" },
-    { id: "xbox", title: "XBOX SERIES X", badge: "GAME PASS ULTIMATE", spec: "12 TFLOPS • Quick Resume", image: slideFc26, color: "#35a9ff" },
-    { id: "vip", title: "VIP STADIUM FOCUS", badge: "PRIVATE ACOUSTIC", spec: "Dolby Atmos • Leather Recliner", image: slideMatch, color: "#ff2db0" },
-  ];
+  const currentFrame = tourFrames[activeTourIndex] ?? tourFrames[0];
 
   const getLightingGlow = () => {
     switch (activeLighting) {
@@ -526,9 +606,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#07080c] text-[#f6f8fc] relative overflow-hidden font-sans selection:bg-[#ffc400] selection:text-[#07080c]">
-      {/* ── TOP VOLUMETRIC SPOTLIGHT BEAM (AuthKit / 3D Dark UI) ──── */}
-      <div className="top-spotlight-beam" />
-      <div className="technical-grid fixed inset-0 pointer-events-none opacity-40 z-0" />
+      
+      {/* ── DYNAMIC SYNCED AMBILIGHT BACKDROP (Framer Motion) ────────── */}
+      <motion.div
+        animate={{
+          background: `radial-gradient(ellipse 70% 45% at 50% 0%, ${currentFrame.glowRgba} 0%, transparent 75%)`
+        }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="fixed inset-x-0 top-0 h-[650px] pointer-events-none z-0"
+      />
+      <div className="technical-grid fixed inset-0 pointer-events-none opacity-30 z-0" />
 
       {/* ── FLOATING PILL NAV ──────────────────────────────────────── */}
       <header className="floating-nav">
@@ -542,7 +629,7 @@ export default function Home() {
         </a>
 
         <nav className="hidden lg:flex items-center gap-6">
-          <a href="#arena">{t.nav.arena}</a>
+          <a href="#top">{t.nav.arena}</a>
           <a href="#customizer">{t.nav.stations}</a>
           <a href="#tournaments">{t.nav.tournaments}</a>
           <a href="#lounge">{t.nav.lounge}</a>
@@ -635,7 +722,7 @@ export default function Home() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-x-0 top-[76px] bg-[#0c0e14] border-b border-white/10 p-6 z-40 lg:hidden flex flex-col gap-4 font-orbitron text-sm"
           >
-            <a href="#arena" onClick={() => setMobileMenuOpen(false)}>{t.nav.arena}</a>
+            <a href="#top" onClick={() => setMobileMenuOpen(false)}>{t.nav.arena}</a>
             <a href="#customizer" onClick={() => setMobileMenuOpen(false)}>{t.nav.stations}</a>
             <a href="#tournaments" onClick={() => setMobileMenuOpen(false)}>{t.nav.tournaments}</a>
             <a href="#lounge" onClick={() => setMobileMenuOpen(false)}>{t.nav.lounge}</a>
@@ -678,58 +765,94 @@ export default function Home() {
 
       <main className="pt-28">
         {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 01: HERO — REAL BAZINO ARENA + MONA + 3D STACK
+            CHAPTER 01: HERO — REAL BAZINO PRO LOUNGE VIRTUAL TOUR (FRAMER MOTION)
         ════════════════════════════════════════════════════════════ */}
         <section id="top" className="max-w-7xl mx-auto px-6 pt-6 pb-24 relative z-10">
-          <div className="relative rounded-[36px] overflow-hidden border border-white/12 bg-[#0a0d14] p-8 sm:p-14 lg:p-16 min-h-[85vh] flex flex-col justify-between shadow-2xl">
-            {/* Background: Real Bazino Game Net + Mona */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={monaHeroWide}
-                alt="Bazino Arena Lounge & Mona"
-                className="w-full h-full object-cover object-right-top sm:object-center opacity-35 filter saturate-125"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14] via-[#0a0d14]/70 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14] via-[#0a0d14]/40 to-transparent" />
+          <div
+            ref={heroRef}
+            onPointerMove={handleHeroPointerMove}
+            className="relative rounded-[36px] overflow-hidden border border-white/12 bg-[#0a0d14] p-8 sm:p-12 lg:p-14 min-h-[88vh] flex flex-col justify-between shadow-2xl transition-shadow duration-500"
+            style={{
+              boxShadow: `0 30px 80px rgba(0,0,0,0.9), 0 0 50px ${currentFrame.glowRgba}`
+            }}
+          >
+            
+            {/* ── BACKGROUND: DYNAMIC TOUR FRAME (Framer Motion Crossfade) ── */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentFrame.id}
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 0.4, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                  className="absolute inset-0"
+                >
+                  <img
+                    src={currentFrame.image}
+                    alt={currentFrame.title}
+                    className="w-full h-full object-cover object-center filter saturate-125"
+                  />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Ambient Cinematic Gradients */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14] via-[#0a0d14]/75 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0d14] via-[#0a0d14]/55 to-transparent" />
             </div>
 
-            {/* Technical Crosshairs & Top HUD */}
+            {/* Technical Crosshairs */}
             <div className="crosshair-corner crosshair-tl" />
             <div className="crosshair-corner crosshair-tr" />
             <div className="crosshair-corner crosshair-bl" />
             <div className="crosshair-corner crosshair-br" />
 
+            {/* ── TOP HUD HEADER ───────────────────────────────────── */}
             <div className="relative z-10 flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-6">
               <div className="editorial-index">
                 <span>{t.hero.kicker}</span>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-orbitron font-bold text-gray-400">
-                <span className="flex items-center gap-1.5 text-[#ffc400] bg-black/40 px-3 py-1 rounded-full border border-[#ffc400]/30">
-                  <Sparkles size={13} />
-                  <span>{t.hero.monaTag}</span>
+              {/* Station Indicators */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded-full animate-pulse transition-colors"
+                  style={{ backgroundColor: currentFrame.glowColor }}
+                />
+                <span
+                  className="font-orbitron font-bold text-xs tracking-wider transition-colors"
+                  style={{ color: currentFrame.glowColor }}
+                >
+                  {currentFrame.badge}
                 </span>
-                <span className="text-gray-600 hidden sm:inline">•</span>
-                <span className="flex items-center gap-1.5 text-white">
-                  <span className="w-2 h-2 rounded-full bg-[#00e5ff] animate-pulse" />
-                  OPEN NOW
+                <span className="text-gray-500 text-xs mr-2 font-orbitron">
+                  (استیشن {activeTourIndex + 1} از {tourFrames.length})
                 </span>
               </div>
             </div>
 
-            {/* Main Headline & 3D Interactive Card Stack (AuthKit Style) */}
-            <div className="relative z-10 my-12 grid lg:grid-cols-12 gap-12 items-center">
-              {/* Left Column: Headline */}
-              <div className="lg:col-span-7">
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black font-orbitron uppercase text-white tracking-tight leading-[1.05] mb-6">
+            {/* ── MAIN HERO STAGE ─────────────────────────────────── */}
+            <div className="relative z-10 my-10 grid lg:grid-cols-12 gap-10 items-center">
+              
+              {/* Left Column: Persian Brand Headline & CTA */}
+              <div className="lg:col-span-6">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ffc400]/10 border border-[#ffc400]/30 text-[#ffc400] font-orbitron text-xs font-bold mb-6">
+                  <Crown size={14} />
+                  <span>{t.hero.loungeBadge}</span>
+                </div>
+
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black font-orbitron uppercase text-white tracking-tight leading-[1.08] mb-6">
                   {t.hero.titleLine1}
                   <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffc400] via-[#ffd700] to-[#35a9ff]">
+                  <span
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffc400] via-[#ffd700] to-[#00d2ff]"
+                    style={{ filter: `drop-shadow(0 0 35px ${currentFrame.glowRgba})` }}
+                  >
                     {t.hero.titleLine2}
                   </span>
                 </h1>
 
-                <p className="text-gray-300 text-base sm:text-xl font-normal leading-relaxed max-w-xl mb-10">
+                <p className="text-gray-300 text-base sm:text-lg font-normal leading-relaxed max-w-xl mb-8">
                   {t.hero.subtitle}
                 </p>
 
@@ -745,312 +868,383 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Column: Interactive 3D Stack (AuthKit Cover-Flow) */}
-              <div className="lg:col-span-5 flex flex-col items-center">
-                <div className="relative w-full max-w-sm h-72 perspective-container">
-                  {heroStackCards.map((card, idx) => {
-                    const offset = idx - heroStackIndex;
-                    const isActive = idx === heroStackIndex;
-                    return (
-                      <motion.div
-                        key={card.id}
-                        onClick={() => setHeroStackIndex(idx)}
-                        animate={{
-                          x: offset * 24,
-                          y: offset * -12,
-                          z: offset * -40,
-                          scale: 1 - Math.abs(offset) * 0.08,
-                          opacity: 1 - Math.abs(offset) * 0.25,
-                          rotateZ: offset * 3,
-                        }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                        className={`absolute inset-0 rounded-2xl p-6 flex flex-col justify-between overflow-hidden cursor-pointer backdrop-blur-xl border ${
-                          isActive
-                            ? "bg-[#101420]/95 border-[#ffc400]/60 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(255,196,0,0.25)] z-30"
-                            : "bg-[#0b0e16]/80 border-white/10 z-10"
-                        }`}
-                      >
-                        <img
-                          src={card.image}
-                          alt={card.title}
-                          className="absolute inset-0 w-full h-full object-cover opacity-35"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/60 to-transparent" />
-
-                        <div className="relative z-10 flex justify-between items-center">
-                          <span className="mono-tag text-[#ffc400] bg-black/60 px-3 py-1 rounded-full border border-white/10">
-                            {card.badge}
-                          </span>
-                          <span className="w-2 h-2 rounded-full bg-[#00e5ff] animate-ping" />
-                        </div>
-
-                        <div className="relative z-10">
-                          <h3 className="text-xl font-black font-orbitron text-white mb-1">{card.title}</h3>
-                          <p className="text-xs text-gray-300 font-medium">{card.spec}</p>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-
-                {/* Stack Switcher Pill Buttons */}
-                <div className="flex gap-2 mt-6 bg-[#0e121a] border border-white/10 p-1 rounded-full">
-                  {heroStackCards.map((c, idx) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setHeroStackIndex(idx)}
-                      className={`px-4 py-1.5 rounded-full text-[11px] font-orbitron font-bold transition-all ${
-                        heroStackIndex === idx
-                          ? "bg-[#ffc400] text-[#07080c]"
-                          : "text-gray-400 hover:text-white"
-                      }`}
-                    >
-                      {c.id.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom 3 Live Pillars */}
-            <div className="relative z-10 grid sm:grid-cols-3 gap-6 pt-8 border-t border-white/10">
-              <div>
-                <div className="mono-tag text-[#ffc400] mb-1">STATION FLEET</div>
-                <div className="text-xl font-black font-orbitron text-white">۱۲ جایگاه فعال PS5 & XBOX</div>
-              </div>
-              <div>
-                <div className="mono-tag text-[#35a9ff] mb-1">PRO ESPORTS WALL</div>
-                <div className="text-xl font-black font-orbitron text-white">نمایشگرهای ۸۵ اینچ 4K 120Hz</div>
-              </div>
-              <div>
-                <div className="mono-tag text-gray-400 mb-1">VIP HOSPITALITY</div>
-                <div className="text-xl font-black font-orbitron text-white">سرویس اختصاصی کافه در جایگاه</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 02: INTERACTIVE CUSTOMIZER WORKBENCH (AuthKit Style)
-        ════════════════════════════════════════════════════════════ */}
-        <section id="customizer" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-            <div>
-              <div className="editorial-index mb-3">
-                <span>{t.customizer.index}</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight">
-                {t.customizer.title}
-              </h2>
-            </div>
-            <p className="text-gray-400 text-sm sm:text-base max-w-md">
-              {t.customizer.subtitle}
-            </p>
-          </div>
-
-          {/* Interactive Configurator Sandbox Canvas */}
-          <div className="customizer-workbench p-8 sm:p-12">
-            <div className="grid lg:grid-cols-12 gap-10 items-center">
-              {/* Left Controls Toolbar */}
-              <div className="lg:col-span-5 space-y-6">
-                {/* 1. Neon Lighting Color Picker */}
-                <div className="bg-[#111622] border border-white/08 rounded-2xl p-5">
-                  <span className="mono-tag text-gray-400 block mb-3">{t.customizer.lightingLabel}</span>
-                  <div className="flex gap-3">
-                    {[
-                      { id: "gold", color: "#ffc400", label: "Gold" },
-                      { id: "cyan", color: "#35a9ff", label: "Cyan" },
-                      { id: "magenta", color: "#ff2db0", label: "Magenta" },
-                      { id: "emerald", color: "#10b981", label: "Emerald" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setActiveLighting(item.id as any)}
-                        style={{ backgroundColor: item.color }}
-                        className={`w-9 h-9 rounded-xl transition-all ${
-                          activeLighting === item.id
-                            ? "ring-4 ring-white/30 scale-110 shadow-lg"
-                            : "opacity-60 hover:opacity-100"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Console Model Selector */}
-                <div className="bg-[#111622] border border-white/08 rounded-2xl p-5">
-                  <span className="mono-tag text-gray-400 block mb-3">{t.customizer.consoleLabel}</span>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: "ps5", label: "PS5 HAPTIC" },
-                      { id: "xbox", label: "XBOX SERIES X" },
-                      { id: "focus85", label: "85\" STADIUM" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setActiveConsole(item.id as any)}
-                        className={`px-3 py-2.5 rounded-xl text-xs font-orbitron font-bold transition-all ${
-                          activeConsole === item.id
-                            ? "bg-[#ffc400] text-[#07080c] shadow-lg shadow-[#ffc400]/20"
-                            : "bg-white/04 text-gray-400 hover:text-white border border-white/06"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 3. Audio & VIP Toggles */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="bg-[#111622] border border-white/08 rounded-2xl p-4 flex justify-between items-center">
-                    <div>
-                      <span className="mono-tag text-gray-400 block mb-1">AUDIO</span>
-                      <span className="text-xs font-orbitron font-bold text-white">
-                        {activeAudio === "spatial" ? "3D SPATIAL" : "DOLBY ATMOS"}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveAudio(activeAudio === "spatial" ? "dolby" : "spatial")}
-                      className="p-2 rounded-lg bg-white/05 hover:bg-white/10 text-[#ffc400]"
-                    >
-                      <Volume2 size={18} />
-                    </button>
-                  </div>
-
-                  <div className="bg-[#111622] border border-white/08 rounded-2xl p-4 flex justify-between items-center">
-                    <div>
-                      <span className="mono-tag text-gray-400 block mb-1">VIP CAFE</span>
-                      <span className="text-xs font-orbitron font-bold text-white">
-                        {vipCafeActive ? "INCLUDED" : "OPTIONAL"}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setVipCafeActive(!vipCafeActive)}
-                      className={`p-2 rounded-lg transition-colors ${
-                        vipCafeActive ? "bg-[#ffc400] text-[#07080c]" : "bg-white/05 text-gray-400"
-                      }`}
-                    >
-                      <Coffee size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Live Preview Card (Reactively Updates) */}
-              <div className="lg:col-span-7">
-                <TiltCard
-                  className={`editorial-card p-8 min-h-[460px] flex flex-col justify-between transition-all duration-500 border-2 ${getLightingGlow()}`}
-                >
-                  <div className="absolute inset-0 z-0">
-                    <img
-                      src={
-                        activeConsole === "ps5"
-                          ? gamesAdults
-                          : activeConsole === "xbox"
-                          ? slideFc26
-                          : slideMatch
-                      }
-                      alt="Selected Station"
-                      className="w-full h-full object-cover opacity-45"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/60 to-transparent" />
-                  </div>
-
-                  <div className="relative z-10 flex justify-between items-center">
-                    <span className="mono-tag text-white bg-black/60 px-3 py-1 rounded-full border border-white/10">
-                      LIVE PREVIEW
-                    </span>
-                    <span className="mono-tag text-[#ffc400] font-black">
-                      {activeConsole === "ps5" ? "4K 120HZ • DUALSENSE" : activeConsole === "xbox" ? "12 TFLOPS • ELITE" : "85\" DOLBY ATMOS"}
-                    </span>
-                  </div>
-
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: activeLighting === "gold" ? "#ffc400" : activeLighting === "cyan" ? "#35a9ff" : activeLighting === "magenta" ? "#ff2db0" : "#10b981" }} />
-                      <span className="mono-tag text-gray-300">CONFIGURED BAY READY</span>
-                    </div>
-                    <h3 className="text-3xl font-black font-orbitron text-white mb-2">
-                      {activeConsole === "ps5" ? "PS5 Haptic Arena Bay" : activeConsole === "xbox" ? "Xbox Series X Pro Bay" : "85\" Stadium VIP Suite"}
-                    </h3>
-                    <p className="text-gray-300 text-sm max-w-md mb-6">
-                      {activeConsole === "ps5"
-                        ? "فیدبک هپتیک پیشرفته نسل ۹ با دسته‌های DualSense Pro و نمایشگر اختصاصی ۸۵ اینچ 4K."
-                        : activeConsole === "xbox"
-                        ? "قدرت پردازش فوق‌العاده با حافظه سریع NVMe و آرشیو کامل اشتراک Game Pass Ultimate."
-                        : "نمایشگر سینمایی ۸۵ اینچ با زاویه دید بهینه و صدای محیطی دالبی اتموس."}
-                    </p>
-
-                    <div className="flex items-center justify-between border-t border-white/10 pt-6">
-                      <div>
-                        <div className="mono-tag text-gray-400">STATUS</div>
-                        <div className="text-sm font-bold font-orbitron text-white">IMMEDIATE AVAILABILITY</div>
+              {/* Right Column: Interactive 3D Tour Frame (Framer Motion) */}
+              <div className="lg:col-span-6">
+                <TiltCard maxTilt={7}>
+                  <div className="relative rounded-3xl p-6 sm:p-8 bg-[#0d121c]/90 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.85)] overflow-hidden">
+                    
+                    {/* Active Station Header */}
+                    <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-5">
+                      <div className="flex items-center gap-2">
+                        <Compass size={16} style={{ color: currentFrame.glowColor }} />
+                        <span className="font-orbitron font-bold text-xs text-white">
+                          {currentFrame.tag}
+                        </span>
                       </div>
-                      <a href={reservationUrl} className="btn-gold-action">
-                        <span>رزرو این استیشن ↗</span>
-                      </a>
+                      <span
+                        className="px-2.5 py-1 rounded-md text-[11px] font-black font-orbitron text-[#07080c] transition-colors"
+                        style={{ backgroundColor: currentFrame.glowColor }}
+                      >
+                        {currentFrame.badge}
+                      </span>
+                    </div>
+
+                    {/* Visual Frame Screen */}
+                    <div className="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-white/15 mb-6 group">
+                      <AnimatePresence mode="wait">
+                        <motion.img
+                          key={currentFrame.image}
+                          src={currentFrame.image}
+                          alt={currentFrame.title}
+                          initial={{ opacity: 0, scale: 1.06 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.35 }}
+                          className="w-full h-full object-cover object-center"
+                        />
+                      </AnimatePresence>
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#080b12] via-transparent to-transparent" />
+                      
+                      {/* Floating Caption on Frame */}
+                      <div className="absolute bottom-3 inset-x-4 flex justify-between items-end z-10">
+                        <div>
+                          <h4 className="text-white font-black text-sm sm:text-base font-orbitron">
+                            {currentFrame.title}
+                          </h4>
+                          <p className="text-gray-300 text-xs line-clamp-1">
+                            {currentFrame.subtitle}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 6-Step Station Scrubbing Buttons */}
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {tourFrames.map((frame, idx) => {
+                        const isSelected = activeTourIndex === idx;
+                        return (
+                          <button
+                            key={frame.id}
+                            type="button"
+                            onClick={() => setActiveTourIndex(idx)}
+                            className={`p-2 rounded-xl text-center transition-all border flex flex-col items-center justify-between h-16 ${
+                              isSelected
+                                ? "bg-white/10 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                                : "bg-white/03 border-white/08 hover:bg-white/06 hover:border-white/20"
+                            }`}
+                            style={{
+                              borderColor: isSelected ? frame.glowColor : undefined,
+                              boxShadow: isSelected ? `0 0 15px ${frame.glowRgba}` : undefined
+                            }}
+                          >
+                            <span
+                              className="text-[10px] font-black font-orbitron line-clamp-1"
+                              style={{ color: isSelected ? frame.glowColor : "#94a3b8" }}
+                            >
+                              0{idx + 1}
+                            </span>
+                            <span className="text-[9px] text-gray-400 line-clamp-1 font-medium">
+                              {frame.id.toUpperCase()}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </TiltCard>
               </div>
             </div>
+
+            {/* ── BOTTOM ARENA STATS PILLARS ──────────────────────── */}
+            <div className="relative z-10 grid sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#ffc400]/10 border border-[#ffc400]/30 flex items-center justify-center text-[#ffc400]">
+                  <Gamepad2 size={20} />
+                </div>
+                <div>
+                  <div className="mono-tag text-[#ffc400] mb-0.5">STATION FLEET</div>
+                  <div className="text-base font-black font-orbitron text-white">۱۴ استیشن دیواری PS5 Pro</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#00d2ff]/10 border border-[#00d2ff]/30 flex items-center justify-center text-[#00d2ff]">
+                  <Monitor size={20} />
+                </div>
+                <div>
+                  <div className="mono-tag text-[#00d2ff] mb-0.5">DISPLAYS</div>
+                  <div className="text-base font-black font-orbitron text-white">نمایشگرهای OLED 120Hz</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#ff2a5f]/10 border border-[#ff2a5f]/30 flex items-center justify-center text-[#ff2a5f]">
+                  <Trophy size={20} />
+                </div>
+                <div>
+                  <div className="mono-tag text-[#ff2a5f] mb-0.5">TOURNAMENTS</div>
+                  <div className="text-base font-black font-orbitron text-white">مسابقات هفتگی FC 26 & MK1</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
         {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 03: LIVE TOURNAMENT BRACKETS & FEED
+            CHAPTER 02: BATTLESTATION CUSTOMIZER (AuthKit / 3D Dark UI)
         ════════════════════════════════════════════════════════════ */}
-        <section id="tournaments" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-            <div>
-              <div className="editorial-index mb-3">
-                <span>{t.bracket.index}</span>
+        <section id="customizer" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+          <div className="mb-12">
+            <div className="editorial-index mb-2">
+              <span>{t.customizer.index}</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white mb-3">
+              {t.customizer.title}
+            </h2>
+            <p className="text-gray-400 text-sm sm:text-base max-w-2xl">
+              {t.customizer.subtitle}
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-8 items-stretch">
+            {/* Left Column: Interactive Controls Box */}
+            <div className="lg:col-span-5 bg-[#0e121a] border border-white/12 rounded-3xl p-8 flex flex-col justify-between shadow-xl">
+              <div className="space-y-8">
+                {/* Control 1: Ambient Lighting */}
+                <div>
+                  <label className="mono-tag text-gray-300 block mb-3">
+                    {t.customizer.lightingLabel}
+                  </label>
+                  <div className="grid grid-cols-4 gap-3">
+                    {[
+                      { id: "gold", color: "#ffc400", label: "GOLD" },
+                      { id: "cyan", color: "#35a9ff", label: "CYAN" },
+                      { id: "magenta", color: "#ff2db0", label: "MAGENTA" },
+                      { id: "emerald", color: "#10b981", label: "EMERALD" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setActiveLighting(item.id as any)}
+                        className={`py-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                          activeLighting === item.id
+                            ? "bg-white/10 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                            : "bg-white/03 border-white/08 hover:border-white/20"
+                        }`}
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}` }}
+                        />
+                        <span className="text-[10px] font-orbitron font-bold text-gray-300">
+                          {item.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Control 2: Console Fleet */}
+                <div>
+                  <label className="mono-tag text-gray-300 block mb-3">
+                    {t.customizer.consoleLabel}
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: "ps5", name: "PS5 HAPTIC", tag: "DUALSENSE PRO" },
+                      { id: "xbox", name: "XBOX SERIES X", tag: "12 TFLOPS" },
+                      { id: "focus85", name: "85\" VIP FOCUS", tag: "DOLBY VISION" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setActiveConsole(item.id as any)}
+                        className={`p-3 rounded-xl border text-right transition-all flex flex-col justify-between ${
+                          activeConsole === item.id
+                            ? "bg-[#ffc400]/15 border-[#ffc400] text-[#ffc400]"
+                            : "bg-white/03 border-white/08 text-gray-400 hover:border-white/20"
+                        }`}
+                      >
+                        <span className="text-xs font-black font-orbitron">{item.name}</span>
+                        <span className="text-[9px] text-gray-500">{item.tag}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Control 3: Sound System */}
+                <div>
+                  <label className="mono-tag text-gray-300 block mb-3">
+                    {t.customizer.audioLabel}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: "spatial", name: "3D SPATIAL HEADSET", desc: "ANC Pulse 3D Wireless" },
+                      { id: "dolby", name: "DOLBY ATMOS LOUNGE", desc: "7.1.4 Surround Acoustic" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setActiveAudio(item.id as any)}
+                        className={`p-3 rounded-xl border text-right transition-all flex flex-col justify-between ${
+                          activeAudio === item.id
+                            ? "bg-[#35a9ff]/15 border-[#35a9ff] text-[#35a9ff]"
+                            : "bg-white/03 border-white/08 text-gray-400 hover:border-white/20"
+                        }`}
+                      >
+                        <span className="text-xs font-black font-orbitron">{item.name}</span>
+                        <span className="text-[9px] text-gray-500">{item.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Control 4: VIP Cafe Toggle */}
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/05 border border-white/10">
+                  <div className="flex items-center gap-3">
+                    <Coffee className="text-[#ffc400]" size={20} />
+                    <div>
+                      <div className="text-xs font-bold text-white">{t.customizer.hospitalityLabel}</div>
+                      <div className="text-[10px] text-gray-400">سرو موکتیل و نوشیدنی به جایگاه</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setVipCafeActive(!vipCafeActive)}
+                    className={`w-12 h-6 rounded-full transition-colors p-1 flex items-center ${
+                      vipCafeActive ? "bg-[#ffc400] justify-end" : "bg-white/20 justify-start"
+                    }`}
+                  >
+                    <span className="w-4 h-4 rounded-full bg-[#07080c]" />
+                  </button>
+                </div>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight">
-                {t.bracket.title}
-              </h2>
+
+              <div className="pt-8 mt-8 border-t border-white/10 flex justify-between items-center">
+                <div>
+                  <div className="text-[11px] text-gray-400">برآورد رزرو جایگاه</div>
+                  <div className="text-lg font-black font-orbitron text-[#ffc400]">۱۵۰ لیر / ساعت</div>
+                </div>
+                <a href={reservationUrl} className="btn-gold-action">
+                  <span>تثبیت کانفیگ</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-[#111622] border border-[#ffc400]/40 rounded-full px-5 py-2 text-xs font-orbitron">
-              <Trophy size={16} className="text-[#ffc400]" />
-              <span className="text-white font-bold">{t.bracket.liveBadge}</span>
+            {/* Right Column: Dynamic 3D Rig Preview Window */}
+            <div className="lg:col-span-7">
+              <TiltCard maxTilt={5}>
+                <div
+                  className={`h-full rounded-3xl p-8 bg-[#0a0d14] border transition-all duration-500 flex flex-col justify-between relative overflow-hidden ${getLightingGlow()}`}
+                >
+                  <img
+                    src={activeConsole === "ps5" ? gamesAdults : activeConsole === "xbox" ? slideFc26 : gamesGear}
+                    alt="Configured Station Preview"
+                    className="absolute inset-0 w-full h-full object-cover opacity-30 filter saturate-150"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14] via-[#0a0d14]/60 to-transparent" />
+
+                  <div className="relative z-10 flex justify-between items-center">
+                    <span className="mono-tag text-[#ffc400] bg-black/70 px-3 py-1 rounded-full border border-white/15">
+                      LIVE HUD SIMULATION
+                    </span>
+                    <span className="flex items-center gap-2 text-xs font-orbitron text-gray-300">
+                      <span className="w-2 h-2 rounded-full bg-[#10b981] animate-ping" />
+                      READY TO DEPLOY
+                    </span>
+                  </div>
+
+                  <div className="relative z-10 my-16 max-w-md">
+                    <div className="text-xs font-orbitron text-[#ffc400] tracking-wider mb-2">
+                      {activeConsole.toUpperCase()} • {activeLighting.toUpperCase()} AURORA
+                    </div>
+                    <h3 className="text-3xl font-black font-orbitron text-white mb-4">
+                      {activeConsole === "ps5" ? "PS5 PRO DUALSENSE DOCK" : activeConsole === "xbox" ? "XBOX SERIES X RIG" : "85\" STADIUM FOCUS BAY"}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                      کالیبراسیون نورپردازی اختصاصی {activeLighting}، اتصال فوق‌العاده سریع با فیبر نوری ایسکله، و سرویس پذیرایی اختصاصی کافه برای نبرد بی‌وقفه.
+                    </p>
+                  </div>
+
+                  <div className="relative z-10 grid grid-cols-3 gap-4 pt-6 border-t border-white/15">
+                    <div>
+                      <div className="text-[10px] text-gray-400">پینگ فیبر نوری</div>
+                      <div className="text-sm font-bold font-orbitron text-white">۱۲ms تک‌رقمی</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-gray-400">رفرش ریت</div>
+                      <div className="text-sm font-bold font-orbitron text-white">120Hz OLED</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-gray-400">پروفایل صدا</div>
+                      <div className="text-sm font-bold font-orbitron text-white">{activeAudio.toUpperCase()}</div>
+                    </div>
+                  </div>
+                </div>
+              </TiltCard>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════
+            CHAPTER 03: LIVE TOURNAMENT BRACKET
+        ════════════════════════════════════════════════════════════ */}
+        <section id="tournaments" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+          <div className="flex flex-wrap justify-between items-end gap-6 mb-12">
+            <div>
+              <div className="editorial-index mb-2">
+                <span>{t.bracket.index}</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white mb-3">
+                {t.bracket.title}
+              </h2>
+              <p className="text-gray-400 text-sm sm:text-base max-w-xl">
+                {t.bracket.subtitle}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="mono-tag text-[#ffc400] bg-[#ffc400]/10 border border-[#ffc400]/30 px-3 py-1.5 rounded-full">
+                {t.bracket.liveBadge}
+              </span>
             </div>
           </div>
 
-          {/* Tournament Cards Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {tournamentGames.map((game) => (
-              <TiltCard key={game.title} className="editorial-card p-6 min-h-[400px] flex flex-col justify-between group">
-                <div className="absolute inset-0 z-0">
+              <TiltCard key={game.key} maxTilt={6}>
+                <div className="h-[380px] rounded-3xl bg-[#0e121a] border border-white/10 hover:border-[#ffc400]/50 transition-all p-6 flex flex-col justify-between relative overflow-hidden group shadow-xl">
                   <img
                     src={game.cover}
                     alt={game.title}
-                    className="w-full h-full object-cover opacity-70 group-hover:scale-105 group-hover:opacity-90 transition-all duration-700"
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/50 to-transparent" />
-                </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-[#0e121a]/70 to-transparent" />
 
-                <div className="relative z-10 flex justify-between items-center">
-                  <span className="mono-tag text-[#35a9ff] bg-black/60 px-2.5 py-1 rounded-full border border-white/10">{game.genre}</span>
-                  <span className="mono-tag text-[#ffc400] font-black">{game.prize}</span>
-                </div>
-
-                <div className="relative z-10">
-                  <div className="flex justify-between items-center text-xs font-orbitron text-gray-300 mb-2">
-                    <span>{game.time}</span>
-                    <span className="text-[#00e5ff] font-bold">{game.activePlayers}</span>
+                  <div className="relative z-10 flex justify-between items-center">
+                    <span className="mono-tag text-[#00d2ff] bg-black/60 px-2.5 py-1 rounded-md border border-white/10">
+                      {game.genre}
+                    </span>
+                    <span className="text-xs font-orbitron text-[#ffc400] font-bold">
+                      {game.activePlayers}
+                    </span>
                   </div>
-                  <h3 className="text-lg font-black font-orbitron text-white mb-4">{game.title}</h3>
-                  <Link href="/hub/events/brackets" className="btn-ghost-action w-full justify-between">
-                    <span>{t.bracket.viewBracket}</span>
-                    <ArrowUpRight size={14} />
-                  </Link>
+
+                  <div className="relative z-10">
+                    <div className="text-[10px] font-orbitron text-gray-400 mb-1">{game.time}</div>
+                    <h3 className="text-xl font-black font-orbitron text-white mb-2">{game.title}</h3>
+                    <div className="text-xs font-bold text-[#ffc400] mb-4">{game.prize}</div>
+
+                    <a
+                      href={reservationUrl}
+                      className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-[#ffc400] hover:text-[#07080c] text-white text-xs font-orbitron font-bold flex items-center justify-center gap-2 transition-all border border-white/15"
+                    >
+                      <span>ثبت‌نام براکت</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  </div>
                 </div>
               </TiltCard>
             ))}
@@ -1058,72 +1252,54 @@ export default function Home() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 04: TELEMETRY & LIVE RADAR SCOREBOARD
+            CHAPTER 04: TELEMETRY & VERIFIED MATCH DATA
         ════════════════════════════════════════════════════════════ */}
-        <section id="arena" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Telemetry & Radar Widget */}
-            <div className="lg:col-span-5">
-              <div className="editorial-index mb-3">
-                <span>{t.telemetry.index}</span>
+        <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+          <div className="bg-[#0b0e16] border border-white/10 rounded-3xl p-8 sm:p-12">
+            <div className="flex flex-wrap justify-between items-center gap-6 mb-8 border-b border-white/10 pb-6">
+              <div>
+                <div className="editorial-index mb-2">
+                  <span>{t.telemetry.index}</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black font-orbitron text-white">
+                  {t.telemetry.title}
+                </h3>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
-                {t.telemetry.title}
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
-                {t.telemetry.subtitle}
-              </p>
 
-              {/* Rotating Radar Widget (AuthKit Style) */}
-              <div className="bg-[#101420] border border-white/10 rounded-2xl p-6 flex items-center gap-6">
-                <div className="relative w-20 h-20 rounded-full border border-[#00e5ff]/40 flex items-center justify-center shrink-0 overflow-hidden">
-                  <div className="radar-sweep-beam" />
-                  <div className="w-2 h-2 rounded-full bg-[#00e5ff] shadow-[0_0_8px_#00e5ff]" />
-                  <div className="absolute top-3 right-4 w-1.5 h-1.5 rounded-full bg-[#ffc400]" />
-                  <div className="absolute bottom-4 left-4 w-1.5 h-1.5 rounded-full bg-[#ff2db0]" />
-                </div>
-                <div>
-                  <div className="mono-tag text-[#00e5ff] mb-1">{t.telemetry.radarLabel}</div>
-                  <div className="text-sm font-bold font-orbitron text-white">ALL 12 BAYS ONLINE</div>
-                  <div className="text-xs text-gray-400">LATENCY: 12ms • ZERO DROPPED FRAMES</div>
-                </div>
+              <div className="flex items-center gap-2 text-xs font-orbitron text-[#10b981] bg-[#10b981]/10 px-3 py-1.5 rounded-full border border-[#10b981]/30">
+                <ShieldCheck size={14} />
+                <span>{t.telemetry.verifiedBadge}</span>
               </div>
             </div>
 
-            {/* Right Column: Scoreboard Ledger */}
-            <div className="lg:col-span-7">
-              <div className="editorial-card p-6 sm:p-8">
-                <div className="flex justify-between items-center text-xs font-orbitron text-gray-400 border-b border-white/10 pb-4 mb-4">
-                  <span className="flex items-center gap-2 text-[#ffc400]">
-                    <Zap size={14} className="text-[#00e5ff]" />
-                    RECENT ROUND TELEMETRY
-                  </span>
-                  <span className="text-[#35a9ff]">{t.telemetry.verifiedBadge}</span>
-                </div>
-
-                <div className="divide-y divide-white/06">
-                  {t.telemetry.rows.map((row) => (
-                    <div key={row.round} className="py-4 flex items-center justify-between font-orbitron">
-                      <div className="flex items-center gap-3">
-                        <span className="mono-tag text-[#35a9ff]">{row.round}</span>
-                        <div>
-                          <div className="text-sm font-bold text-white">{row.match}</div>
-                          <div className="text-[10px] text-gray-500">{row.mode}</div>
-                        </div>
-                      </div>
-
-                      <div className="text-lg font-black text-[#ffc400] bg-black/40 border border-white/10 px-3.5 py-1 rounded-lg">
-                        {row.score}
-                      </div>
-                    </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-right font-orbitron text-xs">
+                <thead>
+                  <tr className="text-gray-500 border-b border-white/05">
+                    <th className="py-3 px-4">مرحله مسابقه</th>
+                    <th className="py-3 px-4">بازیکنان / تیم‌ها</th>
+                    <th className="py-3 px-4">نتیجه ثبت‌شده</th>
+                    <th className="py-3 px-4">عنوان بازی</th>
+                    <th className="py-3 px-4 text-left">وضعیت تایید</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/05">
+                  {t.telemetry.rows.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-white/02 transition-colors text-gray-300">
+                      <td className="py-4 px-4 font-bold text-white">{row.round}</td>
+                      <td className="py-4 px-4 text-[#ffc400]">{row.match}</td>
+                      <td className="py-4 px-4 font-black text-white">{row.score}</td>
+                      <td className="py-4 px-4 text-gray-400">{row.mode}</td>
+                      <td className="py-4 px-4 text-left">
+                        <span className="inline-flex items-center gap-1.5 text-[#10b981] text-[11px]">
+                          <CheckCircle2 size={13} />
+                          VERIFIED
+                        </span>
+                      </td>
+                    </tr>
                   ))}
-                </div>
-
-                <div className="border-t border-white/10 pt-4 mt-4 flex justify-between items-center text-[11px] font-orbitron text-gray-400">
-                  <span>NEXT BROADCAST: SATURDAY 20:00</span>
-                  <span className="text-[#ffc400]">HOTEL VISTAMARE</span>
-                </div>
-              </div>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -1131,64 +1307,62 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════════
             CHAPTER 05: NIGHT LOUNGE & CAFE
         ════════════════════════════════════════════════════════════ */}
-        <section id="lounge" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
+        <section id="lounge" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Lounge Photo Box */}
             <div className="lg:col-span-6">
-              <TiltCard className="editorial-card overflow-hidden aspect-[4/3] group">
-                <img
-                  src={slideCity}
-                  alt="Night Lounge"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0e121a] via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                  <div>
-                    <div className="mono-tag text-[#ffc400] mb-1">ISKELE NIGHT VIBE</div>
-                    <div className="text-lg font-bold text-white">Hotel VistaMare Lounge</div>
-                  </div>
-                </div>
-              </TiltCard>
-            </div>
-
-            {/* Lounge Amenities */}
-            <div className="lg:col-span-6">
-              <div className="editorial-index mb-3">
+              <div className="editorial-index mb-2">
                 <span>{t.lounge.index}</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
+              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white mb-6 leading-tight">
                 {t.lounge.title}
               </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
+              <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
                 {t.lounge.subtitle}
               </p>
 
               <div className="space-y-4">
-                {t.lounge.amenities.map((item) => (
-                  <div key={item.title} className="p-4 rounded-xl bg-white/03 border border-white/06 flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#ffc400]/10 text-[#ffc400] flex items-center justify-center shrink-0">
-                      <Coffee size={18} />
-                    </div>
+                {t.lounge.amenities.map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-[#0e121a] border border-white/08 flex items-start gap-4">
+                    <span className="w-8 h-8 rounded-lg bg-[#ffc400]/10 text-[#ffc400] flex items-center justify-center shrink-0 font-orbitron font-bold text-xs">
+                      0{idx + 1}
+                    </span>
                     <div>
-                      <h3 className="font-orbitron font-bold text-sm text-white mb-1">{item.title}</h3>
+                      <h4 className="text-sm font-bold text-white mb-1">{item.title}</h4>
                       <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="lg:col-span-6">
+              <TiltCard maxTilt={5}>
+                <div className="relative rounded-3xl overflow-hidden border border-white/15 h-[480px] shadow-2xl">
+                  <img
+                    src={foodSoon}
+                    alt="Bazino VIP Lounge & Bar"
+                    className="w-full h-full object-cover filter saturate-125"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-transparent to-transparent" />
+                  <div className="absolute bottom-8 right-8 left-8 p-6 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10">
+                    <div className="mono-tag text-[#ffc400] mb-1">VIP HOSPITALITY</div>
+                    <div className="text-lg font-bold text-white">سرو برترین نوشیدنی‌ها و قهوه‌های تخصصی</div>
+                  </div>
+                </div>
+              </TiltCard>
+            </div>
           </div>
         </section>
 
         {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 06: HOW TO ENTER (3-STEP TIMELINE)
+            CHAPTER 06: THREE STEPS ENTRY PROTOCOL
         ════════════════════════════════════════════════════════════ */}
-        <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
+        <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="editorial-index justify-center mb-3">
+            <div className="editorial-index mb-2">
               <span>{t.entry.index}</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-4">
+            <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white mb-3">
               {t.entry.title}
             </h2>
             <p className="text-gray-400 text-sm sm:text-base">
@@ -1196,101 +1370,111 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {t.entry.steps.map((step) => (
-              <TiltCard key={step.num} className="editorial-card p-8 min-h-[260px] flex flex-col justify-between">
-                <div className="flex justify-between items-center">
-                  <span className="text-4xl font-black font-orbitron text-[#ffc400]">{step.num}</span>
-                  <CheckCircle2 size={20} className="text-[#00e5ff]" />
-                </div>
+          <div className="grid sm:grid-cols-3 gap-8">
+            {t.entry.steps.map((s, idx) => (
+              <div
+                key={idx}
+                className="rounded-3xl bg-[#0c1018] border border-white/10 p-8 flex flex-col justify-between hover:border-[#ffc400]/40 transition-colors shadow-lg"
+              >
                 <div>
-                  <h3 className="text-lg font-black font-orbitron text-white mb-2">{step.title}</h3>
-                  <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
+                  <div className="font-orbitron font-black text-4xl text-[#ffc400]/30 mb-6">{s.num}</div>
+                  <h3 className="text-lg font-black font-orbitron text-white mb-2">{s.title}</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">{s.desc}</p>
                 </div>
-              </TiltCard>
+                <div className="mt-8 pt-4 border-t border-white/05 flex items-center gap-2 text-[11px] font-orbitron text-gray-500">
+                  <CheckCircle2 size={12} className="text-[#ffc400]" />
+                  <span>STEP COMPLETED INSTANTLY</span>
+                </div>
+              </div>
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <a href={reservationUrl} className="btn-gold-action">
-              <span>{lang === "fa" ? "رزرو آنلاین جایگاه" : "RESERVE YOUR SPOT"}</span>
-              <ArrowUpRight size={16} />
-            </a>
           </div>
         </section>
 
         {/* ═══════════════════════════════════════════════════════════
-            CHAPTER 07: LOCATION & DIGITAL MEMBERSHIP PASS
+            CHAPTER 07: LOCATION & DIGITAL PASS
         ════════════════════════════════════════════════════════════ */}
-        <section id="visit" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Location Box */}
-            <div className="lg:col-span-6">
-              <div className="editorial-index mb-3">
-                <span>{t.visit.index}</span>
+        <section id="visit" className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Map & Location */}
+            <div className="lg:col-span-7 bg-[#0b0e16] border border-white/12 rounded-3xl p-8 sm:p-12 flex flex-col justify-between">
+              <div>
+                <div className="editorial-index mb-2">
+                  <span>{t.visit.index}</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-black font-orbitron text-white mb-3">
+                  {t.visit.title}
+                </h2>
+                <p className="text-gray-400 text-sm mb-8">{t.visit.subtitle}</p>
+
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 h-64 mb-8">
+                  <img
+                    src={slideCity}
+                    alt="Iskele Cyprus Location"
+                    className="w-full h-full object-cover filter saturate-125"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 right-4 left-4 flex justify-between items-center text-white">
+                    <span className="font-orbitron text-xs font-bold">{t.visit.locationName}</span>
+                    <MapPin size={16} className="text-[#ffc400]" />
+                  </div>
+                </div>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black font-orbitron text-white tracking-tight mb-6">
-                {t.visit.title}
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8">
-                {t.visit.subtitle}
-              </p>
 
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Hotel%20VistaMare%2C%20%C4%B0skele%2C%20Long%20Beach%2C%20Cyprus"
+                href="https://maps.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="btn-ghost-action"
+                className="btn-gold-action justify-center"
               >
-                <MapPin size={16} className="text-[#ffc400]" />
                 <span>{t.visit.mapsCta}</span>
+                <ArrowUpRight size={16} />
               </a>
             </div>
 
-            {/* Apple Wallet Style Digital Pass Card */}
-            <div className="lg:col-span-6">
-              <TiltCard className="wallet-pass p-8">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <div className="bg-white p-3 rounded-2xl shadow-xl shrink-0">
-                    <QRCodeSVG value="https://bazino.pro" size={110} level="M" />
-                  </div>
-                  <div>
-                    <div className="mono-tag text-[#35a9ff] mb-1">DIGITAL MEMBER ID</div>
-                    <h3 className="text-xl font-black font-orbitron text-white mb-2">
-                      {t.visit.digitalPassTitle}
-                    </h3>
-                    <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                      {t.visit.digitalPassDesc}
-                    </p>
-                    <div className="flex items-center gap-2 text-[10px] font-orbitron text-[#ffc400]">
-                      <ShieldCheck size={14} />
-                      <span>OFFICIAL BAZINO ARENA PASS</span>
-                    </div>
-                  </div>
+            {/* Digital Pass QR */}
+            <div className="lg:col-span-5 bg-gradient-to-br from-[#121724] to-[#0a0d14] border border-[#ffc400]/30 rounded-3xl p-8 sm:p-12 flex flex-col justify-between shadow-[0_0_40px_rgba(255,196,0,0.15)]">
+              <div>
+                <div className="mono-tag text-[#ffc400] mb-2">PASS PROTOCOL</div>
+                <h3 className="text-2xl font-black font-orbitron text-white mb-2">
+                  {t.visit.digitalPassTitle}
+                </h3>
+                <p className="text-xs text-gray-300 leading-relaxed mb-8">
+                  {t.visit.digitalPassDesc}
+                </p>
+
+                <div className="bg-white p-4 rounded-2xl w-48 h-48 mx-auto flex items-center justify-center shadow-2xl">
+                  <QRCodeSVG
+                    value="https://bazino.club/pass/vip-member"
+                    size={160}
+                    fgColor="#07080c"
+                    bgColor="#ffffff"
+                  />
                 </div>
-              </TiltCard>
+              </div>
+
+              <div className="text-center mt-8 text-[11px] font-orbitron text-gray-400">
+                OFFICIAL BAZINO DIGITAL ASSET • NFC ENABLED
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* ── MINIMALIST FOOTER ────────────────────────────────────── */}
-      <footer className="max-w-7xl mx-auto px-6 border-t border-white/10 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 font-orbitron">
+      {/* ── FOOTER ────────────────────────────────────────────────── */}
+      <footer className="border-t border-white/10 bg-[#050608] py-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <span className="w-6 h-6 rounded-full bg-[#ffc400] text-[#07080c] font-black text-xs flex items-center justify-center">
+            <span className="w-6 h-6 rounded-full bg-[#ffc400] text-[#07080c] font-black text-xs flex items-center justify-center font-orbitron">
               B
             </span>
-            <span className="text-white font-bold">{t.footer.copyright}</span>
+            <span className="font-orbitron font-bold text-xs text-gray-400 tracking-wider">
+              {t.footer.copyright}
+            </span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="https://bazino.pro" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-              {t.footer.portalLink}
-            </a>
-            <Link href="/hub/privacy" className="hover:text-white transition-colors">
-              {t.footer.privacyLink}
-            </Link>
+          <div className="flex items-center gap-6 text-xs font-orbitron text-gray-500">
+            <Link href="/hub" className="hover:text-white transition-colors">{t.footer.portalLink}</Link>
+            <a href="#visit" className="hover:text-white transition-colors">{t.footer.privacyLink}</a>
           </div>
         </div>
       </footer>
