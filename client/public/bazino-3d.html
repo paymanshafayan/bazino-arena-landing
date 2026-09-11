@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>بازینو | قلمرو سه‌بعدی و کلاب گیمینگ VIP | Bazino 3D Gaming Universe</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&family=Vazirmatn:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Three.js CDN & GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-void: #050608;
+      --bg-dark-card: rgba(12, 16, 26, 0.75);
+      --bg-card-hover: rgba(20, 26, 42, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-gold: rgba(255, 196, 0, 0.35);
+      --border-cyan: rgba(0, 210, 255, 0.35);
+      --border-crimson: rgba(255, 42, 95, 0.35);
+      
+      --gold-primary: #ffc400;
+      --gold-bright: #ffd700;
+      --gold-glow: rgba(255, 196, 0, 0.4);
+      --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
+      
+      --cyan-primary: #00d2ff;
+      --cyan-glow: rgba(0, 210, 255, 0.4);
+      --cyan-gradient: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%);
+      
+      --crimson-primary: #ff2a5f;
+      --crimson-glow: rgba(255, 42, 95, 0.45);
+      
+      --text-main: #ffffff;
+      --text-dim: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --font-fa: 'Vazirmatn', sans-serif;
+      --font-en: 'Orbitron', sans-serif;
+      --font-mono: 'Rajdhani', sans-serif;
+      
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-tactile: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-main);
+      font-family: var(--font-fa);
+      overflow-x: hidden;
+      min-height: 100vh;
+      selection-background-color: var(--gold-primary);
+      selection-color: #000;
+    }
+
+    /* 3D WebGL Background Canvas */
+    #webgl-hero-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: all;
+    }
+
+    /* Ambient Dynamic Lighting */
+    .ambient-glow-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 30%), rgba(255, 196, 0, 0.08) 0%, rgba(0, 210, 255, 0.06) 35%, transparent 70%);
+      transition: background 0.15s ease-out;
+    }
+
+    /* Main Content Layer */
+    .app-layer {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 28px 100px 28px;
+      pointer-events: none;
+    }
+
+    .app-layer a, 
+    .app-layer button, 
+    .app-layer input, 
+    .interactive-zone {
+      pointer-events: all;
+    }
+
+    /* =========================================================
+       1. SPATIAL FLOATING HEADER
+       ========================================================= */
+    .spatial-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+      padding: 0 28px;
+      margin-top: 20px;
+      border-radius: 20px;
+      background: rgba(10, 14, 23, 0.7);
+      backdrop-filter: blur(24px) saturate(190%);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: border-color 0.3s;
+    }
+
+    .spatial-header:hover {
+      border-color: rgba(255, 196, 0, 0.3);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-holo-logo {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(255, 196, 0, 0.25), rgba(0, 210, 255, 0.25));
+      border: 1px solid var(--gold-primary);
+      border-radius: 12px;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .brand-text-title {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #ffffff 0%, var(--gold-primary) 50%, var(--cyan-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--cyan-primary);
+      text-transform: uppercase;
+    }
+
+    .nav-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-pills a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.2s var(--ease-tactile);
+    }
+
+    .nav-pills a:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-pills a.active {
+      color: #000;
+      background: var(--gold-gradient);
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .header-ctrls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid var(--border-cyan);
+      border-radius: 99px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan-primary);
+    }
+
+    .dot-pulse {
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff88;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .btn-tactile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 24px;
+      font-family: var(--font-fa);
+      font-size: 14px;
+      font-weight: 800;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      outline: none;
+      transition: transform 0.12s var(--ease-tactile), box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-tactile:active {
+      transform: scale(0.96) !important;
+    }
+
+    .btn-gold {
+      background: var(--gold-gradient);
+      color: #000;
+      box-shadow: 0 6px 20px var(--gold-glow);
+    }
+
+    .btn-gold:hover {
+      box-shadow: 0 8px 30px rgba(255, 196, 0, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .btn-cyan {
+      background: var(--cyan-gradient);
+      color: #000;
+      box-shadow: 0 6px 20px var(--cyan-glow);
+    }
+
+    .btn-cyan:hover {
+      box-shadow: 0 8px 30px rgba(0, 210, 255, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* =========================================================
+       2. HERO 3D GAME STAGE & 3D VORTEX
+       ========================================================= */
+    .hero-spatial-section {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 30px;
+      align-items: center;
+      min-height: calc(88vh - 80px);
+      margin-top: 24px;
+    }
+
+    .hero-text-content {
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero-cyber-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      background: rgba(255, 196, 0, 0.08);
+      border: 1px solid var(--border-gold);
+      border-radius: 99px;
+      color: var(--gold-primary);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      box-shadow: 0 0 20px rgba(255, 196, 0, 0.15);
+    }
+
+    .hero-main-title {
+      font-size: 60px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 22px;
+      letter-spacing: -1px;
+    }
+
+    .hero-main-title .gold-glow {
+      background: linear-gradient(135deg, #ffffff 0%, var(--gold-primary) 60%, #ff8800 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px var(--gold-glow);
+    }
+
+    .hero-lead-desc {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.8;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+      max-width: 560px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    /* 3D Game Selector Chips */
+    .game-selector-chips {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 12px;
+      background: rgba(12, 16, 26, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-spring);
+    }
+
+    .chip-btn:hover, .chip-btn.is-active {
+      background: rgba(255, 196, 0, 0.12);
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(255, 196, 0, 0.25);
+    }
+
+    .chip-btn.is-active {
+      background: var(--gold-gradient);
+      color: #000;
+      font-weight: 900;
+    }
+
+    /* 3D Interactive Stage Canvas Wrapper */
+    .hero-3d-stage-viewport {
+      position: relative;
+      width: 100%;
+      height: 560px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 3D Featured Showcase Card */
+    .showcase-3d-card {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 540px;
+      border-radius: 28px;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(10, 14, 24, 0.85) 100%);
+      border: 1px solid rgba(255, 196, 0, 0.35);
+      backdrop-filter: blur(28px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 45px rgba(255, 196, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform-style: preserve-3d;
+      transition: transform 0.2s var(--ease-spring), box-shadow 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+
+    .showcase-3d-card:hover {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 35px 75px rgba(0, 0, 0, 0.8), 0 0 55px rgba(0, 210, 255, 0.3);
+    }
+
+    .card-top-hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 5;
+    }
+
+    .hud-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      font-family: var(--font-en);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--gold-primary);
+    }
+
+    /* Active Game Visual in Card */
+    .game-visual-showcase {
+      position: relative;
+      width: 100%;
+      height: 330px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 800px;
+    }
+
+    .game-cover-mesh {
+      position: absolute;
+      max-width: 88%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 210, 255, 0.25);
+      transition: all 0.5s var(--ease-spring);
+      transform: translateZ(40px) rotateY(-5deg);
+    }
+
+    .showcase-3d-card:hover .game-cover-mesh {
+      transform: translateZ(60px) rotateY(5deg) scale(1.05);
+    }
+
+    .mona-companion-avatar {
+      position: absolute;
+      bottom: -10px;
+      left: -20px;
+      width: 140px;
+      height: 180px;
+      object-fit: contain;
+      z-index: 6;
+      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 196, 0, 0.3));
+      transition: transform 0.4s var(--ease-spring);
+    }
+
+    .showcase-3d-card:hover .mona-companion-avatar {
+      transform: scale(1.08) translateY(-6px);
+    }
+
+    .card-bottom-panel {
+      z-index: 5;
+      background: rgba(6, 8, 14, 0.8);
+      border: 1px solid var(--border-subtle);
+      padding: 16px;
+      border-radius: 16px;
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .game-info-text h3 {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .game-info-text p {
+      font-size: 12px;
+      color: var(--cyan-primary);
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    /* =========================================================
+       3. 3D GAME ROSTER GALLERY (GAMES SHOWCASE)
+       ========================================================= */
+    .section-gallery-3d {
+      margin-top: 100px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .section-head h2 {
+      font-size: 34px;
+      font-weight: 900;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .section-head p {
+      font-size: 15px;
+      color: var(--text-dim);
+    }
+
+    .game-grid-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .game-item-card {
+      position: relative;
+      height: 440px;
+      border-radius: 24px;
+      background: var(--bg-dark-card);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      transition: all 0.35s var(--ease-spring);
+    }
+
+    .game-item-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: var(--gold-primary);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 35px var(--gold-glow);
+    }
+
+    .game-bg-cover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease-spring), filter 0.3s;
+      z-index: 1;
+    }
+
+    .game-item-card:hover .game-bg-cover {
+      transform: scale(1.1);
+      filter: brightness(1.1);
+    }
+
+    .game-card-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(5, 6, 8, 0.2) 0%, rgba(5, 6, 8, 0.95) 80%);
+      z-index: 2;
+    }
+
+    .game-card-hud {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      left: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+    }
+
+    .game-tag-badge {
+      font-family: var(--font-en);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--border-subtle);
+      color: var(--cyan-primary);
+    }
+
+    .game-card-body {
+      position: relative;
+      z-index: 3;
+    }
+
+    .game-card-body h3 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .game-card-body p {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .game-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .game-active-count {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    /* =========================================================
+       4. HARDWARE PODS & VIP LOUNGE
+       ========================================================= */
+    .hardware-section-3d {
+      margin-top: 100px;
+    }
+
+    .hardware-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .pod-card {
+      position: relative;
+      height: 380px;
+      border-radius: 24px;
+      background: var(--bg-dark-card);
+      border: 1px solid var(--border-subtle);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+    }
+
+    .pod-card:hover {
+      border-color: var(--cyan-primary);
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px var(--cyan-glow);
+    }
+
+    .pod-photo-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+      transition: all 0.5s var(--ease-spring);
+      z-index: 1;
+    }
+
+    .pod-card:hover .pod-photo-bg {
+      opacity: 0.55;
+      transform: scale(1.08);
+    }
+
+    .pod-tint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(5,6,8,0.2) 0%, rgba(5,6,8,0.95) 85%);
+      z-index: 2;
+    }
+
+    .pod-header {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pod-content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .pod-content h3 {
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .pod-content p {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .pod-rate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .pod-price {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    /* =========================================================
+       5. LIVE TOURNAMENT HOLO ARENA
+       ========================================================= */
+    .tournament-holo-card {
+      margin-top: 100px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(12, 16, 26, 0.95) 0%, rgba(40, 10, 25, 0.85) 100%);
+      border: 1px solid var(--border-crimson);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 45px rgba(255, 42, 95, 0.25);
+    }
+
+    .match-live-hud {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .live-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 99px;
+      background: rgba(255, 42, 95, 0.15);
+      border: 1px solid var(--crimson-primary);
+      color: var(--crimson-primary);
+      font-family: var(--font-en);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .match-live-hud h3 {
+      font-size: 34px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .match-live-hud p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+
+    .vs-match-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .player-pill {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .player-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-primary);
+      object-fit: cover;
+    }
+
+    .player-pill h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .player-pill span {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--cyan-primary);
+    }
+
+    .score-badge {
+      font-family: var(--font-en);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--crimson-primary);
+      padding: 8px 16px;
+      background: rgba(255, 42, 95, 0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 42, 95, 0.3);
+    }
+
+    /* Mona Floating Dock */
+    .mona-floating-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(12, 16, 26, 0.9);
+      border: 1px solid var(--border-gold);
+      border-radius: 99px;
+      padding: 8px 20px 8px 10px;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px var(--gold-glow);
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+    }
+
+    .mona-floating-dock:hover {
+      transform: scale(1.05) translateY(-4px);
+      border-color: var(--cyan-primary);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 35px var(--cyan-glow);
+    }
+
+    .mona-dock-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-primary);
+      object-fit: cover;
+    }
+
+    .mona-dock-info h4 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .mona-dock-info p {
+      font-size: 11px;
+      color: var(--cyan-primary);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .spatial-footer {
+      margin-top: 100px;
+      padding: 40px 0;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-spatial-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 50px;
+      }
+      .hero-cta-group, .game-selector-chips {
+        justify-content: center;
+      }
+      .hero-lead-desc {
+        margin: 0 auto 36px auto;
+      }
+      .game-grid-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hardware-grid {
+        grid-template-columns: 1fr;
+      }
+      .tournament-holo-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .spatial-header {
+        padding: 0 16px;
+      }
+      .nav-pills {
+        display: none;
+      }
+      .hero-main-title {
+        font-size: 38px;
+      }
+      .game-grid-cards {
+        grid-template-columns: 1fr;
+      }
+      .showcase-3d-card {
+        height: 480px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Three.js 3D WebGL Canvas -->
+  <canvas id="webgl-hero-canvas"></canvas>
+  
+  <!-- Dynamic Pointer Ambient Glow -->
+  <div class="ambient-glow-layer" id="ambient-glow"></div>
+
+  <!-- App UI Layer -->
+  <div class="app-layer">
+    
+    <!-- Header -->
+    <header class="spatial-header interactive-zone">
+      <a href="#" class="brand-group">
+        <div class="brand-holo-logo">
+          <i data-lucide="gamepad-2" style="color: var(--gold-primary); width: 24px; height: 24px;"></i>
+        </div>
+        <div>
+          <div class="brand-text-title">BAZINO</div>
+          <div class="brand-sub">3D GAMING DIMENSION</div>
+        </div>
+      </a>
+
+      <ul class="nav-pills">
+        <li><a href="#hero" class="active"><i data-lucide="sparkles" style="width: 16px;"></i> خانه سه‌بعدی</a></li>
+        <li><a href="#games"><i data-lucide="gamepad" style="width: 16px;"></i> بازی‌ها</a></li>
+        <li><a href="#hardware"><i data-lucide="cpu" style="width: 16px;"></i> سیستم‌ها و کنسول‌ها</a></li>
+        <li><a href="#tournaments"><i data-lucide="trophy" style="width: 16px;"></i> مسابقات</a></li>
+      </ul>
+
+      <div class="header-ctrls">
+        <div class="live-indicator">
+          <span class="dot-pulse"></span>
+          <span>۳۸ / ۴۲ کنسول آنلاین</span>
+        </div>
+        <a href="#reserve" class="btn-tactile btn-gold">
+          <i data-lucide="zap" style="width: 16px;"></i>
+          <span>رزرو آنی جایگاه</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero 3D Spatial Section -->
+    <section class="hero-spatial-section" id="hero">
+      
+      <!-- Hero Copy -->
+      <div class="hero-text-content">
+        <div class="hero-cyber-pill interactive-zone">
+          <i data-lucide="flame" style="width: 16px; color: var(--gold-primary);"></i>
+          <span>نسل نهم گیمینگ در کلاب فوق‌پیشرفته بازینو</span>
+        </div>
+
+        <h1 class="hero-main-title">
+          اگه یه قهرمانی،<br>
+          <span class="gold-glow">این آخرشه.</span>
+        </h1>
+
+        <p class="hero-lead-desc">
+          کلاب گیمینگ اختصاصی با کنسول‌های PS5 Pro، ریگ‌های قدرتمند RTX 4090، شبیه‌سازهای حرفه‌ای VR و تورنمنت‌های زنده هفتگی با حضور مونا.
+        </p>
+
+        <!-- 3D Game Selector Chips -->
+        <div class="game-selector-chips interactive-zone">
+          <button class="chip-btn is-active" onclick="switchFeaturedGame(0)">
+            <i data-lucide="play" style="width: 14px;"></i> EA SPORTS FC 26
+          </button>
+          <button class="chip-btn" onclick="switchFeaturedGame(1)">
+            <i data-lucide="play" style="width: 14px;"></i> TEKKEN 8
+          </button>
+          <button class="chip-btn" onclick="switchFeaturedGame(2)">
+            <i data-lucide="play" style="width: 14px;"></i> MORTAL KOMBAT 1
+          </button>
+          <button class="chip-btn" onclick="switchFeaturedGame(3)">
+            <i data-lucide="play" style="width: 14px;"></i> UFC 5
+          </button>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="hero-cta-group interactive-zone">
+          <a href="#reserve" class="btn-tactile btn-gold" style="padding: 16px 36px; font-size: 16px;">
+            <i data-lucide="zap" style="width: 20px;"></i>
+            <span>رزرو نوبت بازی</span>
+          </a>
+          <a href="#tournaments" class="btn-tactile btn-glass" style="padding: 16px 30px; font-size: 16px;">
+            <i data-lucide="trophy" style="width: 20px; color: var(--cyan-primary);"></i>
+            <span>ورود به براکت تورنمنت</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero 3D Stage Card -->
+      <div class="hero-3d-stage-viewport">
+        <div class="showcase-3d-card interactive-zone" id="hero-3d-card">
+          
+          <div class="card-top-hud">
+            <div class="hud-badge">
+              <i data-lucide="award" style="width: 14px;"></i>
+              <span id="active-game-label">FEATURED TITLE</span>
+            </div>
+            <div class="hud-badge" style="border-color: var(--cyan-primary); color: var(--cyan-primary);">
+              <span id="active-game-platform">PS5 PRO 4K 120FPS</span>
+            </div>
+          </div>
+
+          <!-- 3D Game Artwork & Mona Avatar -->
+          <div class="game-visual-showcase">
+            <img src="/assets/fc26.png" id="featured-game-img" alt="Featured Game" class="game-cover-mesh">
+            <img src="/assets/mona-hero-arena.png" alt="Mona" class="mona-companion-avatar">
+          </div>
+
+          <!-- Card Bottom Panel -->
+          <div class="card-bottom-panel">
+            <div class="game-info-text">
+              <h3 id="active-game-title">EA SPORTS FC 26</h3>
+              <p id="active-game-meta">۱۴ ایستگاه در حال بازی • تورنمنت جمعه</p>
+            </div>
+            <button class="btn-tactile btn-cyan" style="padding: 10px 18px; font-size: 13px;" onclick="quickReserve()">
+              رزرو این بازی
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 3D Game Roster Section -->
+    <section class="section-gallery-3d" id="games">
+      <div class="section-head interactive-zone">
+        <div>
+          <h2><i data-lucide="gamepad-2" style="color: var(--gold-primary);"></i> بازی‌های پرطرفدار کلاب</h2>
+          <p>جدیدترین عناوین لایسنس‌شده، مسابقه‌ای، اکشن و ورزشی در دسترس تمام گیمرها</p>
+        </div>
+        <a href="#" class="btn-tactile btn-glass">مشاهده لیست همه بازی‌ها</a>
+      </div>
+
+      <div class="game-grid-cards interactive-zone">
+        
+        <!-- Game 1: FC 26 -->
+        <div class="game-item-card" onclick="switchFeaturedGame(0)">
+          <img src="/assets/fc26.png" class="game-bg-cover" alt="FC 26">
+          <div class="game-card-gradient"></div>
+          <div class="game-card-hud">
+            <span class="game-tag-badge">SPORTS & TOURNAMENT</span>
+            <i data-lucide="sparkles" style="color: var(--gold-primary); width: 18px;"></i>
+          </div>
+          <div class="game-card-body">
+            <h3>EA SPORTS FC 26</h3>
+            <p>نسل جدید شبیه‌ساز فوتبال با موتور هایپرموشن، آخرین نقل و انتقالات و مسابقات هفتگی بازینو.</p>
+            <div class="game-card-footer">
+              <span class="game-active-count">۱۴ کنسول فعال</span>
+              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">انتخاب</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game 2: Tekken 8 -->
+        <div class="game-item-card" onclick="switchFeaturedGame(1)">
+          <img src="/assets/tekken8.png" class="game-bg-cover" alt="Tekken 8">
+          <div class="game-card-gradient"></div>
+          <div class="game-card-hud">
+            <span class="game-tag-badge" style="color: var(--gold-primary);">FIGHTING</span>
+            <i data-lucide="flame" style="color: var(--crimson-primary); width: 18px;"></i>
+          </div>
+          <div class="game-card-body">
+            <h3>TEKKEN 8</h3>
+            <p>مبارزات نفس‌گیر با موتور آنریل انجین ۵، فایت‌استیک‌های آرکید اختصاصی و صدای فراگیر.</p>
+            <div class="game-card-footer">
+              <span class="game-active-count">۸ کنسول فعال</span>
+              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">انتخاب</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game 3: Mortal Kombat 1 -->
+        <div class="game-item-card" onclick="switchFeaturedGame(2)">
+          <img src="/assets/mk1.png" class="game-bg-cover" alt="Mortal Kombat 1">
+          <div class="game-card-gradient"></div>
+          <div class="game-card-hud">
+            <span class="game-tag-badge" style="color: var(--crimson-primary);">KOMBAT</span>
+            <i data-lucide="sword" style="color: var(--crimson-primary); width: 18px;"></i>
+          </div>
+          <div class="game-card-body">
+            <h3>MORTAL KOMBAT 1</h3>
+            <p>جهان جدید مورتال کامبت با سیستم کامئو، کاراکترهای جدید و فینیشرهای سینمایی 4K.</p>
+            <div class="game-card-footer">
+              <span class="game-active-count">۶ کنسول فعال</span>
+              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">انتخاب</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game 4: UFC 5 -->
+        <div class="game-item-card" onclick="switchFeaturedGame(3)">
+          <img src="/assets/ufc5.png" class="game-bg-cover" alt="UFC 5">
+          <div class="game-card-gradient"></div>
+          <div class="game-card-hud">
+            <span class="game-tag-badge">MMA COMBAT</span>
+            <i data-lucide="shield" style="color: var(--cyan-primary); width: 18px;"></i>
+          </div>
+          <div class="game-card-body">
+            <h3>EA SPORTS UFC 5</h3>
+            <p>شبیه‌سازی واقعی مبارزات قفس MMA با آسیب‌دیدگی‌های بلادرنگ و فیزیک واقع‌گرایانه برخورد.</p>
+            <div class="game-card-footer">
+              <span class="game-active-count">۱۰ کنسول فعال</span>
+              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">انتخاب</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Hardware & Lounge Pods -->
+    <section class="hardware-section-3d" id="hardware">
+      <div class="section-head interactive-zone">
+        <div>
+          <h2><i data-lucide="monitor" style="color: var(--cyan-primary);"></i> سخت‌افزار و سالن‌های اختصاصی</h2>
+          <p>اتمسفر لوکس گیمینگ با مانیتورهای حرفه‌ای، صندلی‌های ماساژور و پذیرایی VIP</p>
+        </div>
+      </div>
+
+      <div class="hardware-grid interactive-zone">
+        
+        <!-- Pod 1 -->
+        <div class="pod-card">
+          <img src="/assets/hero-setup.jpg" class="pod-photo-bg" alt="PS5 Pro Setup">
+          <div class="pod-tint"></div>
+          <div class="pod-header">
+            <span class="game-tag-badge">VIP POD</span>
+            <i data-lucide="tv" style="color: var(--gold-primary);"></i>
+          </div>
+          <div class="pod-content">
+            <h3>ایستگاه‌های PS5 Pro</h3>
+            <p>تلویزیون‌های ۶۵ اینچ OLED 120Hz، هدست‌های سه‌بعدی Pulse و دسته‌های سفارشی DualSense Edge.</p>
+            <div class="pod-rate-row">
+              <span class="pod-price">۵۰ ₺ / ساعت</span>
+              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pod 2 -->
+        <div class="pod-card">
+          <img src="/assets/hero-player.jpg" class="pod-photo-bg" alt="RTX 4090 Rigs">
+          <div class="pod-tint"></div>
+          <div class="pod-header">
+            <span class="game-tag-badge" style="color: var(--gold-primary);">PC BATTLE STATION</span>
+            <i data-lucide="cpu" style="color: var(--cyan-primary);"></i>
+          </div>
+          <div class="pod-content">
+            <h3>ریگ‌های گیمینگ RTX 4090</h3>
+            <p>مانیتورهای ۲۴۰ هرتز ZOWIE، کیبوردهای مکانیکی Razer و اتصال اینترنت اختصاصی فیبر نوری با پینگ تک‌رقمی.</p>
+            <div class="pod-rate-row">
+              <span class="pod-price">۶۵ ₺ / ساعت</span>
+              <button class="btn-tactile btn-cyan" style="padding: 6px 14px; font-size: 12px;">رزرو</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pod 3 -->
+        <div class="pod-card">
+          <img src="/assets/games-gear.jpg" class="pod-photo-bg" alt="VIP Private Lounge">
+          <div class="pod-tint"></div>
+          <div class="pod-header">
+            <span class="game-tag-badge" style="color: var(--crimson-primary);">PRIVATE SUITE</span>
+            <i data-lucide="crown" style="color: var(--gold-primary);"></i>
+          </div>
+          <div class="pod-content">
+            <h3>اتاق اختصاصی VIP & استریم</h3>
+            <p>سالن ایزوله صوتی با ظرفیت ۸ نفر، نورپردازی نئونی قابل تنظیم و امکانات کامل استریم آنلاین.</p>
+            <div class="pod-rate-row">
+              <span class="pod-price">۱۵۰ ₺ / ساعت</span>
+              <button class="btn-tactile btn-gold" style="padding: 6px 14px; font-size: 12px;">رزرو</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Live Tournament Holo Arena -->
+    <section class="tournament-holo-card interactive-zone" id="tournaments">
+      <div class="match-live-hud">
+        <div class="live-tag-row">
+          <div class="badge-live">
+            <span class="dot-pulse" style="background: var(--crimson-primary); box-shadow: 0 0 10px var(--crimson-primary);"></span>
+            <span>LIVE MATCH</span>
+          </div>
+          <span style="font-family: var(--font-en); font-size: 13px; color: var(--text-muted);">BAZINO CUP • FINALS</span>
+        </div>
+
+        <h3>فینال بزرگ تورنمنت FC26</h3>
+        <p>پخش مستقیم رقابت فینالیست‌ها بر روی ویدئودیوار سالن اصلی با گزارش زنده و جایزه ۵,۰۰۰ لیر برای قهرمان فصل.</p>
+
+        <div class="vs-match-strip">
+          <div class="player-pill">
+            <img src="/assets/avatar-armank.jpg" class="player-avatar" alt="Arman">
+            <div>
+              <h4>Arman_Pro</h4>
+              <span>REAL MADRID (ESP)</span>
+            </div>
+          </div>
+
+          <div class="score-badge">3 - 2</div>
+
+          <div class="player-pill" style="flex-direction: row-reverse; text-align: left;">
+            <div class="player-avatar" style="background: #111; display: grid; place-items: center; border-color: var(--cyan-primary);">
+              <i data-lucide="user" style="color: var(--cyan-primary);"></i>
+            </div>
+            <div>
+              <h4>Salar_K</h4>
+              <span>MAN CITY (ENG)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; justify-content: center; gap: 20px;">
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 24px;">
+          <h4 style="font-size: 18px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="calendar" style="color: var(--gold-primary);"></i> جدول مسابقات این هفته
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 10px;">
+              <span>تورنمنت تک‌حذفی مورتال کامبت ۱</span>
+              <span style="color: var(--gold-primary); font-family: var(--font-mono); font-weight: 700;">جمعه ساعت ۲۱:۰۰</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 10px;">
+              <span>مسترز لیگ تیکن ۸ (Tekken 8)</span>
+              <span style="color: var(--cyan-primary); font-family: var(--font-mono); font-weight: 700;">شنبه ساعت ۲۰:۰۰</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-tactile btn-cyan" style="padding: 16px; font-size: 15px;" onclick="registerTournament()">
+          <i data-lucide="user-plus"></i> ثبت‌نام رایگان در مسابقات بعدی
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="spatial-footer interactive-zone">
+      <div style="display: flex; align-items: center; gap: 12px; font-family: var(--font-en); font-weight: 800; color: #fff;">
+        <i data-lucide="gamepad-2" style="color: var(--gold-primary);"></i>
+        <span>BAZINO 3D GAMING LOUNGE</span>
+      </div>
+      <div>
+        <span>© 2026 بازینو کلاب. تمامی بازی‌ها و نشان‌ها متعلق به مالکین حقوقی آنها می‌باشند.</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Mona Floating AI Dock -->
+  <div class="mona-floating-dock interactive-zone" onclick="talkToMona()">
+    <img src="/assets/mona-hero-arena.png" class="mona-dock-img" alt="Mona">
+    <div class="mona-dock-info">
+      <h4>دستیار هوشمند مونا</h4>
+      <p>کلیک برای گفتگو و رزرو فوری</p>
+    </div>
+    <i data-lucide="sparkles" style="color: var(--gold-primary); width: 18px;"></i>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    lucide.createIcons();
+
+    const gamesData = [
+      {
+        title: "EA SPORTS FC 26",
+        img: "/assets/fc26.png",
+        meta: "۱۴ ایستگاه در حال بازی • تورنمنت جمعه",
+        platform: "PS5 PRO 4K 120FPS",
+        label: "FEATURED TOURNAMENT"
+      },
+      {
+        title: "TEKKEN 8",
+        img: "/assets/tekken8.png",
+        meta: "۸ ایستگاه فعال • فایت‌استیک آرکید",
+        platform: "PS5 PRO & PC RTX 4090",
+        label: "PRO FIGHTING"
+      },
+      {
+        title: "MORTAL KOMBAT 1",
+        img: "/assets/mk1.png",
+        meta: "۶ ایستگاه فعال • مسابقه دوشنبه",
+        platform: "PS5 PRO 4K",
+        label: "KOMBAT ARENA"
+      },
+      {
+        title: "EA SPORTS UFC 5",
+        img: "/assets/ufc5.png",
+        meta: "۱۰ ایستگاه فعال • شبیه‌ساز واقعی",
+        platform: "PS5 PRO",
+        label: "MMA TITLE"
+      }
+    ];
+
+    function switchFeaturedGame(index) {
+      const data = gamesData[index];
+      if (!data) return;
+
+      // Update chip buttons active class
+      const chips = document.querySelectorAll('.chip-btn');
+      chips.forEach((c, idx) => {
+        if (idx === index) c.classList.add('is-active');
+        else c.classList.remove('is-active');
+      });
+
+      // Animate card content switch
+      const gameImg = document.getElementById('featured-game-img');
+      const gameTitle = document.getElementById('active-game-title');
+      const gameMeta = document.getElementById('active-game-meta');
+      const gamePlatform = document.getElementById('active-game-platform');
+      const gameLabel = document.getElementById('active-game-label');
+
+      gsap.to(gameImg, {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.2,
+        onComplete: () => {
+          gameImg.src = data.img;
+          gameTitle.innerText = data.title;
+          gameMeta.innerText = data.meta;
+          gamePlatform.innerText = data.platform;
+          gameLabel.innerText = data.label;
+
+          gsap.to(gameImg, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.35,
+            ease: "back.out(1.7)"
+          });
+        }
+      });
+    }
+
+    function quickReserve() {
+      alert("🎮 رزرو سریع: سیستم و زمان مورد نظر شما ثبت شد. مونا اطلاعات تکمیلی را برایتان ارسال خواهد کرد.");
+    }
+
+    function registerTournament() {
+      alert("🏆 ثبت‌نام در مسابقات بازینو انجام شد. زمان‌بندی دقیق مسابقات از طریق پنل کاربری اعلام خواهد شد.");
+    }
+
+    function talkToMona() {
+      alert("✨ مونا: سلام قهرمان! من مونا هستم، دستیار هوشمند و مجری تورنمنت‌های بازینو. برای راهنمایی در مورد سیستم‌ها و بازی‌ها در خدمتم!");
+    }
+
+    // =========================================================
+    // THREE.JS INTERACTIVE 3D SPATIAL UNIVERSE
+    // =========================================================
+    const canvas = document.getElementById('webgl-hero-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    camera.position.z = 28;
+
+    // 1. Cyber Particles Starfield
+    const particleCount = 1400;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(particleCount * 3);
+    const cols = new Float32Array(particleCount * 3);
+
+    const colorGold = new THREE.Color('#ffc400');
+    const colorCyan = new THREE.Color('#00d2ff');
+    const colorWhite = new THREE.Color('#ffffff');
+
+    for (let i = 0; i < particleCount; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 85;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 65;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 65;
+
+      const rand = Math.random();
+      const col = rand < 0.4 ? colorGold : rand < 0.8 ? colorCyan : colorWhite;
+      cols[i * 3] = col.r;
+      cols[i * 3 + 1] = col.g;
+      cols[i * 3 + 2] = col.b;
+    }
+
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.26,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+
+    // 2. Floating 3D Cyber Torus & Rings
+    const ringGeo = new THREE.TorusGeometry(10, 0.12, 16, 90);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffc400, wireframe: true, transparent: true, opacity: 0.18 });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.set(16, 4, -8);
+    scene.add(ringMesh);
+
+    const ringGeo2 = new THREE.TorusGeometry(7, 0.08, 16, 70);
+    const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x00d2ff, wireframe: true, transparent: true, opacity: 0.15 });
+    const ringMesh2 = new THREE.Mesh(ringGeo2, ringMat2);
+    ringMesh2.position.set(-18, -6, -5);
+    scene.add(ringMesh2);
+
+    // Pointer Interactivity
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      document.getElementById('ambient-glow').style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.getElementById('ambient-glow').style.setProperty('--mouse-y', `${e.clientY}px`);
+    });
+
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
+
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      particles.rotation.y += 0.001;
+      particles.rotation.x = targetY * 0.2;
+      particles.rotation.y = targetX * 0.2;
+
+      ringMesh.rotation.x += 0.005;
+      ringMesh.rotation.y += 0.007;
+
+      ringMesh2.rotation.x -= 0.005;
+      ringMesh2.rotation.y += 0.004;
+
+      renderer.render(scene, camera);
+    }
+    renderLoop();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // =========================================================
+    // EMIL KOWALSKI 3D PERSPECTIVE TILT PHYSICS
+    // =========================================================
+    const cardEl = document.getElementById('hero-3d-card');
+    let bounds = cardEl.getBoundingClientRect();
+
+    window.addEventListener('resize', () => {
+      bounds = cardEl.getBoundingClientRect();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      const x = e.clientX - bounds.left;
+      const y = e.clientY - bounds.top;
+
+      if (x >= 0 && x <= bounds.width && y >= 0 && y <= bounds.height) {
+        const xPct = (x / bounds.width - 0.5) * 2;
+        const yPct = (y / bounds.height - 0.5) * 2;
+
+        const rotX = -yPct * 15;
+        const rotY = xPct * 15;
+
+        cardEl.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
+      } else {
+        cardEl.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      }
+    });
+  </script>
+</body>
+</html>
