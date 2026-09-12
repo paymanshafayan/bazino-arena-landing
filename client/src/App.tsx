@@ -27,7 +27,7 @@ function Router() {
         <Route path="/3d" component={Dimension3DPage} />
         <Route path="/dimension" component={Dimension3DPage} />
         <Route path="/verify-cdp" component={CdpVerificationPage} />
-        <Route path="/theme-harness" component={ThemeHarness} />
+        <Route path="/theme-harness" component={() => <ThemeHarness />} />
         <Route path="/brackets" component={BracketDemo} />
         <Route path="/hub/kit" component={HubKit} />
         <Route path="/hub/events/brackets" component={BracketDemo} />
