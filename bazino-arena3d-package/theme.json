@@ -1,0 +1,17 @@
+{
+  "name": "Bazino Arena 3D",
+  "id": "bazino-arena3d",
+  "version": "1.0.0",
+  "sdkVersion": 2,
+  "author": "Bazino Gaming Lounge",
+  "description": "AuthKit-inspired spatial Bazino portal theme with a local frame-motion virtual tour and portal-data-driven Arena Circuit.",
+  "colors": { "primary": "#FFC400", "bg": "#07080C", "card": "#181C28" },
+  "tokens": { "text": "#F6F8FC", "muted": "#8E98A8", "info": "#35A9FF", "accent": "#FF2DB0" },
+  "regions": ["home"],
+  "strings": {
+    "fa": { "reserve": "رزرو ایستگاه", "genres": "دروازه‌های بازی", "lounges": "نقشه سالن", "results": "تابلوی نتایج", "tournaments": "تونل مسابقات", "pricing": "گذرنامه‌های آرنا", "staff": "ترکیب حرفه‌ای", "location": "مختصات نهایی", "empty": "در انتظار داده پورتال" },
+    "en": { "reserve": "Reserve station", "genres": "Game portals", "lounges": "Lounge blueprint", "results": "Arena signal board", "tournaments": "Bracket tunnel", "pricing": "Arena access passes", "staff": "Team formation", "location": "Final coordinates", "empty": "Awaiting portal data" },
+    "ru": { "reserve": "Забронировать", "genres": "Игровые порталы", "lounges": "Схема клуба", "results": "Результаты", "tournaments": "Турнирный тоннель", "pricing": "Пропуска арены", "staff": "Команда", "location": "Координаты", "empty": "Ожидание данных портала" },
+    "tr": { "reserve": "İstasyon ayırt", "genres": "Oyun portalları", "lounges": "Salon planı", "results": "Arena skorları", "tournaments": "Turnuva tüneli", "pricing": "Arena geçişleri", "staff": "Takım", "location": "Son koordinatlar", "empty": "Portal verisi bekleniyor" }
+  }
+}
