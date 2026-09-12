@@ -8,7 +8,6 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
 import PortalPage from "./pages/PortalPage";
 import BracketDemo from "../../hub/bracket-demo/BracketDemo";
 import HubKit from "../../hub/design-system/KitPage";
@@ -19,7 +18,7 @@ import CdpVerificationPage from "./pages/CdpVerificationPage";
 import Dimension3DPage from "./pages/Dimension3DPage";
 import type { PortalPageId } from "./data/portalData";
 
-const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty", "chat"];
+const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty"];
 
 function Router() {
   return (
@@ -35,7 +34,7 @@ function Router() {
         <Route path="/hub/:a/:b" component={HubTheme} />
         <Route path="/hub/:a" component={HubTheme} />
         <Route path="/hub" component={HubTheme} />
-        <Route path="/" component={Home} />
+        <Route path="/" component={Dimension3DPage} />
         {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
