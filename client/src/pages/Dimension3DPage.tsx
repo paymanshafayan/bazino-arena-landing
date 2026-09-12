@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import PortalDock from "../components/PortalDock";
+import ArenaCircuit from "../components/ArenaCircuit";
 import "./dimension-3d.css";
 import "./dimension-3d-effects.css";
 
@@ -112,7 +114,8 @@ export default function Dimension3DPage() {
         <div className="dimension-tour__progress" aria-hidden="true"><span style={{ width: `${progress * 100}%` }} /></div>
         <p className="dimension-tour__count" aria-live="polite"><b>{String(Math.round(progress * (FRAME_COUNT - 1)) + 1).padStart(3, "0")}</b> / {FRAME_COUNT}</p>
       </section>
-      <section className="dimension-tour-handoff" aria-label="صفحه فرود" />
+      <PortalDock />
+      <ArenaCircuit />
     </main>
   );
 }

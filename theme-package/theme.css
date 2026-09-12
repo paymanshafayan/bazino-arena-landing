@@ -1378,3 +1378,27 @@ body[data-theme='bazino-arena'] .bazino-home-hero {
   .theme-bazino-arena .bazino-home .experience-card + .experience-card { border-top: 0; }
 }
 
+
+/* 5.0 — local frame-motion hero + AuthKit-derived spatial card system */
+.theme-bazino-arena .bazino-tour-canvas{display:block;height:106%;inset:-3%;object-fit:cover;position:absolute;width:106%;z-index:1}
+.theme-bazino-arena .bazino-hero-media{cursor:default}
+.theme-bazino-arena .cinematic-card-grid{align-items:center;display:grid;gap:0;grid-template-columns:.86fr 1.08fr 1.08fr .86fr;isolation:isolate;perspective:1400px;position:relative;transform-style:preserve-3d}
+.theme-bazino-arena .cinematic-card-grid:before{background:linear-gradient(90deg,transparent,var(--bz-info-line),transparent);content:"";height:1px;inset-inline:3%;position:absolute;top:50%;z-index:-1}
+.theme-bazino-arena .cinematic-card-grid:after{background:radial-gradient(ellipse,var(--bz-info-halo),transparent 65%);content:"";filter:blur(12px);height:130%;inset-inline:12%;position:absolute;top:-15%;transform:translateZ(-180px);z-index:-2}
+.theme-bazino-arena .experience-card{background:linear-gradient(145deg,var(--bz-panel),var(--bz-surface-2));border:1px solid rgba(170,190,230,.2);border-radius:19px;box-shadow:0 25px 60px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.1),inset 0 -18px 35px rgba(0,0,0,.28);min-height:430px;overflow:hidden;transform-style:preserve-3d}
+.theme-bazino-arena .experience-card:before{border:1px solid rgba(150,175,225,.11);border-radius:21px;content:"";inset:9px -13px -14px 9px;position:absolute;transform:translateZ(-28px);z-index:-1}
+.theme-bazino-arena .experience-card--1,.theme-bazino-arena .experience-card--4{filter:brightness(.62) saturate(.7);transform:translateZ(-90px) scale(.9)}
+.theme-bazino-arena .experience-card--2,.theme-bazino-arena .experience-card--3{margin-inline:-14px;transform:translateZ(60px);z-index:2}
+.theme-bazino-arena .experience-card-image{height:220px;transition:transform .8s var(--arena-ease)}
+.theme-bazino-arena .experience-card:hover{filter:none;transform:translateZ(85px) translateY(-12px);z-index:5}
+.theme-bazino-arena .experience-card:hover .experience-card-image{transform:scale(1.1)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] .experience-card{opacity:0;transform:translate3d(0,130px,-520px) rotateX(22deg)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible .experience-card{opacity:1;transition:opacity .65s ease,transform 1.1s var(--arena-ease),filter .4s;transform:translateZ(0)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible .experience-card:nth-child(2){transition-delay:.14s;transform:translateZ(60px)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible .experience-card:nth-child(3){transition-delay:.28s;transform:translateZ(60px)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible .experience-card:nth-child(4){transition-delay:.42s;transform:translateZ(-70px) scale(.92)}
+.theme-bazino-arena .tournament-card,.theme-bazino-arena .result-row,.theme-bazino-arena .service-row,.theme-bazino-arena .process-step,.theme-bazino-arena .bazino-staff-chip,.theme-bazino-arena .visit-signal-card{background:linear-gradient(145deg,rgba(28,36,57,.88),rgba(9,13,22,.96));border:1px solid rgba(153,178,228,.17);border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.43),inset 0 1px rgba(255,255,255,.08);transform-style:preserve-3d}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl]{opacity:0;transform:translate3d(0,90px,-260px) rotateX(12deg);transition:opacity .65s ease,transform 1.05s var(--arena-ease)}
+.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible{opacity:1;transform:none}
+@media(max-width:800px){.theme-bazino-arena .cinematic-card-grid{display:flex;min-height:470px;overflow:visible;position:relative}.theme-bazino-arena .experience-card{display:none;height:420px;width:84%}.theme-bazino-arena .experience-card--1,.theme-bazino-arena .experience-card--3{display:block;filter:brightness(.46);position:absolute;top:25px;transform:translateZ(-75px) scale(.86)!important;width:78%}.theme-bazino-arena .experience-card--1{inset-inline-start:-57%}.theme-bazino-arena .experience-card--3{inset-inline-end:-57%}.theme-bazino-arena .experience-card--2{display:block;inset-inline-start:8%;margin:0;position:absolute;transform:translateZ(45px)!important;z-index:3}.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl].is-visible .experience-card--2{transform:translateZ(45px)!important}.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl]{transform:translate3d(0,70px,-180px) rotateX(10deg)}}
+@media(prefers-reduced-motion:reduce){.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl],.theme-bazino-arena .bazino-home.bazino-rvl [data-rvl] .experience-card{opacity:1!important;transform:none!important;transition:none!important}}

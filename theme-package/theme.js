@@ -681,6 +681,11 @@
 
     /* ---------- hero media state ---------- */
     var heroRef = R.useRef(null);
+    var tourCanvasRef = R.useRef(null);
+    var tourImagesRef = R.useRef([]);
+    var tourTargetRef = R.useRef(0);
+    var tourCurrentRef = R.useRef(0);
+    var tourLastXRef = R.useRef(null);
     var videoRef = R.useRef(null);
     var heroVisibleRef = R.useRef(true);
     var videoPhase = R.useState(0); /* 0 poster, 1 src set, 2 playing, 3 ended, 4 failed */
@@ -818,6 +823,74 @@
       startPlayback();
     }
 
+    /* ---------- approved frame-motion virtual tour ----------
+       Frames are local theme assets derived from the supplied original MP4.
+       Pointer movement scrubs the tour; there is no video element and no
+       click-to-start state. */
+    R.useEffect(function () {
+      var canvas = tourCanvasRef.current;
+      var hero = heroRef.current;
+      if (!canvas || !hero) return;
+      var context = canvas.getContext('2d', { alpha: false });
+      if (!context) return;
+      var cancelled = false;
+      var animation = 0;
+      var frameCount = 394;
+      function source(index) { var n = String(index + 1); while (n.length < 4) n = '0' + n; return base + 'video-sequence/frame-' + n + '.webp'; }
+      function load(index) {
+        if (tourImagesRef.current[index]) return;
+        var image = new Image();
+        image.decoding = 'async';
+        image.onload = function () { if (!cancelled) tourImagesRef.current[index] = image; };
+        image.src = source(index);
+      }
+      for (var first = 0; first < 18; first++) load(first);
+      var next = 18;
+      function idleLoad() {
+        if (cancelled || next >= frameCount) return;
+        var end = Math.min(next + 20, frameCount);
+        for (; next < end; next++) load(next);
+        if (window.requestIdleCallback) window.requestIdleCallback(idleLoad, { timeout: 1200 });
+        else window.setTimeout(idleLoad, 80);
+      }
+      if (window.requestIdleCallback) window.requestIdleCallback(idleLoad, { timeout: 900 });
+      else window.setTimeout(idleLoad, 250);
+      function draw() {
+        var ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+        var width = hero.clientWidth;
+        var height = hero.clientHeight;
+        if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+          canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+        }
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        tourCurrentRef.current += (tourTargetRef.current - tourCurrentRef.current) * 0.105;
+        var index = Math.max(0, Math.min(frameCount - 1, Math.round(tourCurrentRef.current * (frameCount - 1))));
+        var image = tourImagesRef.current[index];
+        context.fillStyle = '#020305'; context.fillRect(0, 0, width, height);
+        if (image) {
+          var scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+          var dw = image.naturalWidth * scale;
+          var dh = image.naturalHeight * scale;
+          context.drawImage(image, (width - dw) / 2, (height - dh) / 2, dw, dh);
+        }
+        animation = window.requestAnimationFrame(draw);
+      }
+      animation = window.requestAnimationFrame(draw);
+      return function () { cancelled = true; window.cancelAnimationFrame(animation); };
+    }, [base]);
+
+    function onTourPointerMove(e) {
+      var hero = heroRef.current;
+      if (!hero) return;
+      var rect = hero.getBoundingClientRect();
+      var previous = tourLastXRef.current;
+      tourLastXRef.current = e.clientX;
+      if (previous !== null && rect.width) {
+        tourTargetRef.current = Math.max(0, Math.min(1, tourTargetRef.current + ((e.clientX - previous) / rect.width) * 1.12));
+      }
+    }
+    function onTourPointerLeave() { tourLastXRef.current = null; }
+
     /* ---------- cinematic pointer depth (reference design) ----------
        Normalized --pointer-x/--pointer-y on the home root drive the neon
        background glow of every chapter, the hero grid parallax and a subtle
@@ -917,28 +990,9 @@
        locationFrom() it is preferred so the theme stays in sync with the
        portal's own map. Nothing is hardcoded: without coordinates the map
        gracefully doesn't render (address card remains). */
-    function osmLink(lat, lng) {
-      return 'https://www.openstreetmap.org/?mlat=' + lat + '&mlon=' + lng + '#map=17/' + lat + '/' + lng;
-    }
-    function mapData() {
-      if (SDK.locationFrom) {
-        try {
-          var loc = SDK.locationFrom(settings);
-          if (loc && loc.embedUrl && isFinite(loc.lat) && isFinite(loc.lng)) {
-            return { embedUrl: String(loc.embedUrl), mapUrl: osmLink(loc.lat, loc.lng) };
-          }
-        } catch (e) { /* fall through to settings */ }
-      }
-      var lat = parseFloat(settings.club_map_lat);
-      var lng = parseFloat(settings.club_map_lng);
-      if (!isFinite(lat) || !isFinite(lng)) return null;
-      var d = 0.005;
-      return {
-        embedUrl: 'https://www.openstreetmap.org/export/embed.html?bbox=' + (lng - d).toFixed(4) + '%2C' + (lat - 0.004).toFixed(4) + '%2C' + (lng + d).toFixed(4) + '%2C' + (lat + 0.004).toFixed(4) + '&layer=mapnik&marker=' + lat + '%2C' + lng,
-        mapUrl: osmLink(lat, lng)
-      };
-    }
-    var map = mapData();
+    /* Zero-request location layer: contact data remains in semantic DOM;
+       external maps are opened only through portal-owned navigation. */
+    var map = null;
 
     /* ---------- builders ---------- */
     function sectionHead(chapter, title, meta) {
@@ -958,7 +1012,7 @@
         h('span', { key: 'label', className: 'theme-chapter-label' }, loc(entry.label || entry.badge || entry.status, language) || T('signalWord'))
       ];
       if (withMedia) {
-        var cImg = entry.imageUrl || entry.image || (base + 'hero-poster-small.webp');
+        var cImg = entry.imageUrl || entry.image || '';
         kids.push(mediaImg(cImg, loc(entry.title, language) || 'Bazino', 'bazino-home-card-media', '(min-width: 801px) 25vw, 100vw', 'media-' + index));
       }
       kids.push(h('h3', { key: 'h' }, loc(entry.title || entry.name, language) || T('cardTitleFallback')));
@@ -993,23 +1047,11 @@
         onError: function (e) { var t = e && e.target; if (t) t.style.visibility = 'hidden'; }
       })
     ];
-    heroMediaLayers.push(h('video', {
-      key: 'video',
-      ref: videoRef,
-      className: 'bazino-hero-video',
-      src: videoSrc || undefined,
-      poster: posterUrl,
-      muted: true,
-      autoPlay: false,
-      loop: false,
-      playsInline: true,
-      preload: videoSrc ? 'auto' : 'none',
-      onCanPlay: function () { if (phase < 2 && !reducedMotion && heroVisibleRef.current && !document.hidden) startPlayback(); else if (phase < 2) setPhase(1); },
-      onPlay: function () { setPhase(2); },
-      onEnded: function () { setPhase(3); },
-      onError: function () { setPhase(4); },
-      'aria-hidden': true,
-      tabIndex: -1
+    heroMediaLayers.push(h('canvas', {
+      key: 'tour-canvas',
+      ref: tourCanvasRef,
+      className: 'bazino-hero-video bazino-tour-canvas',
+      'aria-hidden': true
     }));
     heroMediaLayers.push(h('div', { key: 'grid', className: 'bazino-hero-grid' }));
 
@@ -1029,19 +1071,11 @@
       },
         h('div', {
           className: 'bazino-hero-media mona-cinematic-scene',
-          onClick: onHeroClick,
-          role: 'button',
-          tabIndex: 0,
-          'aria-label': T('cue'),
-          onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHeroClick(); } },
-          onMouseEnter: function () { setSliderPaused(true); },
-          onMouseLeave: function () { setSliderPaused(false); },
-          onFocus: function () { setSliderPaused(true); },
-          onBlur: function () { setSliderPaused(false); }
+          onPointerMove: onTourPointerMove,
+          onPointerLeave: onTourPointerLeave
         },
           heroMediaLayers,
-          h('div', { className: 'hero-noise', 'aria-hidden': true }),
-          phase < 2 ? h('span', { key: 'cue', className: 'bazino-hero-cue' }, T('cue')) : null
+          h('div', { className: 'hero-noise', 'aria-hidden': true })
         ),
         h('div', { className: 'hero-depth-grid', 'aria-hidden': true }),
         h('div', { className: 'bazino-hero-content layout-frame hero-content', dir: dir },
@@ -1093,21 +1127,16 @@
             )
           ),
           (function () {
-            var list = genres && genres.length ? genres.slice(0, 4) : [
-              { title: T('demoGenre1Title'), body: T('demoGenre1Body') },
-              { title: T('demoGenre2Title'), body: T('demoGenre2Body') },
-              { title: T('demoGenre3Title'), body: T('demoGenre3Body') },
-              { title: T('demoGenre4Title'), body: T('demoGenre4Body') }
-            ];
+            var list = genres && genres.length ? genres.slice(0, 4) : [];
+            if (!list.length) return null;
             return h('div', { className: 'experience-grid cinematic-card-grid', 'data-rvl': '1' }, list.map(function (entry, idx) {
               var e = entry || {};
               var title = loc(e.title || e.name, language) || T('cardTitleFallback');
               var body = loc(e.desc || e.description || e.body, language) || T('cardBodyFallback');
               var labelMap = ['CONSOLE 01', 'CONSOLE 02', 'SCREEN 03', 'LOUNGE 04'];
               var icons = ['◆', '◆', '◆', '◆'];
-              var fallbackPoster = posterUrl || (base + 'hero-poster-small.webp');
-              var imgSrc = e.imageUrl || e.image || fallbackPoster;
-              var imgEl = mediaImg(imgSrc, title, 'experience-card-image', '(min-width: 801px) 25vw, 100vw', 'img-' + idx);
+              var imgSrc = e.imageUrl || e.image || '';
+              var imgEl = imgSrc ? mediaImg(imgSrc, title, 'experience-card-image', '(min-width: 801px) 25vw, 100vw', 'img-' + idx) : null;
               return h('article', { key: e.id || idx, className: 'experience-card experience-card--' + (idx + 1) },
                 imgEl,
                 h('div', { className: 'experience-card-image-shade' }),
@@ -1269,11 +1298,7 @@
           ),
           h('div', { className: 'service-stack', 'data-rvl': '1' },
             (function () {
-              var services = lounges && lounges.length >= 3 ? lounges.slice(0, 3) : [
-                { title: T('demoLoungeVipTitle'), body: T('demoLoungeVipBody'), label: 'VIP / 01' },
-                { title: T('demoLoungeCafeTitle'), body: T('demoLoungeCafeBody'), label: 'CAFÉ / 02' },
-                { title: T('demoGenre3Title'), body: T('demoGenre3Body'), label: 'SCREEN / 03' }
-              ];
+              var services = lounges && lounges.length ? lounges.slice(0, 3) : [];
               return services.map(function (entry, idx) {
                 var e = entry || {};
                 var title = loc(e.title || e.name, language) || T('cardTitleFallback');
@@ -1301,11 +1326,7 @@
             h('button', { className: 'button button--dark', onClick: function () { navigate('reservations'); } }, T('cta') + '  ↗')
           ),
           h('div', { className: 'cinematic-steps', 'data-rvl': '1' },
-            (pricing.length ? pricing : [
-              { title: T('demoPass1Title'), body: T('demoPass1Body') },
-              { title: T('demoPass2Title'), body: T('demoPass2Body') },
-              { title: T('demoPass3Title'), body: T('demoPass3Body') }
-            ]).slice(0, 3).map(function (entry, idx) {
+            pricing.slice(0, 3).map(function (entry, idx) {
               var e = entry || {};
               var title = loc(e.title || e.name, language) || T('passTitleFallback');
               var body = loc(e.body || e.description, language) || '';
@@ -1345,7 +1366,7 @@
             h('div', { className: 'section-index' }, num(language, '07'), h('span', null, '/'), num(language, '07')),
             h('div', { className: 'eyebrow' }, h('span', { className: 'eyebrow-line' }), T('locationTitle')),
             h('h2', null, T('visit')),
-            h('p', null, settings.club_address || T('addressFallback')),
+            h('p', null, settings.club_address || ''),
             h('div', { className: 'visit-actions' },
               h('button', { className: 'button button--outline', onClick: function () { navigate('reservations'); } }, T('cta') + '  ↗'),
               h('span', { className: 'visit-directions' }, h('span', { 'aria-hidden': true }, '◈'), T('directions'))
@@ -1365,7 +1386,7 @@
               }),
               h('span', { className: 'bazino-location-map-badge', 'aria-hidden': 'true' }, T('liveLocation'))
             ) : h('div', { className: 'bazino-location-map-frame', style: { display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #0d1624, #090c14)' } }, h('span', { style: { color: 'var(--bz-muted)', fontSize: '12px' } }, T('empty'))),
-            h('p', { className: 'bazino-location-address visit-signal-card-address' }, settings.club_address || T('addressFallback')),
+            h('p', { className: 'bazino-location-address visit-signal-card-address' }, settings.club_address || ''),
             settings.club_phone ? h('p', { className: 'bazino-location-phone' }, T('phoneLabel') + ': ' + String(settings.club_phone)) : null,
             map ? h('a', {
               className: 'button button--outline bazino-location-link',

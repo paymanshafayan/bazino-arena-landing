@@ -7,6 +7,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ArrowUpRight, MapPin, Menu, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { portalNav, type PortalPageId } from "@/data/portalData";
+import PortalDock from "@/components/PortalDock";
 
 type Props = { children: ReactNode; current?: PortalPageId };
 
@@ -30,21 +31,7 @@ export default function PortalShell({ children, current }: Props) {
 
   return (
     <div className="portal-shell">
-      <header className="portal-header">
-        <Link className="portal-brand" href="/" onClick={() => setMenuOpen(false)}>
-          <span className="portal-brand-mark">B</span>
-          <span><b>BAZINO</b><small>GAMING LOUNGE</small></span>
-        </Link>
-        <nav className={`portal-nav ${menuOpen ? "portal-nav--open" : ""}`} aria-label="Portal navigation">
-          <Link href="/" className={location === "/" ? "is-active" : ""} onClick={() => setMenuOpen(false)}>Arena</Link>
-          {portalNav.map((item) => <Link key={item.id} href={`/${item.id}`} className={current === item.id ? "is-active" : ""} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
-        </nav>
-        <div className="portal-header-actions">
-          <label className="portal-language"><span className="sr-only">Language</span><select value={language} onChange={(event) => setLanguage(event.target.value as Language)} aria-label="Language"><option>TR</option><option>FA</option><option>EN</option><option>RU</option></select></label>
-          <a className="portal-cta" href="https://bazino.pro" target="_blank" rel="noreferrer">Reserve <ArrowUpRight size={14} /></a>
-          <button className="portal-menu-button" type="button" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>{menuOpen ? <X size={21} /> : <Menu size={21} />}</button>
-        </div>
-      </header>
+      <PortalDock mode="floating" currentId={current} />
       <main className="portal-main">{children}</main>
       <footer className="portal-footer">
         <div className="portal-footer-grid">

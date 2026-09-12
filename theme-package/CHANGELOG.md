@@ -426,3 +426,11 @@
 
 ## 2.0.0 — بسته‌ی نصبی اولیه
 - قالب هفت‌فصلی سینمایی، پوشش CSS تمام صفحات، ویدئوی تعریف‌شده (deferred)، بدون دامنه‌ی خارجی.
+
+## 5.0.0 — AuthKit spatial system and frame-motion tour (2026-09-12)
+- Replaced raw hero video rendering with a local 394-frame Canvas tour controlled by pointer movement; no click-to-start state.
+- Added AuthKit-derived central/satellite depth, nested frames, circuit links, staggered scroll assembly, and mobile depth compositions.
+- Removed theme-owned fallback imagery from portal-data cards; genre/lounge media now render only from portal-provided `imageUrl`/`image` fields.
+- Empty optional datasets no longer invent genre, lounge, pricing, tournament, or staff records.
+- Removed unused hero video and decorative character media from the installable package.
+- Removed automatic external map embedding; location content is supplied by portal settings without background third-party requests.
