@@ -1,27 +1,3 @@
-import React, { useEffect, useState } from "react";
-
-declare global { interface Window { BazinoThemeSDK?: any } }
-
-const props = {
-  language: "fa", dir: "rtl", assetsBase: "/arena3d-assets/assets/",
-  ts: (key:string) => ({reserve:"رزرو کن",genres:"ژانرهای بازی",lounges:"سالن‌ها",results:"نتایج اخیر",tournaments:"مسابقات",pricing:"تعرفه‌ها",staff:"تیم بازینو",location:"موقعیت ما",empty:"اطلاعات به‌زودی"} as Record<string,string>)[key] || key,
-  onNavigate: (page:string) => console.info("Navigate:", page),
-  gameGenres: [{title:"رقابتی",description:"رقابت حرفه‌ای و تیمی"},{title:"ماجراجویی",description:"جهان‌های تازه"},{title:"ورزشی",description:"هیجان مسابقه"},{title:"استراتژی",description:"فرمانده میدان باش"}],
-  loungeSections: [{title:"PC Arena",description:"سیستم‌های قدرتمند"},{title:"Console Lounge",description:"کنسول‌های نسل جدید"},{title:"VIP Room",description:"فضای اختصاصی"}],
-  matchHistory: [{title:"Night Cup",teamA:"NOVA",scoreA:3,scoreB:1,teamB:"RAVEN"},{title:"Arena League",teamA:"VIPER",scoreA:2,scoreB:2,teamB:"ORBIT"}],
-  tournaments: [{title:"Bazino Open",description:"ثبت‌نام آزاد"},{title:"Weekend Clash",description:"جمعه شب"},{title:"Pro League",description:"مرحله نهایی"}],
-  pricingPackages: [{title:"Starter",description:"یک ساعت بازی"},{title:"Squad",description:"پکیج گروهی"},{title:"Night Pass",description:"بازی شبانه"}],
-  staffTeam: [{name:"تیم پشتیبانی",role:"همراه شما در آرنا"},{name:"مدیر مسابقات",role:"برگزاری لیگ‌ها"},{name:"تیم فنی",role:"آماده‌سازی سیستم‌ها"}],
-  settings: {club_address:"Bazino Pro Gaming Club"}
-};
-
-export default function Arena3DPreview(){
-  const [render, setRender] = useState<null | ((p:any)=>React.ReactNode)>(null);
-  useEffect(()=>{
-    const link=document.createElement("link"); link.rel="stylesheet"; link.href="/arena3d-assets/theme.css?v=persisted-1"; document.head.appendChild(link);
-    window.BazinoThemeSDK={React,registerComponent:(region:string,def:any)=>{if(region==="home") setRender(()=>def.render);}};
-    const script=document.createElement("script"); script.src="/arena3d-assets/theme.js?v=persisted-1"; document.body.appendChild(script);
-    return ()=>{link.remove();script.remove();delete window.BazinoThemeSDK;};
-  },[]);
-  return render ? <>{render(props)}</> : <main style={{minHeight:"100vh",background:"#020305",color:"white",display:"grid",placeItems:"center"}}>در حال بارگذاری قالب…</main>;
-}
+import React,{useEffect,useState}from"react";declare global{interface Window{BazinoThemeSDK?:any}}
+const props={language:"fa",dir:"rtl",assetsBase:"/arena3d-v101/assets/",ts:(k:string)=>({reserve:"رزرو کن",genres:"ژانرهای بازی",lounges:"سالن‌ها",results:"نتایج اخیر",tournaments:"مسابقات",pricing:"تعرفه‌ها",staff:"تیم بازینو",location:"موقعیت ما",empty:"اطلاعات به‌زودی"}as Record<string,string>)[k]||k,onNavigate:(p:string)=>console.info(p),onLogin:()=>console.info("login"),onLogout:()=>console.info("logout"),onLanguage:(l:string)=>console.info(l),gameGenres:[{title:"رقابتی",description:"رقابت حرفه‌ای"},{title:"ماجراجویی",description:"جهان‌های تازه"},{title:"ورزشی",description:"هیجان مسابقه"},{title:"استراتژی",description:"فرمانده میدان"}],loungeSections:[{title:"PC Arena"},{title:"Console Lounge"},{title:"VIP Room"}],matchHistory:[{title:"Night Cup",teamA:"NOVA",scoreA:3,scoreB:1,teamB:"RAVEN"}],tournaments:[{title:"Bazino Open",description:"ثبت‌نام آزاد"},{title:"Weekend Clash",description:"جمعه شب"},{title:"Pro League",description:"مرحله نهایی"}],pricingPackages:[{title:"Starter"},{title:"Squad"},{title:"Night Pass"}],staffTeam:[{name:"تیم پشتیبانی"},{name:"مدیر مسابقات"},{name:"تیم فنی"},{name:"میزبان آرنا"}],settings:{club_address:"Bazino Pro Gaming Club, Istanbul",club_phone:"+90 555 123 45 67"}};
+export default function Arena3DPreview(){const[regions,setRegions]=useState<Record<string,(p:any)=>React.ReactNode>>({});useEffect(()=>{const l=document.createElement("link");l.rel="stylesheet";l.href="/arena3d-v101/theme.css?v=1.0.1";document.head.appendChild(l);window.BazinoThemeSDK={React,registerComponent:(n:string,d:any)=>setRegions(o=>({...o,[n]:d.render}))};const s=document.createElement("script");s.src="/arena3d-v101/theme.js?v=1.0.1";document.body.appendChild(s);return()=>{l.remove();s.remove();delete window.BazinoThemeSDK}},[]);const internal=location.pathname.includes("internal"),render=regions[internal?"header":"home"];if(!render)return <main style={{minHeight:"100vh",background:"#020305"}}/>;if(internal)return <main style={{minHeight:"100vh",background:"#06080e",color:"white",padding:"160px 8vw"}}>{render({...props,user:location.search.includes("user=1")?{displayName:"بازیکن آرنا",points:1240}:null})}<h1>صفحه داخلی</h1></main>;return <>{regions.header?.(props)}{render(props)}</>}
