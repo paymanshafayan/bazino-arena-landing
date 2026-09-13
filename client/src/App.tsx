@@ -24,6 +24,7 @@ function Router() {
   return (
     <HubProvider>
       <Switch>
+        <Route path="/arena3d-preview/internal" component={Arena3DPreview} />
         <Route path="/arena3d-preview" component={Arena3DPreview} />
         <Route path="/3d" component={Dimension3DPage} />
         <Route path="/dimension" component={Dimension3DPage} />
