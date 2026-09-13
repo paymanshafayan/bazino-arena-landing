@@ -72,12 +72,12 @@
     var selected = dockItems[active];
     return h('main', { className: 'a3-root', ref: root, dir: dir },
       h('section', { className: 'a3-hero', ref: hero, onPointerMove: heroMove, onPointerLeave: function () { last.current = null; if (aura.current) aura.current.classList.remove('is-visible'); } },
-        h('canvas', { ref: canvas }), h('div', { className: 'a3-shade' }), h('div', { className: 'a3-aura', ref: aura }, h('i')),
+        h('img', { className: 'a3-hero-worlds', src: base + 'hero-mona-worlds.jpg', alt: '' }), h('canvas', { ref: canvas }), h('div', { className: 'a3-shade' }), h('div', { className: 'a3-aura', ref: aura }, h('i')),
         h('div', { className: 'a3-hero-copy' }, h('small', null, 'BAZINO PRO / VIRTUAL TOUR'), h('h1', null, l === 'fa' ? 'وارد بازی شو.' : 'ENTER THE GAME.'), h('p', null, l === 'fa' ? 'مسیر واقعی بازینو، فریم‌به‌فریم.' : 'Bazino, frame by frame.'), h('button', { onClick: function () { if (p.onNavigate) p.onNavigate('reservations'); } }, ts('reserve')))),
       h('section', { className: 'a3-dock-scene' },
         h('nav', { className: 'a3-dock', 'aria-label': 'Portal' }, dockItems.map(function (d, i) { return h('button', { key: d[0], className: i === active ? 'is-active' : '', onClick: function () { setActive(i); } }, i ? h('b', null, h('i')) : null, h('em'), h('span', null, l === 'fa' ? d[1] : d[2])); })),
         h('div', { className: 'a3-destination', key: selected[0] }, h('img', { src: base + selected[3], alt: '' }), h('div', null, h('small', null, 'PORTAL DESTINATION / 0' + (active + 1)), h('h2', null, l === 'fa' ? selected[1] : selected[2]), h('button', { onClick: function () { if (p.onNavigate) p.onNavigate(selected[0]); } }, ts('reserve') + '  ←')))),
-      groups.map(function (g) { var list = g[2]; if (!list.length) return null; return h('section', { className: 'a3-section', key: g[1], 'data-reveal': '1' }, h('header', null, h('small', null, g[0] + ' / ARENA CIRCUIT'), h('h2', null, ts(g[1]))), h('div', { className: 'a3-cluster' }, list.slice(0, 4).map(card))); }),
+      groups.map(function (g) { var list = g[2]; if (!list.length) return null; return h('section', { className: 'a3-section a3-' + g[1], key: g[1], 'data-reveal': '1' }, h('header', null, h('small', null, g[0] + ' / ARENA CIRCUIT'), h('h2', null, ts(g[1]))), h('div', { className: 'a3-cluster' }, list.slice(0, 4).map(card))); }),
       h('section', { className: 'a3-section a3-location', 'data-reveal': '1' }, h('header', null, h('small', null, '09 / FINAL COORDINATES'), h('h2', null, ts('location'))), h('div', { className: 'a3-map' }, h('i'), h('p', null, (p.settings && p.settings.club_address) || ts('empty')))));
   }
   S.registerComponent('home', { apiVersion: 2, render: function (p) { return h(Home, p || {}); } });
