@@ -35,7 +35,7 @@
       function batch() { if (dead || next >= 394) return; var e = Math.min(next + 20, 394); for (; next < e; next++) load(next); setTimeout(batch, 90); }
       setTimeout(batch, 250);
       function draw() {
-        var d = Math.min(devicePixelRatio || 1, 1.5), w = box.clientWidth, ht = box.clientHeight;
+        var d = Math.min(devicePixelRatio || 1, 1.5), w = c.clientWidth, ht = c.clientHeight;
         if (c.width !== Math.round(w * d) || c.height !== Math.round(ht * d)) { c.width = Math.round(w * d); c.height = Math.round(ht * d); }
         x.setTransform(d, 0, 0, d, 0, 0);
         current.current += (target.current - current.current) * .105;

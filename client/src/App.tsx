@@ -15,6 +15,7 @@ import HubTheme from "../../hub/theme/HubTheme";
 import { HubProvider } from "../../hub/theme/HubContext";
 import CdpVerificationPage from "./pages/CdpVerificationPage";
 import Dimension3DPage from "./pages/Dimension3DPage";
+import Arena3DPreview from "./pages/Arena3DPreview";
 import type { PortalPageId } from "./data/portalData";
 
 const portalRoutes: PortalPageId[] = ["reservations", "cafe", "shop", "tournaments", "blog", "loyalty"];
@@ -23,6 +24,7 @@ function Router() {
   return (
     <HubProvider>
       <Switch>
+        <Route path="/arena3d-preview" component={Arena3DPreview} />
         <Route path="/3d" component={Dimension3DPage} />
         <Route path="/dimension" component={Dimension3DPage} />
         <Route path="/verify-cdp" component={CdpVerificationPage} />
@@ -32,7 +34,7 @@ function Router() {
         <Route path="/hub/:a/:b" component={HubTheme} />
         <Route path="/hub/:a" component={HubTheme} />
         <Route path="/hub" component={HubTheme} />
-        <Route path="/" component={Dimension3DPage} />
+        <Route path="/" component={Arena3DPreview} />
         {portalRoutes.map((pageId) => <Route key={pageId} path={`/${pageId}`} component={() => <PortalPage pageId={pageId} />} />)}
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
