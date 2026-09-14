@@ -402,15 +402,59 @@ body[data-theme='bazino-hub'] {
 .hb-brk-head .hb-glogo { font-family: var(--hb-font-d); font-weight: 900; font-style: italic; font-size: 26px; color: #fff; }
 .hb-brk-head h3 { margin: 0; font-family: var(--hb-font-d); font-size: 19px; letter-spacing: 1px; color: #ff2ea6; text-shadow: 0 0 12px rgba(255,46,166,.5); }
 .hb-brk-head .hb-meta { display: flex; gap: 18px; color: #c7cfeb; font-weight: 700; font-size: 12.5px; letter-spacing: 1px; align-items: center; }
-.hb-brk-cols { display: grid; grid-template-columns: repeat(9, minmax(112px, 1fr)); gap: 6px; min-width: 0; }
-@media (max-width: 1250px) { .hb-brk-cols { min-width: 1080px; } }
+.hb-brk-cols { display: grid; grid-template-columns: repeat(9, minmax(112px, 1fr)); gap: 10px 18px; min-width: 0; position: relative; z-index: 2; }
+@media (max-width: 1250px) { .hb-brk-cols { min-width: 1180px; } }
 @media (min-width: 1400px) {
-  .hb-brk-cols { grid-template-columns: repeat(9, minmax(122px, 1fr)); gap: 8px; }
+  .hb-brk-cols { grid-template-columns: repeat(9, minmax(122px, 1fr)); gap: 10px 20px; }
   .hb-mname { font-size: 11.5px; }
 }
 .hb-brk-col h4 { text-align: center; color: #7f8ab0; font-size: 10px; letter-spacing: 1.6px; margin: 0 0 10px; font-weight: 700; }
-.hb-brk-col { display: flex; flex-direction: column; justify-content: space-around; gap: 8px; }
+.hb-brk-col { display: flex; flex-direction: column; justify-content: space-around; gap: 8px; position: relative; z-index: 2; }
 .hb-mcard { border: 1px solid #23407a; border-radius: 8px; background: #0b1226; padding: 5px 6px; width: 100%; box-shadow: 0 0 10px rgba(51,140,255,.14); }
+.hb-mcard--cyan { border-color: #2a6db8; box-shadow: 0 0 10px rgba(51,207,255,.18); }
+.hb-mcard--magenta { border-color: #8a3a7a; box-shadow: 0 0 10px rgba(255,46,166,.18); }
+.hb-mcard--gold { border-color: #c9a227; box-shadow: 0 0 12px rgba(255,201,60,.28); }
+
+/* Reusable neon SVG connectors — any curved/elbow line.
+   <svg class="hb-wire-svg">
+     <g class="hb-wire hb-wire--cyan|magenta|gold">
+       <path class="hb-wire-glow|mid|core" d="…"/>
+     </g>
+   </svg>
+   Wrap ports with data-wire="id" inside .hb-wire-layer */
+.hb-wire-layer { position: relative; }
+.hb-wire-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; pointer-events: none; z-index: 1;
+}
+.hb-wire { --hb-wire: #33cfff; --hb-wire-2: #7a5cff; --hb-wire-core: #e7fcff; }
+.hb-wire--cyan    { --hb-wire: #33cfff; --hb-wire-2: #4f8ef7; --hb-wire-core: #e7fcff; }
+.hb-wire--magenta { --hb-wire: #ff2ea6; --hb-wire-2: #a05cf7; --hb-wire-core: #ffe8fb; }
+.hb-wire--gold    { --hb-wire: #ffc93c; --hb-wire-2: #ff9a1f; --hb-wire-core: #fff4c8; }
+.hb-wire--green   { --hb-wire: #2ee87e; --hb-wire-2: #33cfff; --hb-wire-core: #e9ffe8; }
+.hb-wire-glow, .hb-wire-mid, .hb-wire-core {
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.hb-wire-glow {
+  stroke: var(--hb-wire);
+  stroke-width: 7.5;
+  opacity: .4;
+  filter: blur(2.4px);
+}
+.hb-wire-mid {
+  stroke: url(#hb-wire-grad-cyan);
+  stroke: var(--hb-wire);
+  stroke-width: 2.35;
+  opacity: .95;
+  filter: drop-shadow(0 0 5px var(--hb-wire));
+}
+.hb-wire--magenta .hb-wire-mid { stroke: url(#hb-wire-grad-magenta); stroke: var(--hb-wire); }
+.hb-wire--gold .hb-wire-mid { stroke: url(#hb-wire-grad-gold); stroke: var(--hb-wire); }
+.hb-wire-core {
+  stroke: var(--hb-wire-core);
+  stroke-width: 1.1;
+  opacity: .9;
+}
 .hb-mcard .hb-mrow { display: flex; align-items: center; gap: 5px; padding: 3px 0; }
 .hb-mcard .hb-mrow + .hb-mrow { border-top: 1px solid #14203a; }
 .hb-mseed { color: #66719b; font-size: 9px; width: 12px; flex: none; font-weight: 700; }

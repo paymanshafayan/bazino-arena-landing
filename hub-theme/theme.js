@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.2 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.3 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -8,6 +8,7 @@
   var h = R.createElement;
   var useState = R.useState;
   var useEffect = R.useEffect;
+  var useRef = R.useRef;
 
   /* ── helpers ── */
   function asset(p, n) { return (p && p.assetsBase ? p.assetsBase + '/' : '') + n; }
@@ -875,9 +876,114 @@
     }
     return rounds;
   }
-  function MCard(m, seedA, seedB) {
+  function roundN(n) { return Math.round(n * 10) / 10; }
+  function elbowPath(x1, y1, x2, y2, radius, split) {
+    radius = radius == null ? 11 : radius;
+    split = split == null ? 0.52 : split;
+    var dx = x2 - x1, dy = y2 - y1;
+    if (Math.abs(dy) < 0.8) return 'M ' + roundN(x1) + ' ' + roundN(y1) + ' L ' + roundN(x2) + ' ' + roundN(y2);
+    var midX = x1 + dx * split;
+    var sx = dx >= 0 ? 1 : -1;
+    var sy = dy >= 0 ? 1 : -1;
+    var r = Math.max(2, Math.min(radius, Math.abs(midX - x1) * 0.8, Math.abs(x2 - midX) * 0.8, Math.abs(dy) / 2));
+    return 'M ' + roundN(x1) + ' ' + roundN(y1)
+      + ' L ' + roundN(midX - sx * r) + ' ' + roundN(y1)
+      + ' Q ' + roundN(midX) + ' ' + roundN(y1) + ' ' + roundN(midX) + ' ' + roundN(y1 + sy * r)
+      + ' L ' + roundN(midX) + ' ' + roundN(y2 - sy * r)
+      + ' Q ' + roundN(midX) + ' ' + roundN(y2) + ' ' + roundN(midX + sx * r) + ' ' + roundN(y2)
+      + ' L ' + roundN(x2) + ' ' + roundN(y2);
+  }
+  function smoothPath(x1, y1, x2, y2, bend) {
+    bend = bend == null ? 0.5 : bend;
+    var dx = x2 - x1;
+    var s = dx >= 0 ? 1 : -1;
+    var c = Math.abs(dx) * bend;
+    return 'M ' + roundN(x1) + ' ' + roundN(y1) + ' C ' + roundN(x1 + s * c) + ' ' + roundN(y1) + ', ' + roundN(x2 - s * c) + ' ' + roundN(y2) + ', ' + roundN(x2) + ' ' + roundN(y2);
+  }
+  function wireAnchor(el, lr, side) {
+    var r = el.getBoundingClientRect();
+    var x = r.left - lr.left, y = r.top - lr.top;
+    if (side === 'left') return { x: x, y: y + r.height / 2 };
+    if (side === 'right') return { x: x + r.width, y: y + r.height / 2 };
+    if (side === 'top') return { x: x + r.width / 2, y: y };
+    if (side === 'bottom') return { x: x + r.width / 2, y: y + r.height };
+    return { x: x + r.width / 2, y: y + r.height / 2 };
+  }
+  function wireMerge(links, prefix, fromR, toR, nTargets, tone) {
+    var i;
+    for (i = 0; i < nTargets; i++) {
+      links.push({ from: prefix + fromR + '-' + (i * 2), to: prefix + toR + '-' + i, tone: tone, kind: 'elbow' });
+      links.push({ from: prefix + fromR + '-' + (i * 2 + 1), to: prefix + toR + '-' + i, tone: tone, kind: 'elbow' });
+    }
+  }
+  function HbWireLayer(x) {
+    var hold = useState(null);
+    var layer = hold[0], setLayer = hold[1];
+    var dr = useState([]);
+    var paths = dr[0], setPaths = dr[1];
+    function paint() {
+      if (!layer) return;
+      var lr = layer.getBoundingClientRect();
+      var list = x.links || [];
+      var out = [];
+      var i, link, a, b, ar, br, fromA, toA, p1, p2, d;
+      for (i = 0; i < list.length; i++) {
+        link = list[i];
+        a = layer.querySelector('[data-wire="' + link.from + '"]');
+        b = layer.querySelector('[data-wire="' + link.to + '"]');
+        if (!a || !b) continue;
+        ar = a.getBoundingClientRect();
+        br = b.getBoundingClientRect();
+        fromA = link.fromAnchor || (ar.left <= br.left ? 'right' : 'left');
+        toA = link.toAnchor || (ar.left <= br.left ? 'left' : 'right');
+        p1 = wireAnchor(a, lr, fromA);
+        p2 = wireAnchor(b, lr, toA);
+        d = link.kind === 'smooth' ? smoothPath(p1.x, p1.y, p2.x, p2.y, link.bend) : elbowPath(p1.x, p1.y, p2.x, p2.y, link.radius, link.split);
+        out.push({ key: link.from + '>' + link.to + '#' + i, d: d, tone: link.tone || 'cyan' });
+      }
+      setPaths(out);
+    }
+    useEffect(function () {
+      paint();
+      var t1 = window.setTimeout(paint, 40);
+      var t2 = window.setTimeout(paint, 240);
+      window.addEventListener('resize', paint);
+      var ro = null;
+      if (layer && typeof ResizeObserver !== 'undefined') {
+        ro = new ResizeObserver(function () { paint(); });
+        ro.observe(layer);
+      }
+      return function () {
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+        window.removeEventListener('resize', paint);
+        if (ro) ro.disconnect();
+      };
+    }, [layer, x.rev]);
+    var nodes = [];
+    var k;
+    for (k = 0; k < paths.length; k++) {
+      nodes.push(h('g', { key: paths[k].key, className: 'hb-wire hb-wire--' + paths[k].tone },
+        h('path', { className: 'hb-wire-glow', d: paths[k].d }),
+        h('path', { className: 'hb-wire-mid', d: paths[k].d, stroke: 'url(#hb-wire-grad-' + paths[k].tone + ')' }),
+        h('path', { className: 'hb-wire-core', d: paths[k].d })
+      ));
+    }
+    return h('div', { className: 'hb-wire-layer', ref: function (el) { if (el && el !== layer) setLayer(el); } },
+      h('svg', { className: 'hb-wire-svg', 'aria-hidden': 'true' },
+        h('defs', null,
+          h('linearGradient', { id: 'hb-wire-grad-cyan', x1: '0', y1: '0', x2: '1', y2: '1' }, h('stop', { offset: '0%', stopColor: '#33cfff' }), h('stop', { offset: '100%', stopColor: '#7a5cff' })),
+          h('linearGradient', { id: 'hb-wire-grad-magenta', x1: '1', y1: '0', x2: '0', y2: '1' }, h('stop', { offset: '0%', stopColor: '#ff2ea6' }), h('stop', { offset: '100%', stopColor: '#a05cf7' })),
+          h('linearGradient', { id: 'hb-wire-grad-gold', x1: '0', y1: '0', x2: '0', y2: '1' }, h('stop', { offset: '0%', stopColor: '#ffe08a' }), h('stop', { offset: '100%', stopColor: '#ff9a1f' }))
+        ),
+        nodes
+      ),
+      h('div', { className: x.className || undefined }, x.children)
+    );
+  }
+  function MCard(m, seedA, seedB, wireId, tone) {
     var aw = m.sa > m.sb;
-    return h('div', { className: 'hb-mcard' },
+    return h('div', { className: 'hb-mcard' + (tone ? ' hb-mcard--' + tone : ''), 'data-wire': wireId || undefined },
       h('div', { className: 'hb-mrow' + (aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedA)), h('span', { className: 'hb-mav', style: { '--h': String((m.a.length * 53) % 360) } }), h('span', { className: 'hb-mname', title: m.a }, m.a), h('span', { className: 'hb-mscore' }, String(m.sa))),
       h('div', { className: 'hb-mrow' + (!aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedB)), h('span', { className: 'hb-mav', style: { '--h': String((m.b.length * 41) % 360) } }), h('span', { className: 'hb-mname', title: m.b }, m.b), h('span', { className: 'hb-mscore' }, String(m.sb)))
     );
@@ -891,7 +997,7 @@
     var champ = rounds[4][0];
     var champName = champ.sa > champ.sb ? champ.a : champ.b;
     var games = [
-      { g: 'FC 26', cov: 'covers/fc26.jpg', n: 13, date: '29 Aug 2026', st: 'live', kind: 'weekly' },
+      { g: 'FC 26', cov: 'covers/fc26.jpg', n: 13, date: '29 Aug 2026', st: 'done', kind: 'weekly' },
       { g: 'UFC 5', cov: 'covers/ufc5.jpg', n: 12, date: '22 Aug 2026', st: 'done', kind: 'weekly' },
       { g: 'Mortal Kombat 1', cov: 'covers/mk1.jpg', n: 11, date: '15 Aug 2026', st: 'done', kind: 'weekly' },
       { g: 'Tekken 8', cov: 'covers/tekken8.jpg', n: 10, date: '8 Aug 2026', st: 'done', kind: 'weekly' },
@@ -933,17 +1039,27 @@
       var half = [];
       for (var i = 0; i < ms.length / 2; i++) half.push(ms[i]);
       var nodes = [];
-      for (var j = 0; j < half.length; j++) nodes.push(MCard(half[j], seedsStart + j * 2, seedsStart + j * 2 + 1));
-      return h('div', { key: label, className: 'hb-brk-col' }, h('h4', null, label), nodes);
+      for (var j = 0; j < half.length; j++) nodes.push(MCard(half[j], seedsStart + j * 2, seedsStart + j * 2 + 1, 'L' + roundIdx + '-' + j, 'cyan'));
+      return h('div', { key: 'L' + roundIdx, className: 'hb-brk-col' }, h('h4', null, label), nodes);
     }
     function colR(roundIdx, label) {
       var ms = rounds[roundIdx];
       var half = [];
       for (var i = ms.length / 2; i < ms.length; i++) half.push(ms[i]);
       var nodes = [];
-      for (var j = 0; j < half.length; j++) nodes.push(MCard(half[j], 17 + j * 2, 18 + j * 2));
-      return h('div', { key: label, className: 'hb-brk-col' }, h('h4', null, label), nodes);
+      for (var j = 0; j < half.length; j++) nodes.push(MCard(half[j], 17 + j * 2, 18 + j * 2, 'R' + roundIdx + '-' + j, 'magenta'));
+      return h('div', { key: 'R' + roundIdx, className: 'hb-brk-col' }, h('h4', null, label), nodes);
     }
+    var wires = [];
+    wireMerge(wires, 'L', 0, 1, 4, 'cyan');
+    wireMerge(wires, 'L', 1, 2, 2, 'cyan');
+    wireMerge(wires, 'L', 2, 3, 1, 'cyan');
+    wireMerge(wires, 'R', 0, 1, 4, 'magenta');
+    wireMerge(wires, 'R', 1, 2, 2, 'magenta');
+    wireMerge(wires, 'R', 2, 3, 1, 'magenta');
+    wires.push({ from: 'L3-0', to: 'FINAL', tone: 'gold', kind: 'elbow' });
+    wires.push({ from: 'R3-0', to: 'FINAL', tone: 'gold', kind: 'elbow' });
+    wires.push({ from: 'FINAL', to: 'CHAMP', tone: 'gold', kind: 'smooth', fromAnchor: 'top', toAnchor: 'bottom' });
     var filtBtns = [
       ['all', 'bk.all', 'ALL'],
       ['cur', 'bk.cur', 'CURRENT'],
@@ -983,18 +1099,18 @@
               h('span', { style: { color: cur.st === 'live' ? '#2ee87e' : '#ffc93c' } }, ico(p, 'trophy', 14), ' ' + String(cur.st || 'done').toUpperCase())
             )
           ),
-          h('div', { className: 'hb-brk-cols' },
+          h(HbWireLayer, { className: 'hb-brk-cols', links: wires, rev: kind + '-' + sel + '-' + filt },
             col(0, ts(p,'bk.r32','ROUND OF 32'), 1), col(1, ts(p,'bk.r16','ROUND OF 16'), 1), col(2, ts(p,'bk.qf','QUARTER FINALS'), 1), col(3, ts(p,'bk.sf','SEMI FINALS'), 1),
-            h('div', { key: 'final', className: 'hb-brk-col' },
+            h('div', { key: 'final', className: 'hb-brk-col hb-brk-col--final' },
               h('h4', null, ts(p,'bk.f','FINAL')),
-              h('div', { className: 'hb-champ' },
+              h('div', { className: 'hb-champ', 'data-wire': 'CHAMP' },
                 h('span', { className: 'hb-trophy', style: { color: '#ffc93c' } }, ico(p, 'trophy', 64)),
                 h('b', null, ts(p,'bk.champ','CHAMPION')),
                 h('span', { className: 'hb-chav' }, champName.charAt(0)),
                 h('b', { style: { fontSize: 14 } }, champName),
                 h('small', null, '#BZN1024')
               ),
-              MCard(champ, 1, 2)
+              MCard(champ, 1, 2, 'FINAL', 'gold')
             ),
             colR(3, ts(p,'bk.sf','SEMI FINALS')), colR(2, ts(p,'bk.qf','QUARTER FINALS')), colR(1, ts(p,'bk.r16','ROUND OF 16')), colR(0, ts(p,'bk.r32','ROUND OF 32'))
           )

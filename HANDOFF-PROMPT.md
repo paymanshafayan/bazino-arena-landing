@@ -1,5 +1,7 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.3 — خطوط نئون براکت):** کلاس ثابت `.hb-wire` + `.hb-wire-svg` با گرادینت cyan/magenta/gold. `HbWireLayer` + `data-wire` + `elbowPath`/`smoothPath` قابل استفاده در هر صفحه. براکت ۳۲ نفره کارت‌ها را با SVG منحنی وصل می‌کند. زیپ نساز.
+
 > **به‌روزرسانی 2026-09-14 (هاب v2.1.2 — برچسب منو):** `nav.events` در همهٔ زبان‌ها تورنمنت است — EN TOURNAMENTS / FA مسابقات / TR TURNUVALAR / RU ТУРНИРЫ. زیپ نساز مگر خواسته شود.
 
 > **به‌روزرسانی 2026-09-14 (هاب v2.1.1 — مسابقات / EVENTS PDF §10–14):** منوی فارسی `nav.events` = **مسابقات**. Weekly بدون VIEW DETAILS و با جایزه/ورود روی کارت (PDF §11). Special فقط اطلاع‌رسانی. Season Ranking (§13) لیدربورد لیستی جدا از Brackets (§14). براکت: تب Weekly/Special، فیلتر ALL/CURRENT/UPCOMING/COMPLETED، آیتم‌های لیست کلیک‌پذیر، BACK TO EVENTS. کارت‌های پورتال Events تماماً کلیک‌پذیر. زیپ نساز مگر کارفرما بخواهد. مسیر: `hub-theme/`.
