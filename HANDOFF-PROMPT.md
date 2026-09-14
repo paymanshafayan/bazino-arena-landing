@@ -17,12 +17,12 @@
 
 - Name: `Bazino Arena 3D`
 - ID: `bazino-arena3d`
-- Version: `1.0.3`
+- Version: `1.0.4`
 - SDK version: `2`
 - Canonical folder: `themes/bazino-arena3d/`
 - Editable compatibility source: `bazino-arena3d-package/`
-- Active public preview: `client/public/arena3d-v103/`
-- Previous version archive: `archive/bazino-arena3d/v1.0.2/`
+- Active public preview: `client/public/arena3d-v104/`
+- Previous version archive: `archive/bazino-arena3d/v1.0.3/`
 - Preview route: `/arena3d-preview`
 - Internal visual preview: `/arena3d-preview?internal=1&page=games`
 
@@ -54,8 +54,13 @@
 - `1.0.0`: archived under `archive/bazino-arena3d/v1.0.0/`
 - `1.0.1`: archived under `archive/bazino-arena3d/v1.0.1/`
 - `1.0.2`: archived under `archive/bazino-arena3d/v1.0.2/`
-- `1.0.3`: active
+- `1.0.3`: archived under `archive/bazino-arena3d/v1.0.3/`
+- `1.0.4`: active
 
 ## Important integration constraint
 
 The portal SDK currently exposes `home`, `header`, and `mobileNav` theme regions. Internal portal pages are portal-owned React components, so v1.0.3 styles them through the theme CSS using their existing class structure rather than registering unsupported SDK regions.
+
+## v1.0.4 destination correction
+
+Destination CTA copy is specific to each destination and invokes `onNavigate` with authoritative portal paths: `/`, `/games`, `/cafe`, `/shop`, `/events`, `/club`, and `/blog`. The preview callback maps these paths to visible internal preview routes for browser verification.

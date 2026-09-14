@@ -7,14 +7,20 @@
   function txt(v, l) { return typeof v === 'string' ? v : (v && (v[l] || v.fa || v.en)) || ''; }
   function pad(n) { n = String(n); while (n.length < 4) n = '0' + n; return n; }
   var dockItems = [
-    ['home', 'خانه', 'Home', 'portal-menu/home.jpg', 'menu-icons/home.png'],
-    ['games', 'بازی‌ها', 'Games', 'portal-menu/games.jpg', 'menu-icons/games.png'],
-    ['cafe', 'کافه', 'Cafe', 'portal-menu/cafe.jpg', 'menu-icons/cafe.png'],
-    ['shop', 'فروشگاه', 'Shop', 'portal-menu/shop.jpg', 'menu-icons/shop.png'],
-    ['tournaments', 'مسابقات', 'Arena', 'portal-menu/tournaments.jpg', 'menu-icons/tournaments.png'],
-    ['loyalty', 'باشگاه', 'Club', 'portal-menu/loyalty.jpg', 'menu-icons/loyalty.png'],
-    ['blog', 'بلاگ', 'Blog', 'portal-menu/blog.jpg', 'menu-icons/blog.png']
+    ['home', 'خانه', 'Home', 'portal-menu/home.jpg', 'menu-icons/home.png', '/'],
+    ['games', 'بازی‌ها', 'Games', 'portal-menu/games.jpg', 'menu-icons/games.png', '/games'],
+    ['cafe', 'کافه', 'Cafe', 'portal-menu/cafe.jpg', 'menu-icons/cafe.png', '/cafe'],
+    ['shop', 'فروشگاه', 'Shop', 'portal-menu/shop.jpg', 'menu-icons/shop.png', '/shop'],
+    ['tournaments', 'مسابقات', 'Arena', 'portal-menu/tournaments.jpg', 'menu-icons/tournaments.png', '/events'],
+    ['loyalty', 'باشگاه', 'Club', 'portal-menu/loyalty.jpg', 'menu-icons/loyalty.png', '/club'],
+    ['blog', 'بلاگ', 'Blog', 'portal-menu/blog.jpg', 'menu-icons/blog.png', '/blog']
   ];
+  var destinationCtas = {
+    fa: ['رفتن به خانه', 'مشاهده بازی‌ها', 'مشاهده منوی کافه', 'ورود به فروشگاه', 'مشاهده مسابقات', 'ورود به باشگاه', 'مطالعه بلاگ'],
+    en: ['Go home', 'Explore games', 'View cafe menu', 'Enter shop', 'View tournaments', 'Enter club', 'Read blog'],
+    tr: ['Ana sayfaya git', 'Oyunları keşfet', 'Kafe menüsünü gör', 'Mağazaya gir', 'Turnuvaları gör', 'Kulübe gir', 'Blogu oku'],
+    ru: ['На главную', 'Смотреть игры', 'Меню кафе', 'Открыть магазин', 'Смотреть турниры', 'Войти в клуб', 'Читать блог']
+  };
   function Home(p) {
     p = p || {};
     var l = p.language || p.lang || 'fa';
@@ -85,9 +91,9 @@
         h('div', { className: 'a3-hero-copy' }, h('small', null, 'BAZINO PRO / VIRTUAL TOUR'), h('h1', null, l === 'fa' ? 'وارد بازی شو.' : 'ENTER THE GAME.'), h('p', null, l === 'fa' ? 'مسیر واقعی بازینو، فریم‌به‌فریم.' : 'Bazino, frame by frame.'), h('button', { onClick: function () { if (p.onNavigate) p.onNavigate('reservations'); } }, ts('reserve')))),
       h('section', { className: 'a3-dock-scene' },
         h('nav', { className: 'a3-dock', 'aria-label': 'Portal' }, dockItems.map(function (d, i) { return h('button', { key: d[0], className: i === active ? 'is-active' : '', onPointerEnter: function () { setActive(i); }, onFocus: function () { setActive(i); }, onClick: function () { setActive(i); } }, i ? h('b', null, h('i')) : null, h('em', null, h('img', { src: base + d[4], alt: '', 'aria-hidden': 'true' })), h('span', null, l === 'fa' ? d[1] : d[2])); })),
-        h('div', { className: 'a3-destination', key: selected[0] }, h('img', { src: base + selected[3], alt: '' }), h('div', null, h('small', null, 'PORTAL DESTINATION / 0' + (active + 1)), h('h2', null, l === 'fa' ? selected[1] : selected[2]), h('button', { onClick: function () { if (p.onNavigate) p.onNavigate(selected[0]); } }, ts('reserve') + '  ←')))),
+        h('div', { className: 'a3-destination', key: selected[0] }, h('img', { src: base + selected[3], alt: '' }), h('div', null, h('small', null, 'PORTAL DESTINATION / 0' + (active + 1)), h('h2', null, l === 'fa' ? selected[1] : selected[2]), h('button', { onClick: function () { if (p.onNavigate) p.onNavigate(selected[5]); } }, (destinationCtas[l] || destinationCtas.en)[active] + '  ←')))),
       groups.map(function (g) { var list = g[2]; if (!list.length) return null; return h('section', { className: 'a3-section a3-' + g[1], key: g[1], 'data-reveal': '1' }, h('header', null, h('small', null, g[0] + ' / ARENA CIRCUIT'), h('h2', null, ts(g[1]))), h('div', { className: 'a3-cluster', onPointerMove: (g[1] === 'genres' || g[1] === 'staff') ? function (e) { orbitMove(g[1], Math.min(list.length, 4), e); } : null, onPointerLeave: function (e) { e.currentTarget.removeAttribute('data-orbit-x'); } }, list.slice(0, 4).map(function (item, i) { return card(item, i, (g[1] === 'genres' || g[1] === 'staff') ? g[1] : '', orbit[g[1]] || 0, Math.min(list.length, 4)); }))); }),
-      h('div', { className: 'a3-version-badge' }, 'BAZINO ARENA 3D — PREVIEW v1.0.3'),
+      h('div', { className: 'a3-version-badge' }, 'BAZINO ARENA 3D — PREVIEW v1.0.4'),
       h('section', { className: 'a3-section a3-location', 'data-reveal': '1' }, h('header', null, h('small', null, '09 / FINAL COORDINATES'), h('h2', null, ts('location'))), h('div', { className: 'a3-map' }, h('img', { src: (p.settings && (p.settings.map_image_url || p.settings.mapImageUrl || p.settings.location_image)) || (base + 'location-map.png'), alt: '' }), h('div', { className: 'a3-radar', 'aria-hidden': 'true' }, h('i'), h('b')), (address || phone) ? h('div', { className: 'a3-contact' }, address ? h('p', null, h('small', null, l === 'fa' ? 'آدرس' : 'Address'), h('strong', null, address)) : null, phone ? h('p', null, h('small', null, l === 'fa' ? 'تلفن تماس' : 'Phone'), h('a', { href: 'tel:' + phone }, phone)) : null) : null)));
   }
   function PortalHeader(p) {
