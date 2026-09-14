@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.0 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.1 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -230,7 +230,7 @@
           h('div', { className: 'hb-hright' },
             h(LangChip, p),
             u ? h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 10 } },
-              h('button', { type: 'button', className: 'hb-bell', 'aria-label': 'notifications' }, ico(p, 'bell', 20), h('i', null)),
+              h('button', { type: 'button', className: 'hb-bell', 'aria-label': 'notifications', onClick: function () { go(p, '/club'); } }, ico(p, 'bell', 20), h('i', null)),
               h('a', { href: '/club', className: 'hb-user', onClick: function (e) { e.preventDefault(); go(p, '/club'); } },
                 h('span', { className: 'hb-av' }, ((u.displayName || u.username || '?').charAt(0) || '?').toUpperCase()),
                 h('span', null, h('b', null, u.displayName || u.username), h('small', null, '#' + (u.username || 'BZN'))),
@@ -671,39 +671,46 @@
     var cards = [];
     for (var i = 0; i < portals.length; i++) {
       (function (x) {
-        cards.push(h('div', { key: x.tk, className: 'hb-portal', style: { '--c': x.c } },
+        cards.push(h('button', { key: x.tk, type: 'button', className: 'hb-portal', style: { '--c': x.c }, onClick: function () { go(p, x.href); } },
           h('div', { className: 'hb-portal-head' }, h('span', { style: { color: x.c } }, ico(p, x.ic, 34)), h('span', null, h('b', null, ts(p, x.tk, x.tk)), h('small', null, ts(p, x.sk, '')))),
           h('div', { className: 'hb-portal-art', style: { backgroundImage: 'url(' + x.art + ')' } }),
           h('ul', null, x.lik.map(function (li) { return h('li', { key: li }, ico(p, 'star', 15), ts(p, li, li)); })),
           h('p', null, ts(p, x.dk, '')),
-          h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': x.c }, onClick: function () { go(p, x.href); } }, ts(p, x.btnk, x.btnk), '→')
+          h('span', { className: 'hb-cta hb-cta--line', style: { '--c': x.c } }, ts(p, x.btnk, x.btnk), ' →')
         ));
       })(portals[i]);
     }
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'nav.events','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags',''), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
+      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.hero','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags',''), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
       h('div', { className: 'hb-wrap hb-portals' }, cards)
     );
   }
 
   var WEEKLY = [
-    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], day: 'EVERY SATURDAY', max: '32 PLAYERS', prize: '500 BC', c: '#a05cf7', cov: 'covers/fc26.jpg' },
-    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], day: 'EVERY TUESDAY', max: '16 PLAYERS', prize: '300 BC', c: '#33cfff', cov: 'covers/ufc5.jpg' },
-    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY THURSDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
-    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY FRIDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
+    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], day: 'SATURDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#a05cf7', cov: 'covers/fc26.jpg' },
+    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], day: 'TUESDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#33cfff', cov: 'covers/ufc5.jpg' },
+    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], day: 'THURSDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
+    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'FRIDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
   ];
   function WeeklyRow(w, p) {
     return h('div', { className: 'hb-erow', style: { '--c': w.c } },
       CoverBox(p, w.t, w.cov, 'hb-erow-art'),
       h('div', { className: 'hb-erow-mid' },
         h('h3', null, w.t), h('p', null, w.d),
-        h('div', { className: 'hb-chips' }, w.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, ts(p, 'tag.' + t, t)); }))
+        h('div', { className: 'hb-chips' }, w.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, ts(p, 'tag.' + t, t)); })),
+        h('div', { className: 'hb-erow-meta' },
+          h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 15), w.day + '  ' + w.time),
+          h('span', { style: { color: '#c7cfeb' } }, ico(p, 'users', 15), w.max)
+        )
       ),
-      h('div', { className: 'hb-erow-side hb-wmeta' },
-        h('div', { className: 'hb-wm', style: { color: '#ff2ea6' } }, ico(p, 'cal', 22), h('small', null, ts(p, 'wk.every', 'EVERY')), h('b', null, w.day.replace('EVERY ', ''))),
-        h('div', { className: 'hb-wm', style: { color: '#7a8cff' } }, ico(p, 'users', 22), h('small', null, ts(p, 'wk.max', 'MAX')), h('b', null, w.max)),
-        h('div', { className: 'hb-wm', style: { color: '#ffc93c' } }, ico(p, 'trophy', 22), h('small', null, ts(p, 'wk.prize', 'PRIZE')), h('b', null, w.prize)),
-        h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': w.c }, onClick: function () { go(p, '/events/brackets'); } }, ts(p, 'wk.details', 'VIEW DETAILS'), '→')
+      h('div', { className: 'hb-erow-side' },
+        h('div', { className: 'hb-prizes' },
+          h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'coins', 22), h('span', null, h('small', null, ts(p, 'sp.fee', 'ENTRY FEE')), h('b', null, w.fee))),
+          h('div', { className: 'hb-prize-cell', style: { color: '#ff2ea6' } }, ico(p, 'gift', 22), h('span', null, h('small', null, '+10 BC'), h('b', null, ts(p, 'sp.part', 'For Participation')))),
+          h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.1', '1ST PLACE')), h('b', null, w.p1))),
+          h('div', { className: 'hb-prize-cell', style: { color: '#c0d0ff' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.2', '2ND PLACE')), h('b', null, w.p2))),
+          h('div', { className: 'hb-prize-cell', style: { color: '#ff8c3c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.3', '3RD PLACE')), h('b', null, w.p3)))
+        )
       )
     );
   }
@@ -775,14 +782,21 @@
     [['SPRING','sn.spring'],['SUMMER','sn.summer'],['AUTUMN','sn.autumn'],['WINTER','sn.winter']].forEach(function (t) {
       tabs.push(h('button', { key: t[0], type: 'button', className: t[0] === tab ? 'is-on' : '', onClick: function () { setTab(t[0]); } }, ts(p, t[1], t[0])));
     });
+    var ranges = {
+      SPRING: 'SPRING SEASON   |   1 MARCH 2026 – 31 MAY 2026',
+      SUMMER: 'SUMMER SEASON   |   1 JUNE 2026 – 31 AUGUST 2026',
+      AUTUMN: 'AUTUMN SEASON   |   1 SEPTEMBER 2026 – 30 NOVEMBER 2026',
+      WINTER: 'WINTER SEASON   |   1 DECEMBER 2026 – 28 FEBRUARY 2027'
+    };
     var lb = [];
     for (var i = 0; i < rows.length; i++) {
       (function (r, idx) {
-        lb.push(h('tr', { key: r[0], className: idx < 3 ? 'is-' + (idx + 1) : '' },
-          h('td', null, idx < 3 ? h('span', { className: 'hb-medal hb-medal--' + (idx + 1) }, String(idx + 1)) : String(idx + 1)),
-          h('td', null, h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 9 } }, h('span', { className: 'hb-mav', style: { '--h': String((idx * 47) % 360) } }), r[0])),
-          h('td', null, '#BZN0' + (100 + idx * 7)),
-          h('td', { style: { textAlign: 'right' } }, h('b', { style: { fontSize: 18, color: idx < 3 ? '#ffc93c' : '#dfe6ff' } }, String(r[1])), ' ', h('small', { style: { color: '#7f8ab0' } }, ts(p, 'sn.points', 'POINTS')))
+        lb.push(h('div', { key: r[0] + idx, className: 'hb-lb-row' + (idx < 3 ? ' is-' + (idx + 1) : '') },
+          h('span', { className: idx < 3 ? 'hb-medal hb-medal--' + (idx + 1) : 'hb-rankn' }, String(idx + 1)),
+          h('span', { className: 'hb-mav hb-mav--lg', style: { '--h': String((idx * 47) % 360) } }),
+          h('span', { className: 'hb-lb-who' }, h('b', null, r[0]), h('small', null, '#BZN0' + (100 + idx * 7))),
+          h('span', { className: 'hb-gbadge' }, 'FC26'),
+          h('span', { className: 'hb-lb-pts' }, h('b', null, String(r[1])), h('small', null, ts(p, 'sn.points', 'POINTS')))
         ));
       })(rows[i], i);
     }
@@ -802,7 +816,7 @@
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'chart', 46)), title: ts(p,'sn.title','SEASON'), em: ts(p,'sn.em','RANKING'), sub: ts(p,'sn.sub','EARN POINTS • CLIMB THE LEADERBOARD • BECOME THE SEASON CHAMPION'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nClimb', scriptR: 'Good Players\nBetter Legends' }),
       h('div', { className: 'hb-wrap' },
         h('div', { className: 'hb-season-tabs' }, tabs),
-        h('div', { className: 'hb-season-range' }, tab + ' SEASON   |   1 MARCH 2026 – 31 MAY 2026'),
+        h('div', { className: 'hb-season-range' }, ranges[tab] || ranges.SPRING),
         h('div', { className: 'hb-season-clock' }, h('span', null, ico(p, 'clock', 16), ts(p,'sn.ends','SEASON ENDS IN'), h('b', null, (season && season.daysLeft != null ? season.daysLeft : 45) + ' ' + ts(p,'sn.days','DAYS')))),
         h('div', { className: 'hb-season-grid' },
           h('div', { className: 'hb-box', style: { '--c': '#ff2ea6' } },
@@ -826,11 +840,7 @@
           ),
           h('div', { className: 'hb-box', style: { '--c': '#33cfff' } },
             h('div', { className: 'hb-ps-head' }, h('span', { style: { color: '#ffc93c' } }, ico(p, 'trophy', 28)), h('b', null, ts(p,'sn.lb','SEASON LEADERBOARD')), h('small', { style: { marginLeft: 'auto' } }, 'FC26 • PS5 • 1v1')),
-            h('table', { className: 'hb-lb' },
-              h('thead', null, h('tr', null, h('th', null, '#'), h('th', null, ts(p,'sn.player','PLAYER')), h('th', null, 'BZN ID'), h('th', { style: { textAlign: 'right' } }, ts(p,'sn.points','POINTS')))),
-              h('tbody', null, lb)
-            ),
-            h('div', { style: { padding: 14 } })
+            h('div', { className: 'hb-lb-list' }, lb)
           ),
           h('div', { className: 'hb-box', style: { '--c': '#ff2ea6' } },
             h('div', { className: 'hb-ps-head' }, h('span', { style: { color: '#ffc93c' } }, ico(p, 'crown', 26)), h('b', null, ts(p,'sn.top3','CURRENT SEASON TOP 3'))),
@@ -874,20 +884,49 @@
   }
   function BracketsPage(p) {
     var st = useState(0); var sel = st[0], setSel = st[1];
+    var filtSt = useState('all'); var filt = filtSt[0], setFilt = filtSt[1];
+    var kindSt = useState('weekly'); var kind = kindSt[0], setKind = kindSt[1];
     var live = p.bracket || null;
     var rounds = buildTree();
     var champ = rounds[4][0];
     var champName = champ.sa > champ.sb ? champ.a : champ.b;
+    var games = [
+      { g: 'FC 26', cov: 'covers/fc26.jpg', n: 13, date: '29 Aug 2026', st: 'live', kind: 'weekly' },
+      { g: 'UFC 5', cov: 'covers/ufc5.jpg', n: 12, date: '22 Aug 2026', st: 'done', kind: 'weekly' },
+      { g: 'Mortal Kombat 1', cov: 'covers/mk1.jpg', n: 11, date: '15 Aug 2026', st: 'done', kind: 'weekly' },
+      { g: 'Tekken 8', cov: 'covers/tekken8.jpg', n: 10, date: '8 Aug 2026', st: 'done', kind: 'weekly' },
+      { g: 'FC 26', cov: 'covers/fc26.jpg', n: 14, date: '5 Sep 2026', st: 'next', kind: 'weekly' },
+      { g: 'FC 26 Champions Cup', cov: 'covers/fc26.jpg', n: 'CUP', date: '12 Jul 2025', st: 'next', kind: 'special' },
+      { g: 'UFC 5 Fight Night', cov: 'covers/ufc5.jpg', n: 'CUP', date: '26 Aug 2025', st: 'done', kind: 'special' },
+      { g: 'Tekken 8 Championship', cov: 'covers/tekken8.jpg', n: 'CUP', date: '10 Sep 2025', st: 'next', kind: 'special' }
+    ];
+    var shown = [];
+    var i;
+    for (i = 0; i < games.length; i++) {
+      if (games[i].kind !== kind) continue;
+      if (filt === 'cur' && games[i].st !== 'live') continue;
+      if (filt === 'up' && games[i].st !== 'next') continue;
+      if (filt === 'done' && games[i].st !== 'done') continue;
+      shown.push(games[i]);
+    }
+    if (!shown.length) shown = games.filter(function (g) { return g.kind === kind; });
+    var cur = shown[sel] || shown[0] || games[0];
     var tlist = [];
-    var games = [['FC 26', 'covers/fc26.jpg'], ['UFC 5', 'covers/ufc5.jpg'], ['Mortal Kombat 1', 'covers/mk1.jpg'], ['Tekken 8', 'covers/tekken8.jpg'], ['FC 26', 'covers/fc26.jpg'], ['UFC 5', 'covers/ufc5.jpg']];
-    for (var t = 0; t < 6; t++) {
-      (function (idx) {
-        tlist.push(h('button', { key: idx, type: 'button', className: 'hb-titem' + (idx === sel ? ' is-on' : ''), onClick: function () { setSel(idx); } },
-          h('span', { className: 'hb-tcov', style: { backgroundImage: 'url(' + coverSrc(p, games[idx][0], games[idx][1]) + ')' } }),
-          h('span', null, h('b', null, games[idx][0]), h('small', null, ts(p,'bk.weekly','Weekly Tournament') + ' #' + (13 - idx)), h('small', null, '29 Aug 2026 • 32 Players'), h('span', { className: 'hb-st hb-st--done' }, ts(p,'bk.done','COMPLETED'))),
+    for (i = 0; i < shown.length; i++) {
+      (function (row, idx) {
+        var stKey = row.st === 'live' ? 'bk.cur' : (row.st === 'next' ? 'bk.up' : 'bk.done');
+        var stCls = row.st === 'live' ? 'hb-st--live' : (row.st === 'next' ? 'hb-st--next' : 'hb-st--done');
+        tlist.push(h('button', { key: row.g + row.n, type: 'button', className: 'hb-titem' + (idx === sel ? ' is-on' : ''), onClick: function () { setSel(idx); } },
+          h('span', { className: 'hb-tcov', style: { backgroundImage: 'url(' + coverSrc(p, row.g, row.cov) + ')' } }),
+          h('span', null,
+            h('b', null, row.g),
+            h('small', null, row.kind === 'special' ? ts(p, 'bk.specialTab', 'SPECIAL EVENTS') : (ts(p, 'bk.weekly', 'Weekly Tournament') + ' #' + row.n)),
+            h('small', null, row.date + ' • 32 Players'),
+            h('span', { className: 'hb-st ' + stCls }, ts(p, stKey, row.st.toUpperCase()))
+          ),
           h('span', { style: { color: '#66719b' } }, '›')
         ));
-      })(t);
+      })(shown[i], i);
     }
     function col(roundIdx, label, seedsStart) {
       var ms = rounds[roundIdx];
@@ -905,24 +944,43 @@
       for (var j = 0; j < half.length; j++) nodes.push(MCard(half[j], 17 + j * 2, 18 + j * 2));
       return h('div', { key: label, className: 'hb-brk-col' }, h('h4', null, label), nodes);
     }
+    var filtBtns = [
+      ['all', 'bk.all', 'ALL'],
+      ['cur', 'bk.cur', 'CURRENT'],
+      ['up', 'bk.up', 'UPCOMING'],
+      ['done', 'bk.done', 'COMPLETED']
+    ];
+    var fnode = [];
+    var fi;
+    for (fi = 0; fi < filtBtns.length; fi++) {
+      (function (fb) {
+        fnode.push(h('button', { key: fb[0], type: 'button', className: filt === fb[0] ? 'is-on' : '', onClick: function () { setFilt(fb[0]); setSel(0); } }, ts(p, fb[1], fb[2])));
+      })(filtBtns[fi]);
+    }
+    var boardTitle = live && live.title ? live.title : (kind === 'special' ? (cur.g || '') : ('WEEKLY TOURNAMENT #' + cur.n));
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'bk.title','TOURNAMENT'), em: ts(p,'bk.em','BRACKETS'), sub: ts(p,'bk.sub','LIVE & PAST TOURNAMENT RESULTS'), tags: 'REAL PLAYERS   •   REAL MATCHES   •   REAL COMPETITION   •   LASTING LEGENDS', scriptL: 'Play\nCompete\nWin', scriptR: 'Good Games\nGood People' }),
+      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'bk.title','TOURNAMENT'), em: ts(p,'bk.em','BRACKETS'), sub: ts(p,'bk.sub','LIVE & PAST TOURNAMENT RESULTS'), tags: 'REAL PLAYERS   •   REAL MATCHES   •   REAL COMPETITION   •   LASTING LEGENDS', back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nWin', scriptR: 'Good Games\nGood People' }),
+      h('div', { className: 'hb-wrap' },
+        h('div', { className: 'hb-brk-tabs' },
+          h('button', { type: 'button', className: kind === 'weekly' ? 'is-on' : '', onClick: function () { setKind('weekly'); setSel(0); } }, ico(p, 'cal', 16), h('span', null, ts(p, 'bk.weeklyTab', 'WEEKLY TOURNAMENTS'), h('small', null, ts(p, 'bk.weeklyHint', 'Play the weekly championship')))),
+          h('button', { type: 'button', className: kind === 'special' ? 'is-on' : '', onClick: function () { setKind('special'); setSel(0); } }, ico(p, 'star', 16), h('span', null, ts(p, 'bk.specialTab', 'SPECIAL EVENTS'), h('small', null, ts(p, 'bk.specialHint', 'Big tournaments & exclusive cups'))))
+        )
+      ),
       h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
         h('div', { className: 'hb-brk-side hb-box', style: { '--c': '#33cfff' } },
           h('h3', null, ts(p,'bk.side','TOURNAMENTS')),
           h('p', null, ts(p,'bk.pick','Select a tournament to view the bracket')),
-          h('div', { className: 'hb-filters' },
-            h('button', { type: 'button' }, ts(p,'bk.all','ALL')), h('button', { type: 'button', className: 'is-on' }, ts(p,'bk.cur','CURRENT')), h('button', { type: 'button' }, ts(p,'bk.up','UPCOMING')), h('button', { type: 'button' }, ts(p,'bk.done','COMPLETED'))),
+          h('div', { className: 'hb-filters' }, fnode),
           h('div', { className: 'hb-tlist' }, tlist)
         ),
         h('div', { className: 'hb-brk-board hb-box', style: { '--c': '#33cfff' } },
           h('div', { className: 'hb-brk-head' },
-            h('span', { className: 'hb-glogo' }, 'FC26'),
-            h('h3', null, live && live.title ? live.title : 'WEEKLY TOURNAMENT #13'),
+            h('span', { className: 'hb-glogo' }, (cur.g && cur.g.indexOf('FC') === 0) ? 'FC26' : String(cur.g || 'FC26').split(' ')[0]),
+            h('h3', null, boardTitle),
             h('span', { className: 'hb-meta' },
-              h('span', null, ico(p, 'cal', 14), ' 29 AUGUST 2026'),
+              h('span', null, ico(p, 'cal', 14), ' ' + (cur.date || '29 AUGUST 2026')),
               h('span', null, ico(p, 'users', 14), ' 32 PLAYERS'),
-              h('span', { style: { color: '#2ee87e' } }, ico(p, 'trophy', 14), ' COMPLETED')
+              h('span', { style: { color: cur.st === 'live' ? '#2ee87e' : '#ffc93c' } }, ico(p, 'trophy', 14), ' ' + String(cur.st || 'done').toUpperCase())
             )
           ),
           h('div', { className: 'hb-brk-cols' },
@@ -982,7 +1040,7 @@
           h('h1', null, x.title, h('em', null, ts(p, 'common.coming', 'COMING SOON!'))),
           h('div', { className: 'hb-soon-div' }, h('span', { style: { color: '#a05cf7' } }, ico(p, 'pad', 26))),
           h('p', null, x.l1, h('br', null), x.l2),
-          h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#a05cf7' } }, x.btn)
+          h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#a05cf7' }, onClick: function () { go(p, '/contact'); } }, x.btn)
         )
       ),
       h('div', { className: 'hb-wrap' }, h('div', { className: 'hb-feats' }, feats))
@@ -1022,7 +1080,7 @@
               h('div', { className: 'hb-avatar' }, h('div', { className: 'hb-avin' }, name.charAt(0).toUpperCase())),
               h('div', null,
                 h('div', { className: 'hb-kv' }, kvs),
-                h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#ff2ea6', marginTop: 10 } }, ico(p, 'lock', 15), ts(p,'club.pass','CHANGE PASSWORD'), '→')
+                h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#ff2ea6', marginTop: 10 }, onClick: function () { go(p, '/profile'); } }, ico(p, 'lock', 15), ts(p,'club.pass','CHANGE PASSWORD'), '→')
               )
             )
           ),

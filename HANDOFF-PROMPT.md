@@ -1,5 +1,7 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.1 — مسابقات / EVENTS PDF §10–14):** منوی فارسی `nav.events` = **مسابقات**. Weekly بدون VIEW DETAILS و با جایزه/ورود روی کارت (PDF §11). Special فقط اطلاع‌رسانی. Season Ranking (§13) لیدربورد لیستی جدا از Brackets (§14). براکت: تب Weekly/Special، فیلتر ALL/CURRENT/UPCOMING/COMPLETED، آیتم‌های لیست کلیک‌پذیر، BACK TO EVENTS. کارت‌های پورتال Events تماماً کلیک‌پذیر. زیپ نساز مگر کارفرما بخواهد. مسیر: `hub-theme/`.
+
 > **به‌روزرسانی 2026-09-14 (هاب v2.0.5 — کاور بازی‌ها):** کاورهای widescreen خودساخته در `hub-theme/assets/covers/*.jpg` (FC26, NBA 2K24, COD MW3, GTA V, Tekken 8, UFC 5, Assetto, Astro, Minecraft, Fall Guys, LEGO Fortnite, Sackboy, LEGO HP, Rocket League, MK1). `theme.js` اول تصویر سرور را می‌خواند (`imageUrl|image|coverUrl|cover|bannerUrl` روی `systems` / `featuredGames` / `tournaments` / `eventsFeed`) و اگر نبود کاور قالب را نشان می‌دهد؛ `onError` webp←jpg چون پورتال jpg را به webp تبدیل می‌کند. بازی‌های اضافه از `featuredGames` به لیست ADULTS چسبانده می‌شود. زیپ: `hub-theme/bazino-hub-theme.zip`.
 
 
