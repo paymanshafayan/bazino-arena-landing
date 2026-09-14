@@ -10,7 +10,7 @@ mkdir -p "$STAGE/assets"
 cp theme.json theme.css "$STAGE/"
 cp -R assets/. "$STAGE/assets/"
 # drop duplicate root-level copies (CSS loads assets/fonts/*)
-rm -f "$STAGE/assets/"*.woff2 "$STAGE/assets/fc26.png" "$STAGE/assets/mk1.png" "$STAGE/assets/tekken8.png" "$STAGE/assets/ufc5.png"
+rm -f "$STAGE/assets/"*.woff2 "$STAGE/assets/covers/"*.png "$STAGE/assets/covers/"*.jpg "$STAGE/assets/fc26.png" "$STAGE/assets/mk1.png" "$STAGE/assets/tekken8.png" "$STAGE/assets/ufc5.png"
 
 VER=$(node -p "require('./theme.json').version")
 

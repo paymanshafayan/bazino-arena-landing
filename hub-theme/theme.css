@@ -258,7 +258,8 @@ body[data-theme='bazino-hub'] {
 /* ── games rows ──────────────────────────────────────────────────── */
 .hb-rows { display: flex; flex-direction: column; gap: 16px; padding-bottom: 26px; }
 .hb-grow { --c: #a05cf7; display: grid; grid-template-columns: 340px 1fr 250px; gap: 18px; align-items: center; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: linear-gradient(90deg, rgba(14,20,38,.9), rgba(8,10,20,.95)); box-shadow: 0 0 16px color-mix(in srgb, var(--c) 14%, transparent); overflow: hidden; padding: 0; }
-.hb-grow-art { height: 148px; background-size: cover; background-position: center; position: relative; }
+.hb-grow-art { height: 148px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+.hb-grow-art img, .hb-erow-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hb-grow-art--typo { display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 120% at 20% 10%, #1a2340 0%, #0a0f1e 60%); }
 .hb-grow-art--typo b { font-family: var(--hb-font-d); font-weight: 900; font-size: 26px; letter-spacing: 2px; color: var(--c); text-shadow: 0 0 16px var(--c); text-align: center; padding: 0 10px; }
 .hb-grow-mid h3 { margin: 0 0 8px; font-family: var(--hb-font-b); font-weight: 700; font-size: 19px; letter-spacing: .5px; color: #fff; }
@@ -296,7 +297,7 @@ body[data-theme='bazino-hub'] {
 
 /* ── weekly / special rows ───────────────────────────────────────── */
 .hb-erow { --c: #a05cf7; display: grid; grid-template-columns: 400px 1fr auto; gap: 20px; align-items: center; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); background: #0a0f1e; box-shadow: 0 0 18px color-mix(in srgb, var(--c) 16%, transparent); overflow: hidden; margin-bottom: 16px; }
-.hb-erow-art { height: 150px; background-size: cover; background-position: center; }
+.hb-erow-art { height: 150px; background-size: cover; background-position: center; overflow: hidden; }
 .hb-erow-mid h3 { margin: 0 0 6px; color: #fff; font-size: 19px; letter-spacing: .5px; font-weight: 700; }
 .hb-erow-mid p { margin: 0 0 10px; color: #97a1c2; font-weight: 600; font-size: 14px; }
 .hb-erow-meta { display: flex; gap: 8px; margin-top: 10px; color: #c7cfeb; font-weight: 700; font-size: 12.5px; letter-spacing: .5px; flex-wrap: wrap; }

@@ -1,5 +1,8 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
+> **به‌روزرسانی 2026-09-14 (هاب v2.0.5 — کاور بازی‌ها):** کاورهای widescreen خودساخته در `hub-theme/assets/covers/*.jpg` (FC26, NBA 2K24, COD MW3, GTA V, Tekken 8, UFC 5, Assetto, Astro, Minecraft, Fall Guys, LEGO Fortnite, Sackboy, LEGO HP, Rocket League, MK1). `theme.js` اول تصویر سرور را می‌خواند (`imageUrl|image|coverUrl|cover|bannerUrl` روی `systems` / `featuredGames` / `tournaments` / `eventsFeed`) و اگر نبود کاور قالب را نشان می‌دهد؛ `onError` webp←jpg چون پورتال jpg را به webp تبدیل می‌کند. بازی‌های اضافه از `featuredGames` به لیست ADULTS چسبانده می‌شود. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+
 > **به‌روزرسانی 2026-09-14 (مسیر واحد قالب هاب):** همهٔ فایل‌های قالب نصبی هاب (`bazino-hub` v2.0.1) فقط در پوشهٔ **`hub-theme/`** هستند — سورس (`theme.json` / `theme.js` / `theme.css` / `assets/`) + زیپ نصب `hub-theme/bazino-hub-theme.zip` + اسکریپت `hub-theme/build-hub-theme-zip.sh`. راهنمای پوشه: `hub-theme/README.md`. جزئیات: **بخش ۱۲**.
 >
 > **به‌روزرسانی 2026-09-14 (سشن `arena/01a09b67` — سورس قالب هاب v2 نوشته شد):**

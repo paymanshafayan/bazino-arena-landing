@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.0.0 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.0.5 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -11,6 +11,93 @@
 
   /* ── helpers ── */
   function asset(p, n) { return (p && p.assetsBase ? p.assetsBase + '/' : '') + n; }
+  function dynUrl(row) {
+    if (!row) return '';
+    var u = row.imageUrl || row.image || row.coverUrl || row.cover || row.bannerUrl || row.artUrl || '';
+    if (typeof u !== 'string') return '';
+    u = u.trim();
+    if (!u) return '';
+    if (u.charAt(0) === '/' || u.indexOf('http://') === 0 || u.indexOf('https://') === 0) return u;
+    return '';
+  }
+  function normName(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+  function dynCover(p, title) {
+    var key = normName(title);
+    if (!key) return '';
+    var pools = [];
+    var srcs = [p && p.systems, p && p.featuredGames, p && p.tournaments];
+    var i, j, row, n, u, feed;
+    for (i = 0; i < srcs.length; i++) {
+      if (srcs[i] && srcs[i].length) for (j = 0; j < srcs[i].length; j++) pools.push(srcs[i][j]);
+    }
+    feed = p && p.eventsFeed;
+    if (feed) {
+      if (feed.weekly) for (j = 0; j < feed.weekly.length; j++) pools.push(feed.weekly[j]);
+      if (feed.special) for (j = 0; j < feed.special.length; j++) pools.push(feed.special[j]);
+    }
+    for (i = 0; i < pools.length; i++) {
+      row = pools[i];
+      n = normName(pick(row.name || row.title || row.game || row.titleEn || '', langOf(p)));
+      if (!n || n.length < 3) continue;
+      if (key.indexOf(n) !== -1 || n.indexOf(key.slice(0, 6)) !== -1) {
+        u = dynUrl(row);
+        if (u) return u;
+      }
+    }
+    return '';
+  }
+  function themeImg(p, n) {
+    if (!n) return '';
+    return asset(p, String(n).replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+  }
+  function coverSrc(p, title, fallbackPath) {
+    var d = dynCover(p, title);
+    if (d) return d;
+    return themeImg(p, fallbackPath);
+  }
+  function CoverBox(p, title, fallbackPath, cls) {
+    var fb = fallbackPath ? asset(p, fallbackPath) : '';
+    var src = coverSrc(p, title, fallbackPath);
+    if (!src) return h('div', { className: (cls || 'hb-grow-art') + ' hb-grow-art--typo' }, h('b', null, title));
+    return h('div', { className: cls || 'hb-grow-art' },
+      h('img', { src: src, alt: '', onError: function (e) {
+        var el = e.target;
+        if (!el) return;
+        var cur = el.src || '';
+        var step = el.getAttribute('data-fb') || '0';
+        if (step === '0' && cur.indexOf('.webp') !== -1) {
+          el.setAttribute('data-fb', '1');
+          el.src = cur.replace('.webp', '.jpg');
+          return;
+        }
+        if (fb && step !== '2') { el.setAttribute('data-fb', '2'); el.src = fb; }
+      } })
+    );
+  }
+  function extraGames(p, catalog) {
+    var extras = [];
+    var seen = {};
+    var i, g, t, key, list;
+    for (i = 0; i < catalog.length; i++) seen[normName(catalog[i].t)] = 1;
+    list = (p && p.featuredGames) || [];
+    for (i = 0; i < list.length; i++) {
+      g = list[i];
+      t = pick(g.title || g.name || g.game || g.titleEn || '', langOf(p));
+      key = normName(t);
+      if (!key || seen[key]) continue;
+      seen[key] = 1;
+      extras.push({
+        t: t,
+        tags: (g.tags && g.tags.length) ? g.tags : ['Featured'],
+        pegi: Number(g.pegi || g.ageRating || 12) || 12,
+        pl: g.players || '1–4 Players',
+        on: g.online === false ? 'Offline' : 'Online & Offline',
+        d: pick(g.description || g.summary || '', langOf(p)) || t,
+        cov: ''
+      });
+    }
+    return extras;
+  }
   function langOf(p) { return (p && p.language) || 'en'; }
   function ts(p, k, f) { return p && typeof p.ts === 'function' ? p.ts(k, f) : (f || k); }
   function go(p, path) { if (p && p.onNavigate) p.onNavigate(path); }
@@ -373,19 +460,18 @@
     { t: 'Fall Guys', tags: ['Party', 'Action', 'Multiplayer'], pegi: 3, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Join the fun in this colorful and crazy obstacle course game. Perfect for playing with friends!', cov: 'covers/fall-guys.jpg' }
   ];
   var ADULTS = [
-    { t: 'EA SPORTS FC 26', tags: ['Sports', 'Football', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: "The world's game. Real teams, real players, real competition. Play with friends or challenge others at Bazino.", cov: 'covers/fc26.png' },
-    { t: 'NBA 2K24', tags: ['Sports', 'Basketball', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'Step on the court with the most realistic basketball experience. Play solo or with friends at Bazino.', art: 'NBA 2K24' },
-    { t: 'Call of Duty: Modern Warfare III', tags: ['Action', 'Shooter', 'Multiplayer', 'War'], pegi: 18, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Intense action, realistic combat and thrilling multiplayer battles. Team up and experience the next generation warfare.', art: 'MW III' },
-    { t: 'Grand Theft Auto V', tags: ['Action', 'Open World', 'Adventure', 'Multiplayer'], pegi: 18, pl: '1–4 Players', on: 'Online & Offline', d: 'Explore a massive open world, complete missions and enjoy unlimited freedom. Play alone or with friends at Bazino.', art: 'GTA V' },
-    { t: 'Tekken 8', tags: ['Fighting', 'Arcade', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'The next generation of fighting games. Stunning graphics and epic battles. Challenge your friends at Bazino.', cov: 'covers/tekken8.png' },
-    { t: 'UFC 5', tags: ['Sports', 'Fighting', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Online & Offline', d: 'Step into the octagon with the most realistic MMA experience. Fight your way to the top!', cov: 'covers/ufc5.png' },
+    { t: 'EA SPORTS FC 26', tags: ['Sports', 'Football', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: "The world's game. Real teams, real players, real competition. Play with friends or challenge others at Bazino.", cov: 'covers/fc26.jpg' },
+    { t: 'NBA 2K24', tags: ['Sports', 'Basketball', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'Step on the court with the most realistic basketball experience. Play solo or with friends at Bazino.', cov: 'covers/nba2k24.jpg' },
+    { t: 'Call of Duty: Modern Warfare III', tags: ['Action', 'Shooter', 'Multiplayer', 'War'], pegi: 18, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Intense action, realistic combat and thrilling multiplayer battles. Team up and experience the next generation warfare.', cov: 'covers/cod-mw3.jpg' },
+    { t: 'Grand Theft Auto V', tags: ['Action', 'Open World', 'Adventure', 'Multiplayer'], pegi: 18, pl: '1–4 Players', on: 'Online & Offline', d: 'Explore a massive open world, complete missions and enjoy unlimited freedom. Play alone or with friends at Bazino.', cov: 'covers/gtav.jpg' },
+    { t: 'Tekken 8', tags: ['Fighting', 'Arcade', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'The next generation of fighting games. Stunning graphics and epic battles. Challenge your friends at Bazino.', cov: 'covers/tekken8.jpg' },
+    { t: 'UFC 5', tags: ['Sports', 'Fighting', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Online & Offline', d: 'Step into the octagon with the most realistic MMA experience. Fight your way to the top!', cov: 'covers/ufc5.jpg' },
     { t: 'Assetto Corsa Competizione', tags: ['Racing', 'Simulation', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'The most realistic racing simulation. Feel the true driving experience and compete at Bazino.', cov: 'covers/assetto.jpg' }
   ];
 
   function GameRow(g, color, p) {
     return h('div', { className: 'hb-grow', style: { '--c': color } },
-      g.cov ? h('div', { className: 'hb-grow-art', style: { backgroundImage: 'url(' + asset(p, g.cov) + ')' } })
-        : h('div', { className: 'hb-grow-art hb-grow-art--typo' }, h('b', null, g.art || g.t)),
+      CoverBox(p, g.t, g.cov, 'hb-grow-art'),
       h('div', { className: 'hb-grow-mid' },
         h('h3', null, g.t),
         h('div', { className: 'hb-chips' }, g.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, t); })),
@@ -428,7 +514,7 @@
     } else if (view === 'adults') {
       body = h('div', null,
         h(PHero, { img: asset(p, 'games-adults.jpg'), icon: h('span', { style: { color: '#ff2e6f' } }, ico(p, 'pad', 44)), title: 'ADULTS', em: 'GAMES', sub: 'ACTION • SPORTS • RACING • AND MORE', back: function () { setView('cats'); }, backLabel: 'BACK TO GAMES', scriptR: 'Good Games\nGood People' }),
-        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.map(function (g) { return GameRow(g, '#ff2e6f', p); }))
+        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.concat(extraGames(p, KIDS.concat(ADULTS))).map(function (g) { return GameRow(g, '#ff2e6f', p); }))
       );
     } else if (view === 'requests') {
       body = h('div', null,
@@ -475,16 +561,16 @@
   /* ══ EVENTS ══ */
   function EventsPage(p) {
     var portals = [
-      { c: '#ff2ea6', ic: 'cal', t: 'WEEKLY TOURNAMENTS', s: 'Regular weekly competition', art: asset(p, 'covers/fc26.png'), href: '/events/weekly', btn: 'VIEW TOURNAMENTS',
+      { c: '#ff2ea6', ic: 'cal', t: 'WEEKLY TOURNAMENTS', s: 'Regular weekly competition', art: themeImg(p, 'covers/fc26.jpg'), href: '/events/weekly', btn: 'VIEW TOURNAMENTS',
         li: ['32 Players', 'Knockout Format', 'Every Saturday', 'Different Games', 'Earn Rewards'],
         d: 'Join our weekly tournaments, show your skills and compete for rewards!' },
-      { c: '#33cfff', ic: 'trophy', t: 'SPECIAL EVENTS', s: 'Big competitions & unique cups', art: asset(p, 'covers/ufc5.png'), href: '/events/special', btn: 'VIEW EVENTS',
+      { c: '#33cfff', ic: 'trophy', t: 'SPECIAL EVENTS', s: 'Big competitions & unique cups', art: themeImg(p, 'covers/ufc5.jpg'), href: '/events/special', btn: 'VIEW EVENTS',
         li: ['Unique Tournaments', 'Bigger Prizes', 'Different Games', 'Special Rules & Formats', 'Exclusive Cups'],
         d: 'Take part in our special events and experience the biggest tournaments at Bazino!' },
-      { c: '#2ee87e', ic: 'chart', t: 'SEASON RANKING', s: 'Spring • Summer • Autumn • Winter', art: asset(p, 'covers/season-crown.jpg'), href: '/events/season', btn: 'VIEW RANKINGS',
+      { c: '#2ee87e', ic: 'chart', t: 'SEASON RANKING', s: 'Spring • Summer • Autumn • Winter', art: themeImg(p, 'covers/season-crown.jpg'), href: '/events/season', btn: 'VIEW RANKINGS',
         li: ['Live Season Rankings', 'Earn Points', 'Win Season Rewards', 'Compare with Other Players', 'Be the Season Champion'],
         d: 'Compete all season, collect points and climb the leaderboard. Make your name in Bazino history!' },
-      { c: '#ff9a1f', ic: 'brk', t: 'TOURNAMENT BRACKETS', s: 'Live & Past Tournament Results', art: asset(p, 'covers/banner-bracket.jpg'), href: '/events/brackets', btn: 'VIEW BRACKETS',
+      { c: '#ff9a1f', ic: 'brk', t: 'TOURNAMENT BRACKETS', s: 'Live & Past Tournament Results', art: themeImg(p, 'covers/banner-bracket.jpg'), href: '/events/brackets', btn: 'VIEW BRACKETS',
         li: ['Current Tournament (Live)', 'Next Tournament', 'Full Tournament Brackets', 'Match Results', 'Players & Winners'],
         d: 'Follow the current tournament, see live results and explore all past tournaments with full brackets.' }
     ];
@@ -507,14 +593,14 @@
   }
 
   var WEEKLY = [
-    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], day: 'EVERY SATURDAY', max: '32 PLAYERS', prize: '500 BC', c: '#a05cf7', cov: 'covers/fc26.png' },
-    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], day: 'EVERY TUESDAY', max: '16 PLAYERS', prize: '300 BC', c: '#33cfff', cov: 'covers/ufc5.png' },
-    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY THURSDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff9a1f', cov: 'covers/mk1.png' },
-    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY FRIDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff2ea6', cov: 'covers/tekken8.png' }
+    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], day: 'EVERY SATURDAY', max: '32 PLAYERS', prize: '500 BC', c: '#a05cf7', cov: 'covers/fc26.jpg' },
+    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], day: 'EVERY TUESDAY', max: '16 PLAYERS', prize: '300 BC', c: '#33cfff', cov: 'covers/ufc5.jpg' },
+    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY THURSDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
+    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'EVERY FRIDAY', max: '16 PLAYERS', prize: '300 BC', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
   ];
   function WeeklyRow(w, p) {
     return h('div', { className: 'hb-erow', style: { '--c': w.c } },
-      h('div', { className: 'hb-erow-art', style: { backgroundImage: 'url(' + asset(p, w.cov) + ')' } }),
+      CoverBox(p, w.t, w.cov, 'hb-erow-art'),
       h('div', { className: 'hb-erow-mid' },
         h('h3', null, w.t), h('p', null, w.d),
         h('div', { className: 'hb-chips' }, w.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, t); }))
@@ -536,14 +622,14 @@
   }
 
   var SPECIAL = [
-    { t: 'FC 26 CHAMPIONS CUP', d: 'The biggest FC 26 tournament of the season! Compete with the best players and claim the champion title.', tags: ['Football', 'PS5', '1v1', 'Knockout'], date: '12 JULY 2025', time: '18:00', pl: '64 PLAYERS', fee: '150 ₺', p1: '2,000 ₺', p2: '800 ₺', p3: '400 ₺', c: '#33cfff', cov: 'covers/fc26.png' },
-    { t: 'UFC 5 BAZINO FIGHT NIGHT', d: 'Step into the octagon! A special event with top fighters, bigger prizes and real competition.', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: '26 AUGUST 2025', time: '20:00', pl: '32 PLAYERS', fee: '200 ₺', p1: '1,500 ₺', p2: '500 ₺', p3: '250 ₺', c: '#ff2e6f', cov: 'covers/ufc5.png' },
-    { t: 'MORTAL KOMBAT 1 LEGENDS', d: 'A legendary showdown. Only the strongest will survive!', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: 'TO BE ANNOUNCED', time: 'TBA', pl: '32 PLAYERS', fee: '150 ₺', p1: '1,200 ₺', p2: '400 ₺', p3: '250 ₺', c: '#ff9a1f', cov: 'covers/mk1.png' },
-    { t: 'TEKKEN 8 CHAMPIONSHIP', d: 'A new generation of fighters. Prove your skills and be the legend!', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: '10 SEPTEMBER 2025', time: '18:00', pl: '32 PLAYERS', fee: '200 ₺', p1: '1,000 ₺', p2: '350 ₺', p3: '150 ₺', c: '#a05cf7', cov: 'covers/tekken8.png' }
+    { t: 'FC 26 CHAMPIONS CUP', d: 'The biggest FC 26 tournament of the season! Compete with the best players and claim the champion title.', tags: ['Football', 'PS5', '1v1', 'Knockout'], date: '12 JULY 2025', time: '18:00', pl: '64 PLAYERS', fee: '150 ₺', p1: '2,000 ₺', p2: '800 ₺', p3: '400 ₺', c: '#33cfff', cov: 'covers/fc26.jpg' },
+    { t: 'UFC 5 BAZINO FIGHT NIGHT', d: 'Step into the octagon! A special event with top fighters, bigger prizes and real competition.', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: '26 AUGUST 2025', time: '20:00', pl: '32 PLAYERS', fee: '200 ₺', p1: '1,500 ₺', p2: '500 ₺', p3: '250 ₺', c: '#ff2e6f', cov: 'covers/ufc5.jpg' },
+    { t: 'MORTAL KOMBAT 1 LEGENDS', d: 'A legendary showdown. Only the strongest will survive!', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: 'TO BE ANNOUNCED', time: 'TBA', pl: '32 PLAYERS', fee: '150 ₺', p1: '1,200 ₺', p2: '400 ₺', p3: '250 ₺', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
+    { t: 'TEKKEN 8 CHAMPIONSHIP', d: 'A new generation of fighters. Prove your skills and be the legend!', tags: ['Fighting', 'PS5', '1v1', 'Knockout'], date: '10 SEPTEMBER 2025', time: '18:00', pl: '32 PLAYERS', fee: '200 ₺', p1: '1,000 ₺', p2: '350 ₺', p3: '150 ₺', c: '#a05cf7', cov: 'covers/tekken8.jpg' }
   ];
   function SpecialRow(s, p) {
     return h('div', { className: 'hb-erow', style: { '--c': s.c } },
-      h('div', { className: 'hb-erow-art', style: { backgroundImage: 'url(' + asset(p, s.cov) + ')' } }),
+      CoverBox(p, s.t, s.cov, 'hb-erow-art'),
       h('div', { className: 'hb-erow-mid' },
         h('h3', null, s.t), h('p', null, s.d),
         h('div', { className: 'hb-chips' }, s.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, t); })),
@@ -699,11 +785,11 @@
     var champ = rounds[4][0];
     var champName = champ.sa > champ.sb ? champ.a : champ.b;
     var tlist = [];
-    var games = [['FC 26', 'covers/fc26.png'], ['UFC 5', 'covers/ufc5.png'], ['Mortal Kombat 1', 'covers/mk1.png'], ['Tekken 8', 'covers/tekken8.png'], ['FC 26', 'covers/fc26.png'], ['UFC 5', 'covers/ufc5.png']];
+    var games = [['FC 26', 'covers/fc26.jpg'], ['UFC 5', 'covers/ufc5.jpg'], ['Mortal Kombat 1', 'covers/mk1.jpg'], ['Tekken 8', 'covers/tekken8.jpg'], ['FC 26', 'covers/fc26.jpg'], ['UFC 5', 'covers/ufc5.jpg']];
     for (var t = 0; t < 6; t++) {
       (function (idx) {
         tlist.push(h('button', { key: idx, type: 'button', className: 'hb-titem' + (idx === sel ? ' is-on' : ''), onClick: function () { setSel(idx); } },
-          h('span', { className: 'hb-tcov', style: { backgroundImage: 'url(' + asset(p, games[idx][1]) + ')' } }),
+          h('span', { className: 'hb-tcov', style: { backgroundImage: 'url(' + coverSrc(p, games[idx][0], games[idx][1]) + ')' } }),
           h('span', null, h('b', null, games[idx][0]), h('small', null, 'Weekly Tournament #' + (13 - idx)), h('small', null, '29 Aug 2026 • 32 Players'), h('span', { className: 'hb-st hb-st--done' }, 'COMPLETED')),
           h('span', { style: { color: '#66719b' } }, '›')
         ));
@@ -773,7 +859,7 @@
     var opts = [];
     for (var i = 0; i < WEEKLY.length; i++) opts.push(h('option', { key: i, value: String(i) }, WEEKLY[i].t + ' — 150 ₺'));
     return h('div', null,
-      h(PHero, { img: asset(p, 'covers/mk1.png'), icon: h('span', { style: { color: '#2ee87e' } }, ico(p, 'edit', 44)), title: 'REGISTER', em: 'TO PLAY', sub: 'NAME ON THE BRACKET • PAY AT THE DESK', back: function () { go(p, '/events'); }, backLabel: 'BACK TO EVENTS' }),
+      h(PHero, { img: themeImg(p, 'covers/mk1.jpg'), icon: h('span', { style: { color: '#2ee87e' } }, ico(p, 'edit', 44)), title: 'REGISTER', em: 'TO PLAY', sub: 'NAME ON THE BRACKET • PAY AT THE DESK', back: function () { go(p, '/events'); }, backLabel: 'BACK TO EVENTS' }),
       h('div', { className: 'hb-wrap' },
         h('form', { className: 'hb-box', style: { '--c': '#2ee87e', padding: 26, marginBottom: 30, maxWidth: 640, marginInline: 'auto' }, onSubmit: function (e) { e.preventDefault(); if (!p.user) doLogin(p); } },
           h('div', { className: 'hb-field hb-field--plain' }, h('select', { value: tid, onChange: function (e) { setTid(e.target.value); } }, opts.length ? opts : h('option', null, 'FC 26 WEEKLY — 150 ₺'))),
