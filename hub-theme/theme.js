@@ -354,13 +354,13 @@
 
   /* ══ GAMES ══ */
   var KIDS = [
-    { t: "Astro's Playroom", tags: ['Platformer', 'Adventure', 'Kids'], pegi: 3, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'Join Astro on a fun and exciting adventure through amazing worlds. A perfect game for young players!', art: 'ASTRO' },
-    { t: 'Minecraft', tags: ['Adventure', 'Creative', 'Sandbox'], pegi: 7, pl: '1–4 Players', on: 'Online & Offline', d: 'Build, explore and create your own world! A fun and imaginative game for kids.', art: 'MINECRAFT' },
-    { t: 'LEGO Fortnite', tags: ['Action', 'Adventure', 'Survival'], pegi: 7, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Explore huge worlds, build, and play with friends in a safe and fun Lego version of Fortnite.', art: 'LEGO FORTNITE' },
-    { t: 'Sackboy: A Big Adventure', tags: ['Platformer', 'Adventure', 'Co-op'], pegi: 7, pl: '1–4 Players', on: 'Offline (Local Play)', d: 'A fun and creative platformer full of imagination and exciting levels. Play alone or with friends!', art: 'SACKBOY' },
-    { t: 'LEGO Harry Potter Collection', tags: ['Adventure', 'Action', 'Puzzle'], pegi: 7, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'Experience the magic of Hogwarts in a fun Lego world. Perfect for young wizards and fans!', art: 'LEGO HARRY POTTER' },
-    { t: 'Rocket League', tags: ['Sports', 'Racing', 'Multiplayer'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'Play fun and fast car football. Easy to learn and very exciting for all ages!', art: 'ROCKET LEAGUE' },
-    { t: 'Fall Guys', tags: ['Party', 'Action', 'Multiplayer'], pegi: 3, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Join the fun in this colorful and crazy obstacle course game. Perfect for playing with friends!', art: 'FALL GUYS' }
+    { t: "Astro's Playroom", tags: ['Platformer', 'Adventure', 'Kids'], pegi: 3, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'Join Astro on a fun and exciting adventure through amazing worlds. A perfect game for young players!', cov: 'covers/astro.jpg' },
+    { t: 'Minecraft', tags: ['Adventure', 'Creative', 'Sandbox'], pegi: 7, pl: '1–4 Players', on: 'Online & Offline', d: 'Build, explore and create your own world! A fun and imaginative game for kids.', cov: 'covers/minecraft.jpg' },
+    { t: 'LEGO Fortnite', tags: ['Action', 'Adventure', 'Survival'], pegi: 7, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Explore huge worlds, build, and play with friends in a safe and fun Lego version of Fortnite.', cov: 'covers/lego-fortnite.jpg' },
+    { t: 'Sackboy: A Big Adventure', tags: ['Platformer', 'Adventure', 'Co-op'], pegi: 7, pl: '1–4 Players', on: 'Offline (Local Play)', d: 'A fun and creative platformer full of imagination and exciting levels. Play alone or with friends!', cov: 'covers/sackboy.jpg' },
+    { t: 'LEGO Harry Potter Collection', tags: ['Adventure', 'Action', 'Puzzle'], pegi: 7, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'Experience the magic of Hogwarts in a fun Lego world. Perfect for young wizards and fans!', cov: 'covers/lego-hp.jpg' },
+    { t: 'Rocket League', tags: ['Sports', 'Racing', 'Multiplayer'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'Play fun and fast car football. Easy to learn and very exciting for all ages!', cov: 'covers/rocket-league.jpg' },
+    { t: 'Fall Guys', tags: ['Party', 'Action', 'Multiplayer'], pegi: 3, pl: '1–4 Players', on: 'Online (Multiplayer)', d: 'Join the fun in this colorful and crazy obstacle course game. Perfect for playing with friends!', cov: 'covers/fall-guys.jpg' }
   ];
   var ADULTS = [
     { t: 'EA SPORTS FC 26', tags: ['Sports', 'Football', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: "The world's game. Real teams, real players, real competition. Play with friends or challenge others at Bazino.", cov: 'covers/fc26.png' },
@@ -369,12 +369,12 @@
     { t: 'Grand Theft Auto V', tags: ['Action', 'Open World', 'Adventure', 'Multiplayer'], pegi: 18, pl: '1–4 Players', on: 'Online & Offline', d: 'Explore a massive open world, complete missions and enjoy unlimited freedom. Play alone or with friends at Bazino.', art: 'GTA V' },
     { t: 'Tekken 8', tags: ['Fighting', 'Arcade', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Offline (Local Play)', d: 'The next generation of fighting games. Stunning graphics and epic battles. Challenge your friends at Bazino.', cov: 'covers/tekken8.png' },
     { t: 'UFC 5', tags: ['Sports', 'Fighting', 'Multiplayer', 'Competitive'], pegi: 16, pl: '1–2 Players', on: 'Online & Offline', d: 'Step into the octagon with the most realistic MMA experience. Fight your way to the top!', cov: 'covers/ufc5.png' },
-    { t: 'Assetto Corsa Competizione', tags: ['Racing', 'Simulation', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'The most realistic racing simulation. Feel the true driving experience and compete at Bazino.', art: 'ASSETTO CORSA' }
+    { t: 'Assetto Corsa Competizione', tags: ['Racing', 'Simulation', 'Multiplayer', 'Competitive'], pegi: 3, pl: '1–4 Players', on: 'Online & Offline', d: 'The most realistic racing simulation. Feel the true driving experience and compete at Bazino.', cov: 'covers/assetto.jpg' }
   ];
 
-  function GameRow(g, color) {
+  function GameRow(g, color, p) {
     return h('div', { className: 'hb-grow', style: { '--c': color } },
-      g.cov ? h('div', { className: 'hb-grow-art', style: { backgroundImage: 'url(' + g.cov + ')' } })
+      g.cov ? h('div', { className: 'hb-grow-art', style: { backgroundImage: 'url(' + asset(p, g.cov) + ')' } })
         : h('div', { className: 'hb-grow-art hb-grow-art--typo' }, h('b', null, g.art || g.t)),
       h('div', { className: 'hb-grow-mid' },
         h('h3', null, g.t),
@@ -413,12 +413,12 @@
     if (view === 'kids') {
       body = h('div', null,
         h(PHero, { img: asset(p, 'games-kids.jpg'), icon: h('span', { style: { color: '#33cfff' } }, svg(ICO.users, 44, 1.5)), title: 'KIDS', em: 'GAMES', sub: 'FUN & SAFE GAMES FOR YOUNGER PLAYERS', back: function () { setView('cats'); }, backLabel: 'BACK TO GAMES', scriptR: 'Good Games\nGood People' }),
-        h('div', { className: 'hb-wrap hb-rows' }, KIDS.map(function (g) { return GameRow(g, '#a05cf7'); }))
+        h('div', { className: 'hb-wrap hb-rows' }, KIDS.map(function (g) { return GameRow(g, '#a05cf7', p); }))
       );
     } else if (view === 'adults') {
       body = h('div', null,
         h(PHero, { img: asset(p, 'games-adults.jpg'), icon: h('span', { style: { color: '#ff2e6f' } }, svg(ICO.pad, 44, 1.5)), title: 'ADULTS', em: 'GAMES', sub: 'ACTION • SPORTS • RACING • AND MORE', back: function () { setView('cats'); }, backLabel: 'BACK TO GAMES', scriptR: 'Good Games\nGood People' }),
-        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.map(function (g) { return GameRow(g, '#ff2e6f'); }))
+        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.map(function (g) { return GameRow(g, '#ff2e6f', p); }))
       );
     } else if (view === 'requests') {
       body = h('div', null,
@@ -566,10 +566,21 @@
     ['ArmanK', 48], ['RezaB', 42], ['Mahan10', 35], ['Shayan', 28], ['AliGameR', 25],
     ['DarkLord', 23], ['NimaPro', 20], ['RezaMVP', 18], ['Hitman', 16], ['Parsa', 15]
   ];
+  function seasonRowsOf(p) {
+    var season = p.season;
+    if (!season && p.eventsFeed) season = p.eventsFeed.season || null;
+    if (!season || season.error || season.status === 404) return STANDINGS;
+    var list = season.standings || season.leaderboard || season.players || season.rows || [];
+    if (!list || !list.length) return STANDINGS;
+    return list.map(function (r) {
+      if (Object.prototype.toString.call(r) === '[object Array]') return [r[0], r[1] || 0];
+      return [r.displayName || r.username || r.name || 'Player', r.points || r.score || 0];
+    });
+  }
   function SeasonPage(p) {
     var st = useState('SPRING'); var tab = st[0], setTab = st[1];
-    var season = p.season || null;
-    var rows = (season && season.standings && season.standings.length) ? season.standings.map(function (r) { return [r.displayName || r.username, r.points || 0]; }) : STANDINGS;
+    var season = (p.season && !p.season.error) ? p.season : ((p.eventsFeed && p.eventsFeed.season) || null);
+    var rows = seasonRowsOf(p);
     var tabs = [];
     ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'].forEach(function (t) {
       tabs.push(h('button', { key: t, type: 'button', className: t === tab ? 'is-on' : '', onClick: function () { setTab(t); } }, t));
@@ -667,8 +678,8 @@
   function MCard(m, seedA, seedB) {
     var aw = m.sa > m.sb;
     return h('div', { className: 'hb-mcard' },
-      h('div', { className: 'hb-mrow' + (aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedA)), h('span', { className: 'hb-mav', style: { '--h': String((m.a.length * 53) % 360) } }), h('span', { className: 'hb-mname' }, m.a), h('span', { className: 'hb-mscore' }, String(m.sa))),
-      h('div', { className: 'hb-mrow' + (!aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedB)), h('span', { className: 'hb-mav', style: { '--h': String((m.b.length * 41) % 360) } }), h('span', { className: 'hb-mname' }, m.b), h('span', { className: 'hb-mscore' }, String(m.sb)))
+      h('div', { className: 'hb-mrow' + (aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedA)), h('span', { className: 'hb-mav', style: { '--h': String((m.a.length * 53) % 360) } }), h('span', { className: 'hb-mname', title: m.a }, m.a), h('span', { className: 'hb-mscore' }, String(m.sa))),
+      h('div', { className: 'hb-mrow' + (!aw ? ' is-win' : '') }, h('span', { className: 'hb-mseed' }, String(seedB)), h('span', { className: 'hb-mav', style: { '--h': String((m.b.length * 41) % 360) } }), h('span', { className: 'hb-mname', title: m.b }, m.b), h('span', { className: 'hb-mscore' }, String(m.sb)))
     );
   }
   function BracketsPage(p) {
@@ -706,7 +717,7 @@
     }
     return h('div', null,
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, svg(ICO.trophy, 46, 1.5)), title: 'TOURNAMENT', em: 'BRACKETS', sub: 'LIVE & PAST TOURNAMENT RESULTS', tags: 'REAL PLAYERS   •   REAL MATCHES   •   REAL COMPETITION   •   LASTING LEGENDS', scriptL: 'Play\nCompete\nWin', scriptR: 'Good Games\nGood People' }),
-      h('div', { className: 'hb-wrap hb-brk-layout' },
+      h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
         h('div', { className: 'hb-brk-side hb-box', style: { '--c': '#33cfff' } },
           h('h3', null, 'TOURNAMENTS'),
           h('p', null, 'Select a tournament to view the bracket'),
@@ -841,7 +852,7 @@
           ),
           h('div', { className: 'hb-box', style: { '--c': '#33cfff', paddingBottom: 12 } },
             h('div', { className: 'hb-card-head' }, h('span', { style: { color: '#c0d0ff' } }, svg(ICO.crown, 24, 1.6)), h('b', null, 'BAZINO MEMBER CARD')),
-            h('div', { className: 'hb-mcard' },
+            h('div', { className: 'hb-memcard' },
               h('div', { className: 'hb-mc-logo' }, 'BAZINO'), h('small', null, 'GAMING CLUB'),
               h('div', { className: 'hb-mc-script' }, 'PLAY', h('br', null), 'COMPETE', h('br', null), 'EARN', h('br', null), 'BE A LEGEND'),
               h('div', { className: 'hb-mc-mid' },
