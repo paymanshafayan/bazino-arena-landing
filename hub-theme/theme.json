@@ -1,7 +1,7 @@
 {
   "id": "bazino-hub",
   "name": "Bazino Hub Arena (Hasti mockups)",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "layout": "hub",
   "description": "Neon Hub theme rebuilt 1:1 after the employer WhatsApp mockups (2026-09-04 set): 3-panel hero, 7 quick tiles, contact strip footer, category games with PEGI rows, events portals, weekly/special rows, season ranking 3-col, 32-player double bracket with champion core, profile with member card, coming-soon shop/food. Menus & page names follow portal HUB_PAGES (home/games/events/shop/food/club/blog/contact/rules/privacy).",
   "author": "Bazino",
@@ -52,7 +52,7 @@
     "en": {
       "nav.home": "HOME",
       "nav.games": "GAMES",
-      "nav.events": "EVENTS",
+      "nav.events": "TOURNAMENTS",
       "nav.shop": "SHOP",
       "nav.food": "FOOD & DRINKS",
       "nav.club": "CLUB",
@@ -384,7 +384,7 @@
       "pv.em": "POLICY",
       "pv.sub": "YOUR DATA • YOUR RIGHTS",
       "pv.body": "Bazino stores only the information you provide (name, username, phone) to run club memberships, tournaments and credits. Data is never sold. Contact the desk or WhatsApp for correction or deletion requests.",
-      "ev.hero": "EVENTS",
+      "ev.hero": "TOURNAMENTS",
       "wk.sat": "SATURDAY",
       "wk.time": "18:00",
       "bk.weeklyTab": "WEEKLY TOURNAMENTS",

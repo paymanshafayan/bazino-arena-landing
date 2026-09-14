@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.1 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.2 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
