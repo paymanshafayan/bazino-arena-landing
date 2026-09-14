@@ -67,3 +67,8 @@ body[data-theme='bazino-arena3d'] [class*='grid-cols-3']>.bg-dark-card:nth-child
 @media(prefers-reduced-motion:reduce){body[data-theme='bazino-arena3d'] .animate-fade-in{animation:none}}
 
 /* Bazino Arena 3D v1.0.4 — destination CTA/navigation correction */
+
+/* Bazino Arena 3D v1.0.5 — aligned internal cards and interactive actions */
+body[data-theme='bazino-arena3d'] [class*='grid-cols-3']>.bg-dark-card:nth-child(2n),body[data-theme='bazino-arena3d'] [class*='xl:grid-cols-3']>.group:nth-child(2n){transform:none!important}
+body[data-theme='bazino-arena3d'] [class*='grid-cols-3']>.bg-dark-card:nth-child(2n):hover,body[data-theme='bazino-arena3d'] [class*='xl:grid-cols-3']>.group:nth-child(2n):hover{transform:translateY(-9px) translateZ(35px)!important}
+body[data-theme='bazino-arena3d'] .animate-fade-in :is(button,a){pointer-events:auto;position:relative;z-index:6}

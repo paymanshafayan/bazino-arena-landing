@@ -17,12 +17,12 @@
 
 - Name: `Bazino Arena 3D`
 - ID: `bazino-arena3d`
-- Version: `1.0.4`
+- Version: `1.0.5`
 - SDK version: `2`
 - Canonical folder: `themes/bazino-arena3d/`
 - Editable compatibility source: `bazino-arena3d-package/`
-- Active public preview: `client/public/arena3d-v104/`
-- Previous version archive: `archive/bazino-arena3d/v1.0.3/`
+- Active public preview: `client/public/arena3d-v105/`
+- Previous version archive: `archive/bazino-arena3d/v1.0.4/`
 - Preview route: `/arena3d-preview`
 - Internal visual preview: `/arena3d-preview?internal=1&page=games`
 
@@ -55,7 +55,8 @@
 - `1.0.1`: archived under `archive/bazino-arena3d/v1.0.1/`
 - `1.0.2`: archived under `archive/bazino-arena3d/v1.0.2/`
 - `1.0.3`: archived under `archive/bazino-arena3d/v1.0.3/`
-- `1.0.4`: active
+- `1.0.4`: archived under `archive/bazino-arena3d/v1.0.4/`
+- `1.0.5`: active
 
 ## Important integration constraint
 
@@ -64,3 +65,7 @@ The portal SDK currently exposes `home`, `header`, and `mobileNav` theme regions
 ## v1.0.4 destination correction
 
 Destination CTA copy is specific to each destination and invokes `onNavigate` with authoritative portal paths: `/`, `/games`, `/cafe`, `/shop`, `/events`, `/club`, and `/blog`. The preview callback maps these paths to visible internal preview routes for browser verification.
+
+## v1.0.5 tournament correction
+
+Internal tournament cards are vertically aligned. Interactive buttons/links are layered above decorative pseudo-elements. Tournament preview card actions navigate to the bracket page for end-to-end verification.
