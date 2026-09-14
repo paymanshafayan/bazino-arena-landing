@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.3 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.4 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -658,6 +658,27 @@
   }
 
   /* ══ EVENTS ══ */
+  function EventsSubnav(p, active) {
+    var items = [
+      { id: 'events', href: '/events', k: 'ev.hero', f: 'EVENTS' },
+      { id: 'weekly', href: '/events/weekly', k: 'wk.title', f: 'WEEKLY' },
+      { id: 'special', href: '/events/special', k: 'sp.title', f: 'SPECIAL' },
+      { id: 'season', href: '/events/season', k: 'sn.title', f: 'SEASON' },
+      { id: 'brackets', href: '/events/brackets', k: 'bk.em', f: 'BRACKETS' }
+    ];
+    var nodes = [];
+    var i;
+    for (i = 0; i < items.length; i++) {
+      (function (it) {
+        nodes.push(h('a', {
+          key: it.id, href: it.href,
+          className: 'hb-esub' + (active === it.id ? ' is-on' : ''),
+          onClick: function (e) { e.preventDefault(); go(p, it.href); }
+        }, ts(p, it.k, it.f)));
+      })(items[i]);
+    }
+    return h('div', { className: 'hb-wrap' }, h('nav', { className: 'hb-esubnav', 'aria-label': 'events' }, nodes));
+  }
   function EventsPage(p) {
     var portals = [
       { c: '#ff2ea6', ic: 'cal', tk: 'ev.weekly', sk: 'ev.weeklyS', art: themeImg(p, 'covers/fc26.jpg'), href: '/events/weekly', btnk: 'ev.weeklyB',
@@ -683,7 +704,7 @@
     }
     return h('div', null,
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.hero','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags',''), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
-      h('div', { className: 'hb-wrap hb-portals' }, cards)
+      EventsSubnav(p, 'events'), h('div', { className: 'hb-wrap hb-portals' }, cards)
     );
   }
 
@@ -694,11 +715,11 @@
     { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'FRIDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
   ];
   function WeeklyRow(w, p) {
-    return h('div', { className: 'hb-erow', style: { '--c': w.c } },
+    return h('button', { type: 'button', className: 'hb-erow', style: { '--c': w.c }, onClick: function () { go(p, '/events/brackets'); } },
       CoverBox(p, w.t, w.cov, 'hb-erow-art'),
       h('div', { className: 'hb-erow-mid' },
         h('h3', null, w.t), h('p', null, w.d),
-        h('div', { className: 'hb-chips' }, w.tags.map(function (t) { return h('span', { key: t, className: 'hb-chip2' }, ts(p, 'tag.' + t, t)); })),
+        h('div', { className: 'hb-chips' }, w.tags.map(function (tg) { return h('span', { key: tg, className: 'hb-chip2' }, ts(p, 'tag.' + tg, tg)); })),
         h('div', { className: 'hb-erow-meta' },
           h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 15), w.day + '  ' + w.time),
           h('span', { style: { color: '#c7cfeb' } }, ico(p, 'users', 15), w.max)
@@ -711,7 +732,8 @@
           h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.1', '1ST PLACE')), h('b', null, w.p1))),
           h('div', { className: 'hb-prize-cell', style: { color: '#c0d0ff' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.2', '2ND PLACE')), h('b', null, w.p2))),
           h('div', { className: 'hb-prize-cell', style: { color: '#ff8c3c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.3', '3RD PLACE')), h('b', null, w.p3)))
-        )
+        ),
+        h('span', { className: 'hb-cta hb-cta--line', style: { '--c': w.c, marginTop: 10, pointerEvents: 'none' } }, ts(p, 'wk.bracket', 'VIEW BRACKET'), ' →')
       )
     );
   }
@@ -719,7 +741,7 @@
     var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
     return h('div', null,
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 46)), title: ts(p,'wk.title','WEEKLY'), em: ts(p,'wk.em','TOURNAMENTS'), sub: ts(p,'wk.sub','PLAY • COMPETE • EARN CREDITS • BE A LEGEND'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptR: 'Good Games\nGood People' }),
-      h('div', { className: 'hb-wrap' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
+      EventsSubnav(p, 'weekly'), h('div', { className: 'hb-wrap' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
     );
   }
 
@@ -755,7 +777,7 @@
   function SpecialPage(p) {
     return h('div', null,
       h(PHero, { img: asset(p, 'slide-city.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'sp.title','SPECIAL'), em: ts(p,'sp.em','EVENTS'), sub: ts(p,'sp.sub','BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Epic\nTournaments', scriptR: 'More\nThan\na Game' }),
-      h('div', { className: 'hb-wrap' }, SPECIAL.map(function (s) { return SpecialRow(s, p); }))
+      EventsSubnav(p, 'special'), h('div', { className: 'hb-wrap' }, SPECIAL.map(function (s) { return SpecialRow(s, p); }))
     );
   }
 
@@ -792,10 +814,11 @@
     var lb = [];
     for (var i = 0; i < rows.length; i++) {
       (function (r, idx) {
+        var ids = ['1024','0876','0341','0287','0912','0674','0456','0789','0112','0398'];
         lb.push(h('div', { key: r[0] + idx, className: 'hb-lb-row' + (idx < 3 ? ' is-' + (idx + 1) : '') },
           h('span', { className: idx < 3 ? 'hb-medal hb-medal--' + (idx + 1) : 'hb-rankn' }, String(idx + 1)),
           h('span', { className: 'hb-mav hb-mav--lg', style: { '--h': String((idx * 47) % 360) } }),
-          h('span', { className: 'hb-lb-who' }, h('b', null, r[0]), h('small', null, '#BZN0' + (100 + idx * 7))),
+          h('span', { className: 'hb-lb-who' }, h('b', null, r[0], idx === 0 ? h('span', { className: 'hb-crownlet' }, '♛') : null), h('small', null, '#BZN' + (ids[idx] || ('0' + (100 + idx * 7))))),
           h('span', { className: 'hb-gbadge' }, 'FC26'),
           h('span', { className: 'hb-lb-pts' }, h('b', null, String(r[1])), h('small', null, ts(p, 'sn.points', 'POINTS')))
         ));
@@ -815,6 +838,7 @@
     }
     return h('div', null,
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'chart', 46)), title: ts(p,'sn.title','SEASON'), em: ts(p,'sn.em','RANKING'), sub: ts(p,'sn.sub','EARN POINTS • CLIMB THE LEADERBOARD • BECOME THE SEASON CHAMPION'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nClimb', scriptR: 'Good Players\nBetter Legends' }),
+      EventsSubnav(p, 'season'),
       h('div', { className: 'hb-wrap' },
         h('div', { className: 'hb-season-tabs' }, tabs),
         h('div', { className: 'hb-season-range' }, ranges[tab] || ranges.SPRING),
@@ -841,6 +865,7 @@
           ),
           h('div', { className: 'hb-box', style: { '--c': '#33cfff' } },
             h('div', { className: 'hb-ps-head' }, h('span', { style: { color: '#ffc93c' } }, ico(p, 'trophy', 28)), h('b', null, ts(p,'sn.lb','SEASON LEADERBOARD')), h('small', { style: { marginLeft: 'auto' } }, 'FC26 • PS5 • 1v1')),
+            h('div', { className: 'hb-lb-cols' }, h('span', null, '#'), h('span', null, ts(p,'sn.player','PLAYER')), h('span', null, 'BZN ID'), h('span', null, ts(p,'sn.points','POINTS'))),
             h('div', { className: 'hb-lb-list' }, lb)
           ),
           h('div', { className: 'hb-box', style: { '--c': '#ff2ea6' } },
@@ -1082,7 +1107,7 @@
           h('button', { type: 'button', className: kind === 'special' ? 'is-on' : '', onClick: function () { setKind('special'); setSel(0); } }, ico(p, 'star', 16), h('span', null, ts(p, 'bk.specialTab', 'SPECIAL EVENTS'), h('small', null, ts(p, 'bk.specialHint', 'Big tournaments & exclusive cups'))))
         )
       ),
-      h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
+      EventsSubnav(p, 'brackets'), h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
         h('div', { className: 'hb-brk-side hb-box', style: { '--c': '#33cfff' } },
           h('h3', null, ts(p,'bk.side','TOURNAMENTS')),
           h('p', null, ts(p,'bk.pick','Select a tournament to view the bracket')),

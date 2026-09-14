@@ -1,3 +1,5 @@
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.4 — مسابقات هفتگی + رتبه‌بندی فصل):** کارت‌های WEEKLY با `VIEW BRACKET` کلیک‌پذیر به `/events/brackets`. نوار زیرهیرو EVENTS / WEEKLY / SPECIAL / SEASON / BRACKETS برای پیدا کردن §13. لیدربورد فصل نزدیک‌تر به ماکاپ طلا/نقره/برنز. زیپ نساز.
+
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
 > **به‌روزرسانی 2026-09-14 (هاب v2.1.3 — خطوط نئون براکت):** کلاس ثابت `.hb-wire` + `.hb-wire-svg` با گرادینت cyan/magenta/gold. `HbWireLayer` + `data-wire` + `elbowPath`/`smoothPath` قابل استفاده در هر صفحه. براکت ۳۲ نفره کارت‌ها را با SVG منحنی وصل می‌کند. زیپ نساز.

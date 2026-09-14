@@ -1,7 +1,7 @@
 {
   "id": "bazino-hub",
   "name": "Bazino Hub Arena (Hasti mockups)",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "layout": "hub",
   "description": "Neon Hub theme rebuilt 1:1 after the employer WhatsApp mockups (2026-09-04 set): 3-panel hero, 7 quick tiles, contact strip footer, category games with PEGI rows, events portals, weekly/special rows, season ranking 3-col, 32-player double bracket with champion core, profile with member card, coming-soon shop/food. Menus & page names follow portal HUB_PAGES (home/games/events/shop/food/club/blog/contact/rules/privacy).",
   "author": "Bazino",
