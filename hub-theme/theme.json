@@ -1,7 +1,7 @@
 {
   "id": "bazino-hub",
   "name": "Bazino Hub Arena (Hasti mockups)",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "layout": "hub",
   "description": "Neon Hub theme rebuilt 1:1 after the employer WhatsApp mockups (2026-09-04 set): 3-panel hero, 7 quick tiles, contact strip footer, category games with PEGI rows, events portals, weekly/special rows, season ranking 3-col, 32-player double bracket with champion core, profile with member card, coming-soon shop/food. Menus & page names follow portal HUB_PAGES (home/games/events/shop/food/club/blog/contact/rules/privacy).",
   "author": "Bazino",
@@ -392,7 +392,8 @@
       "bk.weeklyHint": "Play the weekly championship",
       "bk.specialHint": "Big tournaments & exclusive cups",
       "club.passOk": "Password updated at the desk — ask staff if you need a reset.",
-      "common.stayHint": "We will announce this at the club."
+      "common.stayHint": "We will announce this at the club.",
+      "ev.page": "EVENTS"
     },
     "fa": {
       "nav.home": "خانه",
@@ -737,7 +738,8 @@
       "bk.weeklyHint": "قهرمانی هفتگی را بازی کن",
       "bk.specialHint": "تورنمنت‌های بزرگ و کاپ‌های ویژه",
       "club.passOk": "رمز از میز باشگاه به‌روز می‌شود.",
-      "common.stayHint": "به‌زودی در باشگاه اعلام می‌شود."
+      "common.stayHint": "به‌زودی در باشگاه اعلام می‌شود.",
+      "ev.page": "رویدادها"
     },
     "tr": {
       "nav.home": "ANA SAYFA",
@@ -1082,7 +1084,8 @@
       "bk.weeklyHint": "Haftalık şampiyonayı oyna",
       "bk.specialHint": "Büyük turnuvalar ve özel kupalar",
       "club.passOk": "Şifre kulüp gişesinde güncellenir.",
-      "common.stayHint": "Kulüpte duyurulacak."
+      "common.stayHint": "Kulüpte duyurulacak.",
+      "ev.page": "EVENTS"
     },
     "ru": {
       "nav.home": "ГЛАВНАЯ",
@@ -1427,7 +1430,8 @@
       "bk.weeklyHint": "Играй в еженедельный чемпионат",
       "bk.specialHint": "Большие турниры и кубки",
       "club.passOk": "Пароль обновляется на стойке клуба.",
-      "common.stayHint": "Анонс будет в клубе."
+      "common.stayHint": "Анонс будет в клубе.",
+      "ev.page": "EVENTS"
     }
   }
 }

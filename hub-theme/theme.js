@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.5 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.6 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -716,7 +716,7 @@
       })(portals[i]);
     }
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.hero','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags','TOURNAMENTS   |   SEASON RANKINGS   |   SPECIAL EVENTS   |   REAL PLAYERS   |   REAL PRIZES'), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
+      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.page','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags','TOURNAMENTS   |   SEASON RANKINGS   |   SPECIAL EVENTS   |   REAL PLAYERS   |   REAL PRIZES'), scriptR: 'Play\nCompete\nWin' }),
       h('div', { className: 'hb-wrap hb-portals' }, cards)
     );
   }
@@ -836,8 +836,12 @@
         top3.push(h('div', { key: r[0], className: 'hb-t3 is-' + (idx + 1), style: { '--c': t3c[idx] } },
           h('span', { className: 'hb-medal hb-medal--' + (idx + 1) }, String(idx + 1)),
           Av(p, idx, 'hb-avimg hb-avimg--lg'),
-          h('span', null, h('small', { style: { color: t3c[idx], letterSpacing: 1.5, fontSize: 10, fontWeight: 700 } }, (idx + 1) + (idx === 0 ? 'ST' : idx === 1 ? 'ND' : 'RD') + ' PLACE'), h('b', null, r[0]), h('small', null, '#BZN' + (['1024','0876','0341'][idx] || '0000'))),
-          h('span', { className: 'hb-pts' }, r[1] + ' Points')
+          h('span', { className: 'hb-t3-who' },
+            h('small', { style: { color: t3c[idx], letterSpacing: 1.5, fontSize: 10, fontWeight: 700 } }, (idx + 1) + (idx === 0 ? 'ST' : idx === 1 ? 'ND' : 'RD') + ' PLACE'),
+            h('b', null, r[0]),
+            h('small', null, '#BZN' + (['1024','0876','0341'][idx] || '0000')),
+            h('strong', { className: 'hb-pts' }, String(r[1]) + ' Points')
+          )
         ));
       })(rows[k], k);
     }
@@ -867,7 +871,7 @@
           ),
           h('div', { className: 'hb-box', style: { '--c': '#33cfff' } },
             h('div', { className: 'hb-ps-head' }, h('span', { style: { color: '#ffc93c' } }, ico(p, 'trophy', 28)), h('b', null, ts(p,'sn.lb','SEASON LEADERBOARD')), h('small', { style: { marginLeft: 'auto' } }, 'FC26 • PS5 • 1v1')),
-            h('div', { className: 'hb-lb-cols' }, h('span', null, '#'), h('span', null, ts(p,'sn.player','PLAYER')), h('span', null, 'BZN ID'), h('span', null, ts(p,'sn.points','POINTS'))),
+            h('div', { className: 'hb-lb-cols' }, h('span', null, '#'), h('span', null, ''), h('span', null, ts(p,'sn.player','PLAYER')), h('span', null, 'BZN ID'), h('span', null, ts(p,'sn.points','POINTS'))),
             h('div', { className: 'hb-lb-list' }, lb)
           ),
           h('div', { className: 'hb-box', style: { '--c': '#ff2ea6' } },
@@ -1102,7 +1106,7 @@
     }
     var boardTitle = live && live.title ? live.title : (kind === 'special' ? (cur.g || '') : ('WEEKLY TOURNAMENT #' + cur.n));
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'bk.title','TOURNAMENT'), em: ts(p,'bk.em','BRACKETS'), sub: ts(p,'bk.sub','LIVE & PAST TOURNAMENT RESULTS'), tags: 'REAL PLAYERS   •   REAL MATCHES   •   REAL COMPETITION   •   LASTING LEGENDS', back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nWin', scriptR: 'Good Games\nGood People' }),
+      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'bk.title','TOURNAMENT'), em: ts(p,'bk.em','BRACKETS'), sub: ts(p,'bk.sub','LIVE & PAST TOURNAMENT RESULTS'), tags: 'REAL PLAYERS   •   REAL MATCHES   •   REAL COMPETITION   •   LASTING LEGENDS', back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nWin' }),
       h('div', { className: 'hb-wrap' },
         h('div', { className: 'hb-brk-tabs' },
           h('button', { type: 'button', className: kind === 'weekly' ? 'is-on' : '', onClick: function () { setKind('weekly'); setSel(0); } }, ico(p, 'cal', 16), h('span', null, ts(p, 'bk.weeklyTab', 'WEEKLY TOURNAMENTS'), h('small', null, ts(p, 'bk.weeklyHint', 'Play the weekly championship')))),
@@ -1133,7 +1137,7 @@
               h('div', { className: 'hb-champ', 'data-wire': 'CHAMP' },
                 h('span', { className: 'hb-trophy', style: { color: '#ffc93c' } }, ico(p, 'trophy', 64)),
                 h('b', null, ts(p,'bk.champ','CHAMPION')),
-                h('span', { className: 'hb-chav' }, champName.charAt(0)),
+                Av(p, 0, 'hb-avimg hb-avimg--champ'),
                 h('b', { style: { fontSize: 14 } }, champName),
                 h('small', null, '#BZN1024')
               ),
