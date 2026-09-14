@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.4 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.5 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -74,6 +74,13 @@
         if (fb && step !== '2') { el.setAttribute('data-fb', '2'); el.src = fb; }
       } })
     );
+  }
+
+  var AVATARS = ['arman', 'reza', 'mahan', 'shayan', 'ali', 'darklord', 'nima', 'reza', 'darklord', 'shayan'];
+  function Av(p, idx, cls) {
+    var n = AVATARS[(idx || 0) % AVATARS.length];
+    return h('img', { className: cls || 'hb-avimg', src: themeImg(p, 'avatars/' + n + '.jpg'), alt: '',
+      onError: function (e) { if (e && e.target && String(e.target.src).indexOf('.webp') !== -1) e.target.src = asset(p, 'avatars/' + n + '.jpg'); } });
   }
   function extraGames(p, catalog) {
     var extras = [];
@@ -373,8 +380,10 @@
         h('div', { className: 'hb-in' },
           h('h1', { className: 'hb-ptitle' }, x.icon || null, x.title, x.em ? h('em', null, x.em) : null),
           h('p', { className: 'hb-psub' }, x.sub || ''),
-          x.tags ? h('p', { className: 'hb-ptags' }, x.tags) : null
-        )
+          x.tags ? h('p', { className: 'hb-ptags' }, x.tags) : null,
+          x.extra || null
+        ),
+        x.chip ? h('div', { className: 'hb-phero-chip' }, x.chip) : null
       )
     );
   }
@@ -682,66 +691,62 @@
   function EventsPage(p) {
     var portals = [
       { c: '#ff2ea6', ic: 'cal', tk: 'ev.weekly', sk: 'ev.weeklyS', art: themeImg(p, 'covers/fc26.jpg'), href: '/events/weekly', btnk: 'ev.weeklyB',
-        lik: ['ev.li1','ev.li2','ev.li3','ev.li4','ev.li5'], dk: 'ev.weeklyD' },
-      { c: '#33cfff', ic: 'trophy', tk: 'ev.special', sk: 'ev.specialS', art: themeImg(p, 'covers/ufc5.jpg'), href: '/events/special', btnk: 'ev.specialB',
-        lik: ['ev.li6','ev.li7','ev.li4','ev.li8','ev.li9'], dk: 'ev.specialD' },
+        lik: [['trophy','ev.li1'],['users','ev.li2'],['cal','ev.li3'],['pad','ev.li4'],['star','ev.li5']], dk: 'ev.weeklyD' },
+      { c: '#33cfff', ic: 'trophy', tk: 'ev.special', tri: 1, sk: 'ev.specialS', art: themeImg(p, 'covers/ufc5.jpg'), href: '/events/special', btnk: 'ev.specialB',
+        lik: [['trophy','ev.li6'],['gift','ev.li7'],['pad','ev.li4'],['star','ev.li8'],['trophy','ev.li9']], dk: 'ev.specialD' },
       { c: '#2ee87e', ic: 'chart', tk: 'ev.season', sk: 'ev.seasonS', art: themeImg(p, 'covers/season-crown.jpg'), href: '/events/season', btnk: 'ev.seasonB',
-        lik: ['ev.li10','ev.li11','ev.li12','ev.li13','ev.li14'], dk: 'ev.seasonD' },
+        lik: [['chart','ev.li10'],['star','ev.li11'],['trophy','ev.li12'],['users','ev.li13'],['crown','ev.li14']], dk: 'ev.seasonD' },
       { c: '#ff9a1f', ic: 'brk', tk: 'ev.brk', sk: 'ev.brkS', art: themeImg(p, 'covers/banner-bracket.jpg'), href: '/events/brackets', btnk: 'ev.brkB',
-        lik: ['ev.li15','ev.li16','ev.li17','ev.li18','ev.li19'], dk: 'ev.brkD' }
+        lik: [['trophy','ev.li15'],['cal','ev.li16'],['brk','ev.li17'],['eye','ev.li18'],['users','ev.li19']], dk: 'ev.brkD' }
     ];
     var cards = [];
     for (var i = 0; i < portals.length; i++) {
       (function (x) {
         cards.push(h('button', { key: x.tk, type: 'button', className: 'hb-portal', style: { '--c': x.c }, onClick: function () { go(p, x.href); } },
           h('div', { className: 'hb-portal-head' }, h('span', { style: { color: x.c } }, ico(p, x.ic, 34)), h('span', null, h('b', null, ts(p, x.tk, x.tk)), h('small', null, ts(p, x.sk, '')))),
-          h('div', { className: 'hb-portal-art', style: { backgroundImage: 'url(' + x.art + ')' } }),
-          h('ul', null, x.lik.map(function (li) { return h('li', { key: li }, ico(p, 'star', 15), ts(p, li, li)); })),
+          x.tri ? h('div', { className: 'hb-portal-art hb-portal-art--tri' },
+            h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/cod-mw3.jpg') + ')' } }),
+            h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/fc26.jpg') + ')' } }),
+            h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/mk1.jpg') + ')' } })
+          ) : h('div', { className: 'hb-portal-art', style: { backgroundImage: 'url(' + x.art + ')' } }),
+          h('ul', null, x.lik.map(function (li) { return h('li', { key: li[1] }, ico(p, li[0], 15), ts(p, li[1], li[1])); })),
           h('p', null, ts(p, x.dk, '')),
           h('span', { className: 'hb-cta hb-cta--line', style: { '--c': x.c } }, ts(p, x.btnk, x.btnk), ' →')
         ));
       })(portals[i]);
     }
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.hero','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags',''), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
-      EventsSubnav(p, 'events'), h('div', { className: 'hb-wrap hb-portals' }, cards)
+      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 46)), title: '', em: ts(p,'ev.hero','EVENTS'), sub: ts(p,'ev.sub','PLAY • COMPETE • EARN • BE A LEGEND'), tags: ts(p,'ev.tags','TOURNAMENTS   |   SEASON RANKINGS   |   SPECIAL EVENTS   |   REAL PLAYERS   |   REAL PRIZES'), scriptL: 'Good Games\nGood People', scriptR: 'Play\nCompete\nWin' }),
+      h('div', { className: 'hb-wrap hb-portals' }, cards)
     );
   }
 
   var WEEKLY = [
-    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], day: 'SATURDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#a05cf7', cov: 'covers/fc26.jpg' },
-    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], day: 'TUESDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#33cfff', cov: 'covers/ufc5.jpg' },
-    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], day: 'THURSDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
-    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], day: 'FRIDAY', time: '18:00', max: '32 PLAYERS', fee: '150 ₺', p1: '1,000 ₺', p2: '300 ₺', p3: '150 ₺', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
+    { t: 'FC 26 WEEKLY TOURNAMENT', d: 'Show your skills, compete with other players and become this week’s champion!', tags: ['Football', 'Sports', '1v1'], every: 'EVERY', day: 'SATURDAY', maxL: 'MAX', max: '32 PLAYERS', prizeL: 'PRIZE', prize: '500 BC', c: '#ff2ea6', cov: 'covers/fc26.jpg' },
+    { t: 'UFC 5 WEEKLY TOURNAMENT', d: 'Step into the octagon and prove you are the best!', tags: ['Fighting', 'Sports', '1v1'], every: 'EVERY', day: 'TUESDAY', maxL: 'MAX', max: '16 PLAYERS', prizeL: 'PRIZE', prize: '300 BC', c: '#33cfff', cov: 'covers/ufc5.jpg' },
+    { t: 'MORTAL KOMBAT 1 WEEKLY TOURNAMENT', d: 'Choose your fighter, master your skills and claim victory!', tags: ['Fighting', 'Action', '1v1'], every: 'EVERY', day: 'THURSDAY', maxL: 'MAX', max: '16 PLAYERS', prizeL: 'PRIZE', prize: '300 BC', c: '#ff9a1f', cov: 'covers/mk1.jpg' },
+    { t: 'TEKKEN 8 WEEKLY TOURNAMENT', d: 'Fast fights, high skills and non-stop action. Are you ready?', tags: ['Fighting', 'Action', '1v1'], every: 'EVERY', day: 'FRIDAY', maxL: 'MAX', max: '16 PLAYERS', prizeL: 'PRIZE', prize: '300 BC', c: '#ff2ea6', cov: 'covers/tekken8.jpg' }
   ];
   function WeeklyRow(w, p) {
-    return h('button', { type: 'button', className: 'hb-erow', style: { '--c': w.c }, onClick: function () { go(p, '/events/brackets'); } },
+    return h('div', { className: 'hb-erow hb-erow--wk', style: { '--c': w.c } },
       CoverBox(p, w.t, w.cov, 'hb-erow-art'),
       h('div', { className: 'hb-erow-mid' },
         h('h3', null, w.t), h('p', null, w.d),
-        h('div', { className: 'hb-chips' }, w.tags.map(function (tg) { return h('span', { key: tg, className: 'hb-chip2' }, ts(p, 'tag.' + tg, tg)); })),
-        h('div', { className: 'hb-erow-meta' },
-          h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 15), w.day + '  ' + w.time),
-          h('span', { style: { color: '#c7cfeb' } }, ico(p, 'users', 15), w.max)
-        )
+        h('div', { className: 'hb-chips' }, w.tags.map(function (tg) { return h('span', { key: tg, className: 'hb-chip2' }, ts(p, 'tag.' + tg, tg)); }))
       ),
-      h('div', { className: 'hb-erow-side' },
-        h('div', { className: 'hb-prizes' },
-          h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'coins', 22), h('span', null, h('small', null, ts(p, 'sp.fee', 'ENTRY FEE')), h('b', null, w.fee))),
-          h('div', { className: 'hb-prize-cell', style: { color: '#ff2ea6' } }, ico(p, 'gift', 22), h('span', null, h('small', null, '+10 BC'), h('b', null, ts(p, 'sp.part', 'For Participation')))),
-          h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.1', '1ST PLACE')), h('b', null, w.p1))),
-          h('div', { className: 'hb-prize-cell', style: { color: '#c0d0ff' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.2', '2ND PLACE')), h('b', null, w.p2))),
-          h('div', { className: 'hb-prize-cell', style: { color: '#ff8c3c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.3', '3RD PLACE')), h('b', null, w.p3)))
-        ),
-        h('span', { className: 'hb-cta hb-cta--line', style: { '--c': w.c, marginTop: 10, pointerEvents: 'none' } }, ts(p, 'wk.bracket', 'VIEW BRACKET'), ' →')
-      )
+      h('div', { className: 'hb-wk-stats' },
+        h('div', { className: 'hb-wk-stat', style: { color: '#d24bff' } }, ico(p, 'cal', 20), h('small', null, w.every), h('b', null, w.day)),
+        h('div', { className: 'hb-wk-stat', style: { color: '#c7cfeb' } }, ico(p, 'users', 20), h('small', null, w.maxL), h('b', null, w.max)),
+        h('div', { className: 'hb-wk-stat', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('small', null, w.prizeL), h('b', null, w.prize))
+      ),
+      h('button', { type: 'button', className: 'hb-cta hb-cta--line hb-erow-cta', style: { '--c': w.c }, onClick: function () { go(p, '/events/brackets'); } }, ts(p, 'wk.details', 'VIEW DETAILS'), ' →')
     );
   }
   function WeeklyPage(p) {
     var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 46)), title: ts(p,'wk.title','WEEKLY'), em: ts(p,'wk.em','TOURNAMENTS'), sub: ts(p,'wk.sub','PLAY • COMPETE • EARN CREDITS • BE A LEGEND'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptR: 'Good Games\nGood People' }),
-      EventsSubnav(p, 'weekly'), h('div', { className: 'hb-wrap' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
+      h(PHero, { img: asset(p, 'city-neon.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 46)), title: ts(p,'wk.title','WEEKLY'), em: ts(p,'wk.em','TOURNAMENTS'), sub: ts(p,'wk.sub','PLAY • COMPETE • EARN CREDITS • BE A LEGEND'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptR: 'Good Games\nGood People' }),
+      h('div', { className: 'hb-wrap hb-rows' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
     );
   }
 
@@ -764,8 +769,8 @@
         )
       ),
       h('div', { className: 'hb-erow-side' },
-        h('div', { className: 'hb-prizes' },
-          h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'coins', 22), h('span', null, h('small', null, ts(p, 'sp.fee', 'ENTRY FEE')), h('b', null, s.fee))),
+        h('div', { className: 'hb-prizes hb-prizes--sp' },
+          h('div', { className: 'hb-prize-cell hb-pc-fee', style: { color: '#ffc93c' } }, ico(p, 'coins', 22), h('span', null, h('small', null, ts(p, 'sp.fee', 'ENTRY FEE')), h('b', null, s.fee))),
           h('div', { className: 'hb-prize-cell', style: { color: '#ff2ea6' } }, ico(p, 'gift', 22), h('span', null, h('small', null, '+10 BC'), h('b', null, ts(p, 'sp.part', 'For Participation')))),
           h('div', { className: 'hb-prize-cell', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.1', '1ST PLACE')), h('b', null, s.p1))),
           h('div', { className: 'hb-prize-cell', style: { color: '#c0d0ff' } }, ico(p, 'trophy', 20), h('span', null, h('small', null, ts(p, 'sp.2', '2ND PLACE')), h('b', null, s.p2))),
@@ -777,7 +782,7 @@
   function SpecialPage(p) {
     return h('div', null,
       h(PHero, { img: asset(p, 'slide-city.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'sp.title','SPECIAL'), em: ts(p,'sp.em','EVENTS'), sub: ts(p,'sp.sub','BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Epic\nTournaments', scriptR: 'More\nThan\na Game' }),
-      EventsSubnav(p, 'special'), h('div', { className: 'hb-wrap' }, SPECIAL.map(function (s) { return SpecialRow(s, p); }))
+      h('div', { className: 'hb-wrap hb-rows' }, SPECIAL.map(function (s) { return SpecialRow(s, p); }))
     );
   }
 
@@ -817,10 +822,10 @@
         var ids = ['1024','0876','0341','0287','0912','0674','0456','0789','0112','0398'];
         lb.push(h('div', { key: r[0] + idx, className: 'hb-lb-row' + (idx < 3 ? ' is-' + (idx + 1) : '') },
           h('span', { className: idx < 3 ? 'hb-medal hb-medal--' + (idx + 1) : 'hb-rankn' }, String(idx + 1)),
-          h('span', { className: 'hb-mav hb-mav--lg', style: { '--h': String((idx * 47) % 360) } }),
-          h('span', { className: 'hb-lb-who' }, h('b', null, r[0], idx === 0 ? h('span', { className: 'hb-crownlet' }, '♛') : null), h('small', null, '#BZN' + (ids[idx] || ('0' + (100 + idx * 7))))),
-          h('span', { className: 'hb-gbadge' }, 'FC26'),
-          h('span', { className: 'hb-lb-pts' }, h('b', null, String(r[1])), h('small', null, ts(p, 'sn.points', 'POINTS')))
+          Av(p, idx, 'hb-avimg' + (idx < 3 ? ' hb-avimg--lg' : '')),
+          h('span', { className: 'hb-lb-who' }, h('b', null, r[0], idx === 0 ? h('span', { className: 'hb-crownlet' }, '♛') : null), idx < 3 ? h('small', null, '#BZN' + (ids[idx] || '0000')) : null),
+          idx < 3 ? h('span', { className: 'hb-gmark' }, 'FC26') : h('span', { className: 'hb-bznid' }, '#BZN' + (ids[idx] || '0000')),
+          h('span', { className: 'hb-lb-pts' }, h('b', null, String(r[1])), idx < 3 ? h('small', null, ts(p, 'sn.points', 'POINTS')) : null)
         ));
       })(rows[i], i);
     }
@@ -828,21 +833,18 @@
     var t3c = ['#ffc93c', '#c0d0ff', '#ff8c3c'];
     for (var k = 0; k < 3 && k < rows.length; k++) {
       (function (r, idx) {
-        top3.push(h('div', { key: r[0], className: 'hb-t3', style: { '--c': t3c[idx] } },
-          h('span', { style: { color: t3c[idx] } }, ico(p, 'crown', 22)),
-          h('span', { className: 'hb-mav', style: { '--h': String((idx * 47) % 360), width: 46, height: 46 } }),
-          h('span', null, h('small', { style: { color: t3c[idx], letterSpacing: 1.5, fontSize: 10, fontWeight: 700 } }, (idx + 1) + (idx === 0 ? 'ST' : idx === 1 ? 'ND' : 'RD') + ' PLACE'), h('b', null, r[0]), h('small', null, '#BZN0' + (100 + idx * 7))),
+        top3.push(h('div', { key: r[0], className: 'hb-t3 is-' + (idx + 1), style: { '--c': t3c[idx] } },
+          h('span', { className: 'hb-medal hb-medal--' + (idx + 1) }, String(idx + 1)),
+          Av(p, idx, 'hb-avimg hb-avimg--lg'),
+          h('span', null, h('small', { style: { color: t3c[idx], letterSpacing: 1.5, fontSize: 10, fontWeight: 700 } }, (idx + 1) + (idx === 0 ? 'ST' : idx === 1 ? 'ND' : 'RD') + ' PLACE'), h('b', null, r[0]), h('small', null, '#BZN' + (['1024','0876','0341'][idx] || '0000'))),
           h('span', { className: 'hb-pts' }, r[1] + ' Points')
         ));
       })(rows[k], k);
     }
+    var clock = h('span', { className: 'hb-season-clockchip' }, ico(p, 'clock', 16), ts(p,'sn.ends','SEASON ENDS IN'), h('b', null, (season && season.daysLeft != null ? season.daysLeft : 45) + ' ' + ts(p,'sn.days','DAYS')));
     return h('div', null,
-      h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'chart', 46)), title: ts(p,'sn.title','SEASON'), em: ts(p,'sn.em','RANKING'), sub: ts(p,'sn.sub','EARN POINTS • CLIMB THE LEADERBOARD • BECOME THE SEASON CHAMPION'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nClimb', scriptR: 'Good Players\nBetter Legends' }),
-      EventsSubnav(p, 'season'),
+      h(PHero, { img: asset(p, 'city-neon.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'chart', 46)), title: ts(p,'sn.title','SEASON'), em: ts(p,'sn.em','RANKING'), sub: ts(p,'sn.sub','EARN POINTS • CLIMB THE LEADERBOARD • BECOME THE SEASON CHAMPION'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Play\nCompete\nClimb', scriptR: 'Good Players\nBetter Legends', extra: h('div', { className: 'hb-season-hero' }, h('div', { className: 'hb-season-tabs' }, tabs), h('div', { className: 'hb-season-range' }, ranges[tab] || ranges.SPRING)), chip: clock }),
       h('div', { className: 'hb-wrap' },
-        h('div', { className: 'hb-season-tabs' }, tabs),
-        h('div', { className: 'hb-season-range' }, ranges[tab] || ranges.SPRING),
-        h('div', { className: 'hb-season-clock' }, h('span', null, ico(p, 'clock', 16), ts(p,'sn.ends','SEASON ENDS IN'), h('b', null, (season && season.daysLeft != null ? season.daysLeft : 45) + ' ' + ts(p,'sn.days','DAYS')))),
         h('div', { className: 'hb-season-grid' },
           h('div', { className: 'hb-box', style: { '--c': '#ff2ea6' } },
             h('div', { className: 'hb-ps-head' }, h('span', { style: { color: '#ffc93c' } }, ico(p, 'chart', 30)), h('span', null, h('b', null, ts(p,'sn.ptsSys','POINT SYSTEM')), h('small', null, ts(p,'sn.ptsHint','Earn season points by ranking in tournaments.')))),
@@ -1107,7 +1109,7 @@
           h('button', { type: 'button', className: kind === 'special' ? 'is-on' : '', onClick: function () { setKind('special'); setSel(0); } }, ico(p, 'star', 16), h('span', null, ts(p, 'bk.specialTab', 'SPECIAL EVENTS'), h('small', null, ts(p, 'bk.specialHint', 'Big tournaments & exclusive cups'))))
         )
       ),
-      EventsSubnav(p, 'brackets'), h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
+      h('div', { className: 'hb-wrap hb-wrap--wide hb-brk-layout' },
         h('div', { className: 'hb-brk-side hb-box', style: { '--c': '#33cfff' } },
           h('h3', null, ts(p,'bk.side','TOURNAMENTS')),
           h('p', null, ts(p,'bk.pick','Select a tournament to view the bracket')),

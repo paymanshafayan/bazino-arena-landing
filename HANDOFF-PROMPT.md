@@ -1,3 +1,5 @@
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.5 — شباهت صفحات مسابقات به ماکاپ WhatsApp):** مرجع: `hub/reference/whatsapp/10_events_hub.jpeg` … `14_tournament_brackets.jpeg` و PDF §§10–14. WEEKLY: کاور + تگ + سه ستون EVERY/MAX/PRIZE + دکمه VIEW DETAILS. SPECIAL: گرید جایزه ۲×۳ (ورود/+۱۰BC / ۱و۲و۳). SEASON: تب‌ها داخل هیرو، تایمر ۴۵ روز، لیدربورد طلا/نقره/برنز با آواتار و واترمارک FC26، TOP 3. EVENTS: کارت SPECIAL سه‌کاور، آیکون بولت‌ها. قالب روی پورتال نصب است. زیپ نساز.
+
 > **به‌روزرسانی 2026-09-14 (هاب v2.1.4 — مسابقات هفتگی + رتبه‌بندی فصل):** کارت‌های WEEKLY با `VIEW BRACKET` کلیک‌پذیر به `/events/brackets`. نوار زیرهیرو EVENTS / WEEKLY / SPECIAL / SEASON / BRACKETS برای پیدا کردن §13. لیدربورد فصل نزدیک‌تر به ماکاپ طلا/نقره/برنز. زیپ نساز.
 
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
