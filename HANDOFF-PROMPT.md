@@ -1,8 +1,10 @@
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
 
-> **به‌روزرسانی 2026-09-14 (سشن `arena/01a09b67` — سورس قالب هاب v2 نوشته شد، تست زنده هنوز انجام نشده):**
+> **به‌روزرسانی 2026-09-14 (مسیر واحد قالب هاب):** همهٔ فایل‌های قالب نصبی هاب (`bazino-hub` v2.0.1) فقط در پوشهٔ **`hub-theme/`** هستند — سورس (`theme.json` / `theme.js` / `theme.css` / `assets/`) + زیپ نصب `hub-theme/bazino-hub-theme.zip` + اسکریپت `hub-theme/build-hub-theme-zip.sh`. راهنمای پوشه: `hub-theme/README.md`. جزئیات: **بخش ۱۲**.
+>
+> **به‌روزرسانی 2026-09-14 (سشن `arena/01a09b67` — سورس قالب هاب v2 نوشته شد):**
 > کارفرما خواست قالب **هاب** (نه کلاسیک) مطابق ۱۷ ماکاپ واتساپ + PDF، با **نام منو/صفحات طبق کد پورتال** ساخته شود؛ سپس سرور زنده پورتال در سندباکس بالا بیاید، قالب نصب شود و اسکرین‌شات صفحه‌به‌صفحه با مرجع مقایسه گردد.
-> **انجام‌شده روی دیسک همین برنچ:** سورس نصبی `hub-theme/` (`theme.json` v2.0.0، `layout:"hub"`، ۲۰ ریجن، `theme.js` ۹۸۴ خط ES5 با `wrap()`، `theme.css` ۵۲۹ خط) + اَسِت‌ها + زیپ `bazino-hub-theme.zip` (~2.6MB، ۲۵ فایل، **بدون** entry پوشه‌ای). منو طبق پورتال: HOME / GAMES / EVENTS / SHOP / FOOD & DRINKS / CLUB / BLOG / CONTACT — چت در ناو نیست و صفحه‌اش DISABLED است.
+> **انجام‌شده روی دیسک همین برنچ:** سورس نصبی `hub-theme/` (`theme.json` v2.0.1، `layout:"hub"`، ۲۰ ریجن، `theme.js` ES5 با `wrap()`، `theme.css`) + اَسِت‌ها + زیپ `hub-theme/bazino-hub-theme.zip`. منو طبق پورتال: HOME / GAMES / EVENTS / SHOP / FOOD & DRINKS / CLUB / BLOG / CONTACT — چت در ناو نیست و صفحه‌اش DISABLED است.
 > **انجام‌نشده (اولویت ایجنت بعدی):** بیلد `better-sqlite3`، اجرای `npx tsx server.ts` روی `0.0.0.0:3000`، نصب/فعال‌سازی قالب از API ادمین، نصب Chromium (`@sparticuz`)، اسکرین‌شات همهٔ صفحات و فیکس عدم‌تطابق بصری با `/home/user/refs/01.jpg…17.jpg`. تا آن حلقه تمام نشده گزارش «قالب تأیید شد» ندهید. جزئیات: **بخش ۱۲**.
 
 > **به‌روزرسانی 2026-09-08 (تکمیل نهایی قالب Hub — کاورهای بازی با کیفیت فوق‌العاده 8K + افزودن کارت چهارم SYSTEMS & GEAR):**
@@ -238,6 +240,7 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 | `theme-package/` | سورس خوانا (theme.js غیرمینیفای؛ مینیفای فقط داخل زیپ) + `assets/` (ویدئو، پوسترها، وزیرمتن) + `CHANGELOG.md` |
 | `build-theme-zip.sh` | بیلد تکرارپذیر زیپ |
 | `client/` | سورس لندینگ مرجع (Arena of Legends): `src/pages/Home.tsx`, `src/index.css` |
+| `hub-theme/` | **قالب نصبی هاب v2.0.1** (`bazino-hub`) — سورس + `bazino-hub-theme.zip` + اسکریپت بیلد |
 | `hub/` | **فاز طراحی Hasti/Hub**: دموی براکت + مرجع PDF + ابزار مقایسه + پیش‌نمایش‌ها (راهنما: `hub/README.md`) |
 | `HANDOFF-PROMPT.md` | همین سند |
 | `pagespeed-findings-fa.md` | ۶ بخش تحلیل PSI |
@@ -435,7 +438,27 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 
 ---
 
-## ۱۲) سشن 2026-09-14 — قالب هاب نصبی v2.0.0 روی برنچ `arena/01a09b67`
+## ۱۲) سشن 2026-09-14 — قالب هاب نصبی v2.0.1 روی برنچ `arena/01a09b67`
+
+### ۱۲-۰) مسیر واحد روی ریپو (ثبت به دستور کارفرما)
+
+**همهٔ فایل‌های این قالب داخل یک پوشه است:**
+
+```
+hub-theme/
+```
+
+| مسیر | چیست |
+|---|---|
+| `hub-theme/theme.json` | شناسه `bazino-hub`، نسخه **2.0.1**، `layout: hub` |
+| `hub-theme/theme.js` | کامپوننت‌های SDK v2 (ES5 + `wrap()`) |
+| `hub-theme/theme.css` | استایل نئون |
+| `hub-theme/assets/` | تصاویر، کاور بازی‌ها، فونت |
+| `hub-theme/bazino-hub-theme.zip` | **زیپ نصب روی پورتال** |
+| `hub-theme/build-hub-theme-zip.sh` | بازسازی زیپ از همین پوشه |
+| `hub-theme/README.md` | راهنمای کوتاه همین پوشه |
+
+زیپ دیگر در ریشهٔ ریپو نیست. قالب قدیمی `hub-package/` جدا و منسوخ است.
 
 > مخاطب: ایجنت بعدی روی **همین برنچ لندینگ** (`paymanshafayan/bazino-arena-landing` / `arena/01a09b67-bazino-arena-landing`).
 > پورتال جداست: `paymanshafayan/bazino-gamenet-portal` برنچ `arena/01a089a9-bazino-gamenet-portal` (HEAD دیده‌شده در سندباکس: `09873d6`). **ریپوی پورتال را تغییر ندهید و پوش نکنید.**
@@ -454,12 +477,14 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 
 | مسیر | وضعیت |
 |---|---|
-| `hub-theme/theme.json` | v**2.0.0**، `id: bazino-hub`، `layout: hub`، `sdkVersion: 2`، **۲۰ ریجن**: header, footer, mobileNav, home, hub.home, hub.games, hub.events, hub.weekly, hub.special, hub.season, hub.brackets, hub.register, hub.shop, hub.food, hub.club, hub.blog, hub.chat, hub.contact, hub.rules, hub.privacy |
-| `hub-theme/theme.js` | ۹۸۴ خط، IIFE، `var R = SDK.React; var h = R.createElement;`، الگوی `wrap(Page) → {apiVersion:2, render}` که ولیدیتور پورتال (کامیت `09873d6`) می‌پذیرد |
-| `hub-theme/theme.css` | ۵۲۹ خط نئون (Orbitron/Rajdhani/Pacifico باندل) |
-| `hub-theme/assets/` | کاورها، اسلایدها، فونت woff2 (هم سطح `assets/` و هم `assets/fonts/` — تکراری)، `club-interior.jpg` |
-| `bazino-hub-theme.zip` | ~2.6MB، ۲۵ فایل، `zipinfo` **بدون** entry پوشه‌ای (`/` انتهایی). شامل `theme.json/css/js` + `assets/fonts/*` + `assets/covers/*` + چند jpg. **سورس تکراری سطح‌بالای فونت/کاور داخل زیپ نیست.** |
-| `hub-package/` | قالب هاب **قدیمی** (هنوز ترک‌شده). اسکریپت `build-hub-theme-zip.sh` هنوز از **همین** پوشه می‌خواند — با `hub-theme/` هم‌گام نیست. |
+| `hub-theme/` | **پوشهٔ واحد قالب هاب v2.0.1** — سورس + زیپ + اسکریپت بیلد |
+| `hub-theme/theme.json` | `id: bazino-hub`، `layout: hub`، `sdkVersion: 2`، ۲۰ ریجن |
+| `hub-theme/theme.js` | IIFE ES5، الگوی `wrap(Page) → {apiVersion:2, render}` |
+| `hub-theme/theme.css` | نئون (Orbitron/Rajdhani/Pacifico باندل) |
+| `hub-theme/assets/` | کاورها، اسلایدها، فونت woff2 |
+| `hub-theme/bazino-hub-theme.zip` | زیپ نصب (~5.4MB، بدون entry پوشه‌ای) |
+| `hub-theme/build-hub-theme-zip.sh` | بیلد زیپ از همین پوشه |
+| `hub-package/` | قالب هاب **قدیمی** — استفاده نشود |
 | `hub/reference/hasti-hub-theme-guide.pdf` | کپی PDF راهنما (md5 برابر فایل پورتال: `2588ad40bd49d22641d58eeac4e36599`) |
 
 **منوی هدر در `theme.js` (مستند به پورتال، نه ماکاپ):**
