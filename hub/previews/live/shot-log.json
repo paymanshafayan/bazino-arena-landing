@@ -1,0 +1,92 @@
+[
+  {
+    "name": "home",
+    "status": 200,
+    "bytes": 1004253,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/home.png"
+  },
+  {
+    "name": "games",
+    "status": 200,
+    "bytes": 1118279,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/games.png"
+  },
+  {
+    "name": "events",
+    "status": 200,
+    "bytes": 733591,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/events.png"
+  },
+  {
+    "name": "weekly",
+    "status": 200,
+    "bytes": 719131,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/weekly.png"
+  },
+  {
+    "name": "special",
+    "status": 200,
+    "bytes": 750648,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/special.png"
+  },
+  {
+    "name": "season",
+    "status": 200,
+    "bytes": 806683,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/season.png"
+  },
+  {
+    "name": "brackets",
+    "status": 200,
+    "bytes": 638787,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/brackets.png"
+  },
+  {
+    "name": "register",
+    "status": 200,
+    "bytes": 281572,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/register.png"
+  },
+  {
+    "name": "shop",
+    "status": 200,
+    "bytes": 749238,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/shop.png"
+  },
+  {
+    "name": "food",
+    "status": 200,
+    "bytes": 690071,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/food.png"
+  },
+  {
+    "name": "club",
+    "status": 200,
+    "bytes": 134002,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/club.png"
+  },
+  {
+    "name": "blog",
+    "status": 200,
+    "bytes": 703031,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/blog.png"
+  },
+  {
+    "name": "contact",
+    "status": 200,
+    "bytes": 256456,
+    "file": "/home/user/bazino-arena-landing/hub/previews/live/contact.png"
+  },
+  {
+    "clicks": [
+      "portals=8",
+      "afterFirst=http://127.0.0.1:3000/events/weekly",
+      "weeklyCta=true",
+      "afterDetails=http://127.0.0.1:3000/events/brackets",
+      "seasonTabs=4",
+      "seasonOn=SUMMER",
+      "back=true",
+      "afterBack=http://127.0.0.1:3000/events"
+    ]
+  }
+]

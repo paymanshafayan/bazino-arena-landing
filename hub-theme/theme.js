@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.6 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.7 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -705,7 +705,7 @@
         cards.push(h('button', { key: x.tk, type: 'button', className: 'hb-portal', style: { '--c': x.c }, onClick: function () { go(p, x.href); } },
           h('div', { className: 'hb-portal-head' }, h('span', { style: { color: x.c } }, ico(p, x.ic, 34)), h('span', null, h('b', null, ts(p, x.tk, x.tk)), h('small', null, ts(p, x.sk, '')))),
           x.tri ? h('div', { className: 'hb-portal-art hb-portal-art--tri' },
-            h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/cod-mw3.jpg') + ')' } }),
+            h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/ufc5.jpg') + ')' } }),
             h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/fc26.jpg') + ')' } }),
             h('i', { style: { backgroundImage: 'url(' + themeImg(p, 'covers/mk1.jpg') + ')' } })
           ) : h('div', { className: 'hb-portal-art', style: { backgroundImage: 'url(' + x.art + ')' } }),
