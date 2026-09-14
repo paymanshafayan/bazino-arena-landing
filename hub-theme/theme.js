@@ -18,6 +18,10 @@
   function doLogout(p) { if (p && p.onLogout) p.onLogout(); }
   function pick(v, lang) { if (!v) return ''; if (typeof v === 'string') return v; return v[lang] || v.en || v.fa || ''; }
   function wrap(Page) { return { apiVersion: 2, render: function (props) { return h(Page, props); } }; }
+  function icoPng(p, name, size) {
+    return h('img', { className: 'hb-ico', src: asset(p, 'icons/' + name + '.webp'), width: size || 44, height: size || 44, alt: '', draggable: 'false',
+      onError: function (e) { if (e && e.target && e.target.src && e.target.src.indexOf('.webp') !== -1) e.target.src = asset(p, 'icons/' + name + '.png'); } });
+  }
 
   function svg(d, size, sw) {
     return h('svg', { width: size || 18, height: size || 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: sw || 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true' }, h('path', { d: d }));
@@ -93,6 +97,7 @@
           h('path', { d: 'M14 23h20c4 0 7-3 7-7 0-5-3-8-8-8-3 0-5 1.4-9 1.4S18 8 15 8c-5 0-8 3-8 8 0 4 3 7 7 7z' }),
           h('path', { d: 'M17 13v5M14.5 15.5h5' }), h('path', { d: 'M30 14h.01M33 17h.01' }))
       ),
+      icoPng(p, 'pad', 28),
       h('b', null, 'BAZINO'),
       h('small', null, 'GAMING CLUB')
     );
@@ -184,19 +189,19 @@
     return h('div', { className: 'hb-wrap' },
       h('div', { className: 'hb-strip' },
         h('a', { href: map, target: '_blank', rel: 'noreferrer' },
-          h('span', { className: 'hb-fic hb-fic--pink' }, svg(ICO.pin, 20)),
+          h('span', { className: 'hb-fic hb-fic--pink' }, icoPng(p, 'pin', 28)),
           h('span', null, h('b', null, addr.split(',').slice(0, 2).join(',') || addr), h('small', null, addr.split(',').slice(2).join(',') || ' '))
         ),
         h('button', { type: 'button', onClick: function () { setOpen(true); } },
-          h('span', { className: 'hb-fic hb-fic--red' }, svg(ICO.clock, 20)),
+          h('span', { className: 'hb-fic hb-fic--red' }, icoPng(p, 'clock', 28)),
           h('span', null, h('b', null, ts(p, 'foot.hours')), h('small', null, hours))
         ),
         h('a', { href: wa, target: '_blank', rel: 'noreferrer' },
-          h('span', { className: 'hb-fic hb-fic--green' }, svg('M12 21a9 9 0 10-8.6-6.3L2 21l6.5-1.4A9 9 0 0012 21zM8.7 9.2c.4 2.2 2.6 4.6 4.9 5.2l1.4-1.4 2.4 1.3', 20)),
+          h('span', { className: 'hb-fic hb-fic--green' }, icoPng(p, 'whatsapp', 28)),
           h('span', null, h('b', null, ts(p, 'foot.whatsapp')), h('small', null, phone))
         ),
         h('a', { href: ig, target: '_blank', rel: 'noreferrer' },
-          h('span', { className: 'hb-fic hb-fic--ig' }, svg(ICO.img, 19)),
+          h('span', { className: 'hb-fic hb-fic--ig' }, icoPng(p, 'instagram', 28)),
           h('span', null, h('b', null, ts(p, 'foot.instagram')), h('small', null, '@bazinopro'))
         )
       ),
@@ -290,7 +295,7 @@
       return function () { window.clearTimeout(id); };
     }, [n]);
     var center = [
-      { img: asset(p, 'slide-city.jpg'), badge: 'COMING SOON', title: 'grand theft auto VI', sub: 'THE NEXT GENERATION OF CRIME' },
+      { img: asset(p, 'hero-gta6.jpg'), badge: 'COMING SOON', title: 'grand theft auto VI', sub: 'THE NEXT GENERATION OF CRIME' },
       { img: asset(p, 'slide-fc26.jpg'), badge: 'NOW', title: 'FC 26 TOURNAMENT', sub: 'SATURDAY NIGHT BRACKET • 32 PLAYERS' },
       { img: asset(p, 'slide-match.jpg'), badge: 'LIVE MATCH', title: 'EL CLASICO ON THE WALL', sub: 'TONIGHT 21:00 • LOUNGE' }
     ];
@@ -300,19 +305,19 @@
       (function (k) { dots.push(h('button', { key: k, type: 'button', 'aria-label': 'slide ' + (k + 1), className: k === i % center.length ? 'is-on' : '', onClick: function () { setI(k); } })); })(d);
     }
     var tiles = [
-      { c: '#33cfff', ic: ICO.pad, k: 'nav.games', sub: 'Kids & adults stations', href: '/games' },
-      { c: '#ff2e6f', ic: ICO.trophy, k: 'nav.events', sub: 'Weekly cups & brackets', href: '/events' },
-      { c: '#a05cf7', ic: ICO.cart, k: 'nav.shop', sub: 'Gaming gear & more', href: '/shop' },
-      { c: '#ff9a1f', ic: ICO.food, k: 'nav.food', sub: 'Snacks, drinks & food', href: '/food' },
-      { c: '#2ee87e', ic: ICO.users, k: 'nav.club', sub: 'Credits & member card', href: '/club' },
-      { c: '#ff2ea6', ic: ICO.chat, k: 'nav.blog', sub: 'Club news & stories', href: '/blog' },
-      { c: '#7a5cff', ic: ICO.info, k: 'nav.contact', sub: 'About, map & contact', href: '/contact' }
+      { c: '#33cfff', ic: 'pad', k: 'nav.games', sub: 'Kids & adults stations', href: '/games' },
+      { c: '#ff2e6f', ic: 'trophy', k: 'nav.events', sub: 'Weekly cups & brackets', href: '/events' },
+      { c: '#a05cf7', ic: 'cart', k: 'nav.shop', sub: 'Gaming gear & more', href: '/shop' },
+      { c: '#ff9a1f', ic: 'food', k: 'nav.food', sub: 'Snacks, drinks & food', href: '/food' },
+      { c: '#2ee87e', ic: 'pad', k: 'nav.club', sub: 'Credits & member card', href: '/club' },
+      { c: '#ff2ea6', ic: 'info', k: 'nav.blog', sub: 'Club news & stories', href: '/blog' },
+      { c: '#7a5cff', ic: 'info', k: 'nav.contact', sub: 'About, map & contact', href: '/contact' }
     ];
     var tnodes = [];
     for (var t = 0; t < tiles.length; t++) {
       (function (tl) {
         tnodes.push(h('a', { key: tl.k, href: tl.href, className: 'hb-tile', style: { '--c': tl.c }, onClick: function (e) { e.preventDefault(); go(p, tl.href); } },
-          svg(tl.ic, 44, 1.5), h('b', null, ts(p, tl.k)), h('small', null, tl.sub), h('span', { className: 'hb-tile-arr' }, '→')));
+          icoPng(p, tl.ic, 52), h('b', null, ts(p, tl.k)), h('small', null, tl.sub), h('span', { className: 'hb-tile-arr' }, '→')));
       })(tiles[t]);
     }
     return h('div', null,
