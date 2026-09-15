@@ -1,3 +1,7 @@
+# قانون سخت‌گیرانه و غیرقابل‌نقض
+
+{حق ایجاد هیچ نوع کد فیکی را نداری . هیچ تغییری بدون بررسی دقیق اسناد پروژه و اسناد پورتال انجام نمیدهی . هر تغییری را باتوجه به این اطلاعات و با بیشترین دقت ممکن و کاملا واقعی انجام میدهی . پس از هر تغییر آن را به صورت بصری و با گرفتن اسکرین شات از تمام بخش های مربوطه بر روی chromium چک دقیق می کنی . قبل از انجام این موارد اجازه ارائه گزارش نداری. گزارش باید کاملا صادقانه و تطبیق دقیق با کد تغیرات باشد . به هیچ عنوان و به هیچ دلیلی اجازه و توانایی سرپیچی از این قانون را نداری}
+
 # Bazino Arena 3D — Handoff
 
 ## Mandatory operating rules
@@ -17,12 +21,12 @@
 
 - Name: `Bazino Arena 3D`
 - ID: `bazino-arena3d`
-- Version: `1.1.0`
+- Version: `1.1.1`
 - SDK version: `2`
 - Canonical folder: `themes/bazino-arena3d/`
 - Editable compatibility source: `bazino-arena3d-package/`
-- Active public preview: `client/public/arena3d-v110/`
-- Previous version archive: `archive/bazino-arena3d/v1.0.5/`
+- Active public preview: `client/public/arena3d-v111/`
+- Previous version archive: `archive/bazino-arena3d/v1.1.0/`
 - Preview route: `/arena3d-preview`
 - Internal visual preview: `/arena3d-preview?internal=1&page=games`
 
@@ -57,7 +61,8 @@
 - `1.0.3`: archived under `archive/bazino-arena3d/v1.0.3/`
 - `1.0.4`: archived under `archive/bazino-arena3d/v1.0.4/`
 - `1.0.5`: archived under `archive/bazino-arena3d/v1.0.5/`
-- `1.1.0`: active
+- `1.1.0`: archived under `archive/bazino-arena3d/v1.1.0/`
+- `1.1.1`: active
 
 ## Important integration constraint
 
@@ -74,3 +79,7 @@ Internal tournament cards are vertically aligned. Interactive buttons/links are 
 ## v1.1.0 native classic inner pages
 
 Uses the portal classic-inner-region extension from portal branch `arena/01a0a0e1-bazino-gamenet-portal`. Registers 18 native classic regions for games, cafe, shop, tournaments and subpages, loyalty, blog, and contact. All production content comes from region Props and operations call portal callbacks.
+
+## v1.1.1 strict correction
+
+Adds functional logo-home navigation, frameless primary navigation on every internal page, Games reservation gates tied to portal checkout, stateful Cafe/Shop carts tied to checkout, Blog detail state, tournament route console, bracket rendering, and real team registration callback.

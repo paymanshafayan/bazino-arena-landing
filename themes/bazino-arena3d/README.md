@@ -3,7 +3,7 @@
 Canonical repository folder for the active Arena theme.
 
 - Theme ID: `bazino-arena3d`
-- Active version: `1.1.0`
+- Active version: `1.1.1`
 - SDK: v2
 - Source: `theme.js`, `theme.css`, `theme.json`, and `assets/`
 - Active browser preview: `/arena3d-preview`
