@@ -1,7 +1,7 @@
 {
   "name": "Bazino Arena 3D",
   "id": "bazino-arena3d",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "sdkVersion": 2,
   "author": "Bazino Gaming Lounge",
   "description": "AuthKit-inspired spatial Bazino portal theme with a local frame-motion virtual tour and portal-data-driven Arena Circuit.",
@@ -19,7 +19,25 @@
   "regions": [
     "home",
     "header",
-    "mobileNav"
+    "mobileNav",
+    "games",
+    "games.detail",
+    "cafe",
+    "cafe.detail",
+    "cafe.cart",
+    "shop",
+    "shop.detail",
+    "shop.cart",
+    "tournaments",
+    "tournaments.weekly",
+    "tournaments.special",
+    "tournaments.season",
+    "tournaments.brackets",
+    "tournaments.register",
+    "loyalty",
+    "blog",
+    "blog.detail",
+    "contact"
   ],
   "strings": {
     "fa": {

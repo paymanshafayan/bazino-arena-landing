@@ -17,12 +17,12 @@
 
 - Name: `Bazino Arena 3D`
 - ID: `bazino-arena3d`
-- Version: `1.0.5`
+- Version: `1.1.0`
 - SDK version: `2`
 - Canonical folder: `themes/bazino-arena3d/`
 - Editable compatibility source: `bazino-arena3d-package/`
-- Active public preview: `client/public/arena3d-v105/`
-- Previous version archive: `archive/bazino-arena3d/v1.0.4/`
+- Active public preview: `client/public/arena3d-v110/`
+- Previous version archive: `archive/bazino-arena3d/v1.0.5/`
 - Preview route: `/arena3d-preview`
 - Internal visual preview: `/arena3d-preview?internal=1&page=games`
 
@@ -56,7 +56,8 @@
 - `1.0.2`: archived under `archive/bazino-arena3d/v1.0.2/`
 - `1.0.3`: archived under `archive/bazino-arena3d/v1.0.3/`
 - `1.0.4`: archived under `archive/bazino-arena3d/v1.0.4/`
-- `1.0.5`: active
+- `1.0.5`: archived under `archive/bazino-arena3d/v1.0.5/`
+- `1.1.0`: active
 
 ## Important integration constraint
 
@@ -69,3 +70,7 @@ Destination CTA copy is specific to each destination and invokes `onNavigate` wi
 ## v1.0.5 tournament correction
 
 Internal tournament cards are vertically aligned. Interactive buttons/links are layered above decorative pseudo-elements. Tournament preview card actions navigate to the bracket page for end-to-end verification.
+
+## v1.1.0 native classic inner pages
+
+Uses the portal classic-inner-region extension from portal branch `arena/01a0a0e1-bazino-gamenet-portal`. Registers 18 native classic regions for games, cafe, shop, tournaments and subpages, loyalty, blog, and contact. All production content comes from region Props and operations call portal callbacks.
