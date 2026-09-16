@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.7 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.8 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -529,8 +529,9 @@
   }
   function holdBay(p, sys, hours, extras, reqGame) {
     if (!sys) return false;
+    if (sys.isReserved) return false;
     if (!p.user) { doLogin(p); return false; }
-    if (String(sys.id).indexOf('demo-') === 0) return false;
+    if (String(sys.id).indexOf('demo-') === 0) return 'desk';
     var slot = nextSlot();
     var startH = Number(slot.hour);
     var endH = (startH + hours) % 24;
@@ -569,7 +570,12 @@
       (function (sys, idx) {
         var c = sys.c || colors[idx % colors.length];
         var art = sys.art || (sys.type === 'PS5' ? asset(p, 'hero-setup.jpg') : asset(p, 'games-gear.jpg'));
-        cards.push(h('button', { key: sys.id, type: 'button', className: 'hb-price' + (selId === sys.id ? ' is-on' : ''), style: { '--c': c }, onClick: function () { setSelId(sys.id); setFlash(''); } },
+        cards.push(h('button', { key: sys.id, type: 'button', className: 'hb-price' + (selId === sys.id ? ' is-on' : ''), style: { '--c': c }, onClick: function () {
+          setSelId(sys.id); setFlash('');
+          if (sys.isReserved) return;
+          var r = holdBay(p, sys, hours, extras, reqGame);
+          if (r) setFlash(ts(p, 'games.held', 'Bay held — pay cash or card at the desk.'));
+        } },
           h('div', { className: 'hb-price-art', style: { backgroundImage: 'url(' + art + ')' } }),
           h('div', { className: 'hb-price-body' },
             h('h3', null, sysLabel(p, sys)),
@@ -603,11 +609,12 @@
       h('input', { className: 'hb-book-input', value: reqGame, placeholder: ts(p, 'games.reqTitle', 'Game title'), onChange: function (e) { setReqGame(e.target.value); } }),
       h('div', { className: 'hb-book-total' }, h('b', null, String(bookAmt) + ' TL'), h('span', null, ts(p, 'games.deskPay', 'Cash or card at the desk — no online payment.'))),
       flash ? h('p', { className: 'hb-book-ok' }, flash) : null,
-      h('button', { type: 'button', className: 'hb-cta', onClick: function () {
+      h('button', { type: 'button', className: 'hb-cta hb-hold-cta', onClick: function () {
         if (!selected) { setFlash(ts(p, 'games.needSys', 'Select a station first')); return; }
+        if (selected.isReserved) { setFlash(ts(p, 'games.busy', 'IN USE')); return; }
         if (!p.user) { doLogin(p); return; }
-        holdBay(p, selected, hours, extras, reqGame);
-        setFlash(ts(p, 'games.hold', 'HOLD MY BAY'));
+        var r = holdBay(p, selected, hours, extras, reqGame);
+        setFlash(r ? ts(p, 'games.held', 'Bay held — pay cash or card at the desk.') : ts(p, 'games.hold', 'HOLD MY BAY'));
       } }, ts(p, 'games.hold', 'HOLD MY BAY'))
     );
 
@@ -746,6 +753,9 @@
     var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
     return h('div', null,
       h(PHero, { img: asset(p, 'city-neon.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 46)), title: ts(p,'wk.title','WEEKLY'), em: ts(p,'wk.em','TOURNAMENTS'), sub: ts(p,'wk.sub','PLAY • COMPETE • EARN CREDITS • BE A LEGEND'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptR: 'Good Games\nGood People' }),
+      h('div', { className: 'hb-wrap', style: { marginBottom: 12 } },
+        h('button', { type: 'button', className: 'hb-cta hb-reg-tourney', onClick: function () { go(p, '/events/register'); } }, ts(p, 'rg.hold', 'HOLD MY SEAT'), ' — ', ts(p, 'rg.title', 'REGISTER'), ' ', ts(p, 'rg.em', 'TO PLAY'))
+      ),
       h('div', { className: 'hb-wrap hb-rows' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
     );
   }
@@ -1153,17 +1163,23 @@
   /* ══ REGISTER ══ */
   function RegisterPage(p) {
     var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
-    var st = useState(''); var tid = st[0], setTid = st[1];
+    var st = useState('0'); var tid = st[0], setTid = st[1];
     var tagSt = useState((p.user && (p.user.displayName || p.user.username)) || ''); var tag = tagSt[0], setTag = tagSt[1];
+    var okSt = useState(''); var ok = okSt[0], setOk = okSt[1];
     var opts = [];
     for (var i = 0; i < WEEKLY.length; i++) opts.push(h('option', { key: i, value: String(i) }, WEEKLY[i].t + ' — 150 ₺'));
     return h('div', null,
       h(PHero, { img: themeImg(p, 'covers/mk1.jpg'), icon: h('span', { style: { color: '#2ee87e' } }, ico(p, 'edit', 44)), title: ts(p,'rg.title','REGISTER'), em: ts(p,'rg.em','TO PLAY'), sub: ts(p,'rg.sub','NAME ON THE BRACKET • PAY AT THE DESK'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS') }),
       h('div', { className: 'hb-wrap' },
-        h('form', { className: 'hb-box', style: { '--c': '#2ee87e', padding: 26, marginBottom: 30, maxWidth: 640, marginInline: 'auto' }, onSubmit: function (e) { e.preventDefault(); if (!p.user) doLogin(p); } },
+        h('form', { className: 'hb-box', style: { '--c': '#2ee87e', padding: 26, marginBottom: 30, maxWidth: 640, marginInline: 'auto' }, onSubmit: function (e) {
+          e.preventDefault();
+          if (!p.user) { doLogin(p); return; }
+          setOk('1');
+        } },
           h('div', { className: 'hb-field hb-field--plain' }, h('select', { value: tid, onChange: function (e) { setTid(e.target.value); } }, opts.length ? opts : h('option', null, 'FC 26 WEEKLY — 150 ₺'))),
           h('div', { className: 'hb-field hb-field--plain' }, h('input', { value: tag, onChange: function (e) { setTag(e.target.value); }, placeholder: ts(p,'rg.tag','GAMERTAG ON BRACKET (e.g. ArmanK)') })),
-          h('button', { type: 'submit', className: 'hb-cta', style: { width: '100%', marginTop: 6 } }, ts(p,'rg.hold','HOLD MY SEAT')),
+          h('button', { type: 'submit', className: 'hb-cta hb-reg-submit', style: { width: '100%', marginTop: 6 } }, ts(p,'rg.hold','HOLD MY SEAT')),
+          ok ? h('p', { className: 'hb-book-ok' }, ts(p,'rg.ok','Seat held — pay the entry fee at the desk. Your name will be on the bracket.')) : null,
           h('p', { style: { color: '#97a1c2', fontWeight: 600, fontSize: 13, textAlign: 'center', margin: '12px 0 0' } }, ts(p,'rg.pay','Entry is paid in cash, card or wallet at the club desk — no online payment.'))
         )
       )

@@ -678,3 +678,7 @@ button.hb-erow:hover { filter: brightness(1.07); transform: translateY(-1px); }
 .hb-avimg--champ { width: 72px; height: 72px; border: 3px solid #ffc93c; box-shadow: 0 0 18px rgba(255,201,60,.55); }
 .hb-lb-row:not(.is-1):not(.is-2):not(.is-3) .hb-lb-pts b { font-size: 15px; color: #fff; text-shadow: none; }
 .hb-lb-row:not(.is-1):not(.is-2):not(.is-3) .hb-lb-pts { text-align: right; }
+
+.hb-reg-tourney { width: 100%; margin: 0 0 8px; }
+.hb-book-ok { color: #2ee87e; font-weight: 700; margin: 10px 0 0; }
+.hb-price.is-on { outline: 2px solid var(--c); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 40%, transparent); }
