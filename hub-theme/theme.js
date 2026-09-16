@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.8 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.1.10 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -87,7 +87,7 @@
     var seen = {};
     var i, g, t, key, list;
     for (i = 0; i < catalog.length; i++) seen[normName(catalog[i].t)] = 1;
-    list = (p && p.featuredGames) || [];
+    list = ((p && p.featuredGames) || []).concat((p && p.tournaments) || []);
     for (i = 0; i < list.length; i++) {
       g = list[i];
       t = pick(g.title || g.name || g.game || g.titleEn || '', langOf(p));
@@ -479,8 +479,8 @@
     { t: 'Assetto Corsa Competizione', tags: ['Racing', 'Simulation', 'Multiplayer', 'Competitive'], pegi: 3, pk: 'pl.14', ok: 'on.both', dk: 'gd.assetto', cov: 'covers/assetto.jpg' }
   ];
 
-  function GameRow(g, color, p) {
-    return h('div', { className: 'hb-grow', style: { '--c': color } },
+  function GameRow(g, color, p, onPick) {
+    return h(onPick ? 'button' : 'div', { type: onPick ? 'button' : undefined, className: 'hb-grow', style: { '--c': color }, onClick: onPick ? function () { onPick(g); } : undefined },
       CoverBox(p, g.t, g.cov, 'hb-grow-art'),
       h('div', { className: 'hb-grow-mid' },
         h('h3', null, g.t),
@@ -632,12 +632,12 @@
     if (view === 'kids') {
       body = h('div', null,
         h(PHero, { img: asset(p, 'games-kids.jpg'), icon: h('span', { style: { color: '#33cfff' } }, ico(p, 'users', 44)), title: ts(p, 'games.kids', 'KIDS'), em: ts(p, 'games.kidsEm', 'GAMES'), sub: ts(p, 'games.kidsSub', 'FUN & SAFE GAMES FOR YOUNGER PLAYERS'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\nGood People') }),
-        h('div', { className: 'hb-wrap hb-rows' }, KIDS.map(function (g) { return GameRow(g, '#a05cf7', p); }))
+        h('div', { className: 'hb-wrap hb-rows' }, KIDS.map(function (g) { return GameRow(g, '#a05cf7', p, function (game) { setReqGame(game.t); setFlash(ts(p, 'games.picked', 'Selected: ') + game.t); }); }))
       );
     } else if (view === 'adults') {
       body = h('div', null,
         h(PHero, { img: asset(p, 'games-adults.jpg'), icon: h('span', { style: { color: '#ff2e6f' } }, ico(p, 'pad', 44)), title: ts(p, 'games.adults', 'ADULTS'), em: ts(p, 'games.adultsEm', 'GAMES'), sub: ts(p, 'games.adultsSub', 'ACTION • SPORTS • RACING • AND MORE'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\nGood People') }),
-        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.concat(extraGames(p, KIDS.concat(ADULTS))).map(function (g) { return GameRow(g, '#ff2e6f', p); }))
+        h('div', { className: 'hb-wrap hb-rows' }, ADULTS.concat(extraGames(p, KIDS.concat(ADULTS))).map(function (g) { return GameRow(g, '#ff2e6f', p, function (game) { setReqGame(game.t); setFlash(ts(p, 'games.picked', 'Selected: ') + game.t); }); }))
       );
     } else if (view === 'requests') {
       body = h('div', null,
@@ -746,17 +746,78 @@
         h('div', { className: 'hb-wk-stat', style: { color: '#c7cfeb' } }, ico(p, 'users', 20), h('small', null, w.maxL), h('b', null, w.max)),
         h('div', { className: 'hb-wk-stat', style: { color: '#ffc93c' } }, ico(p, 'trophy', 20), h('small', null, w.prizeL), h('b', null, w.prize))
       ),
-      h('button', { type: 'button', className: 'hb-cta hb-cta--line hb-erow-cta', style: { '--c': w.c }, onClick: function () { go(p, '/events/brackets'); } }, ts(p, 'wk.details', 'VIEW DETAILS'), ' →')
+      h('button', { type: 'button', className: 'hb-cta hb-cta--line hb-erow-cta', style: { '--c': w.c }, onClick: function () { go(p, w.go || '/events/brackets'); } }, ts(p, 'wk.details', 'VIEW DETAILS'), ' →')
     );
   }
+
+  function coverForGame(title) {
+    var g = String(title || '').toLowerCase();
+    if (g.indexOf('ufc') !== -1) return 'covers/ufc5.jpg';
+    if (g.indexOf('tekken') !== -1) return 'covers/tekken8.jpg';
+    if (g.indexOf('mortal') !== -1) return 'covers/mk1.jpg';
+    if (g.indexOf('gta') !== -1) return 'covers/gtav.jpg';
+    if (g.indexOf('cod') !== -1 || g.indexOf('warzone') !== -1) return 'covers/cod-mw3.jpg';
+    if (g.indexOf('counter') !== -1 || g.indexOf('cs2') !== -1 || g.indexOf('cs 2') !== -1) return 'covers/cod-mw3.jpg';
+    if (g.indexOf('valorant') !== -1) return 'covers/rocket-league.jpg';
+    if (g.indexOf('dota') !== -1) return 'covers/gtav.jpg';
+    if (g.indexOf('fifa') !== -1 || g.indexOf('fc2') !== -1 || g.indexOf('fc 2') !== -1) return 'covers/fc26.jpg';
+    if (g.indexOf('nba') !== -1) return 'covers/nba2k24.jpg';
+    if (g.indexOf('rocket') !== -1) return 'covers/rocket-league.jpg';
+    return 'covers/fc26.jpg';
+  }
+  function eventTitle(e, p) {
+    var lang = langOf(p);
+    var t = pick(e.title, lang);
+    if (t) return t;
+    if (lang === 'fa') return e.titleFa || e.title || e.titleEn || e.game || '';
+    if (lang === 'ru') return e.titleRu || e.titleEn || e.title || e.game || '';
+    if (lang === 'tr') return e.titleTr || e.titleEn || e.title || e.game || '';
+    return e.titleEn || e.title || e.game || '';
+  }
+  function mapLiveEvent(e, i, p) {
+    var title = eventTitle(e, p) || 'TOURNAMENT';
+    var game = e.game || '';
+    var colors = ['#ff2ea6', '#33cfff', '#ff9a1f', '#a05cf7'];
+    var done = String(e.status || '').toLowerCase() === 'completed';
+    return {
+      id: e.id || String(i),
+      t: String(title),
+      d: game || String(e.status || ''),
+      tags: [game ? String(game).split(' ')[0] : 'Event', e.kind || 'Weekly'],
+      every: '',
+      day: e.startDate || e.date || '',
+      maxL: 'MAX',
+      max: String(e.maxTeams || e.maxPlayers || 16) + ' TEAMS',
+      prizeL: 'FEE',
+      prize: String(e.registrationFee != null ? e.registrationFee : '') + (e.registrationFee != null ? ' ₺' : ''),
+      c: colors[i % colors.length],
+      cov: coverForGame(game + ' ' + title),
+      go: done ? '/events/brackets' : '/events/register',
+      feeN: Number(e.registrationFee) || 0
+    };
+  }
+  function liveWeekly(p) {
+    var src = (p.tournaments && p.tournaments.length) ? p.tournaments : ((p.eventsFeed && p.eventsFeed.weekly) || []);
+    if (!src.length) return WEEKLY;
+    var out = []; var i;
+    for (i = 0; i < src.length; i++) out.push(mapLiveEvent(src[i], i, p));
+    return out;
+  }
+  function liveSpecial(p) {
+    var src = (p.eventsFeed && p.eventsFeed.special) || [];
+    if (!src.length) return SPECIAL;
+    var out = []; var i;
+    for (i = 0; i < src.length; i++) out.push(mapLiveEvent(src[i], i, p));
+    return out;
+  }
   function WeeklyPage(p) {
-    var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
+    var list = liveWeekly(p);
     return h('div', null,
       h(PHero, { img: asset(p, 'city-neon.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'cal', 46)), title: ts(p,'wk.title','WEEKLY'), em: ts(p,'wk.em','TOURNAMENTS'), sub: ts(p,'wk.sub','PLAY • COMPETE • EARN CREDITS • BE A LEGEND'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptR: 'Good Games\nGood People' }),
       h('div', { className: 'hb-wrap', style: { marginBottom: 12 } },
         h('button', { type: 'button', className: 'hb-cta hb-reg-tourney', onClick: function () { go(p, '/events/register'); } }, ts(p, 'rg.hold', 'HOLD MY SEAT'), ' — ', ts(p, 'rg.title', 'REGISTER'), ' ', ts(p, 'rg.em', 'TO PLAY'))
       ),
-      h('div', { className: 'hb-wrap hb-rows' }, WEEKLY.map(function (w) { return WeeklyRow(w, p); }))
+      h('div', { className: 'hb-wrap hb-rows' }, list.map(function (w) { return WeeklyRow(w, p); }))
     );
   }
 
@@ -792,7 +853,7 @@
   function SpecialPage(p) {
     return h('div', null,
       h(PHero, { img: asset(p, 'slide-city.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'sp.title','SPECIAL'), em: ts(p,'sp.em','EVENTS'), sub: ts(p,'sp.sub','BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Epic\nTournaments', scriptR: 'More\nThan\na Game' }),
-      h('div', { className: 'hb-wrap hb-rows' }, SPECIAL.map(function (s) { return SpecialRow(s, p); }))
+      h('div', { className: 'hb-wrap hb-rows' }, liveSpecial(p).map(function (s) { return SpecialRow(s, p); }))
     );
   }
 
@@ -1162,18 +1223,26 @@
 
   /* ══ REGISTER ══ */
   function RegisterPage(p) {
-    var list = (p.eventsFeed && p.eventsFeed.weekly) || p.tournaments || [];
-    var st = useState('0'); var tid = st[0], setTid = st[1];
+    var list = liveWeekly(p);
+    var st = useState(list[0] && list[0].id ? String(list[0].id) : '0'); var tid = st[0], setTid = st[1];
     var tagSt = useState((p.user && (p.user.displayName || p.user.username)) || ''); var tag = tagSt[0], setTag = tagSt[1];
     var okSt = useState(''); var ok = okSt[0], setOk = okSt[1];
     var opts = [];
-    for (var i = 0; i < WEEKLY.length; i++) opts.push(h('option', { key: i, value: String(i) }, WEEKLY[i].t + ' — 150 ₺'));
+    var i, row, fee;
+    for (i = 0; i < list.length; i++) {
+      row = list[i];
+      opts.push(h('option', { key: row.id || i, value: String(row.id || i) }, row.t + ' — ' + (row.prize || '150 ₺')));
+    }
     return h('div', null,
       h(PHero, { img: themeImg(p, 'covers/mk1.jpg'), icon: h('span', { style: { color: '#2ee87e' } }, ico(p, 'edit', 44)), title: ts(p,'rg.title','REGISTER'), em: ts(p,'rg.em','TO PLAY'), sub: ts(p,'rg.sub','NAME ON THE BRACKET • PAY AT THE DESK'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS') }),
       h('div', { className: 'hb-wrap' },
         h('form', { className: 'hb-box', style: { '--c': '#2ee87e', padding: 26, marginBottom: 30, maxWidth: 640, marginInline: 'auto' }, onSubmit: function (e) {
           e.preventDefault();
           if (!p.user) { doLogin(p); return; }
+          var chosen = null; var j;
+          for (j = 0; j < list.length; j++) if (String(list[j].id || j) === String(tid)) chosen = list[j];
+          fee = chosen && chosen.feeN != null ? chosen.feeN : 150;
+          if (p.onCheckout) p.onCheckout('tournament', { tournamentId: tid, gamerTag: tag, teamName: tag }, fee);
           setOk('1');
         } },
           h('div', { className: 'hb-field hb-field--plain' }, h('select', { value: tid, onChange: function (e) { setTid(e.target.value); } }, opts.length ? opts : h('option', null, 'FC 26 WEEKLY — 150 ₺'))),
@@ -1284,23 +1353,24 @@
   /* ══ BLOG ══ */
   function BlogPage(p) {
     var arts = p.articles || [];
+    var openSt = useState(-1); var open = openSt[0], setOpen = openSt[1];
     var posts = [];
     var fallback = [
       { title: 'FC26 Saturday Cup — Recap', tag: 'TOURNAMENTS', date: 'SEP 06, 2026', img: asset(p, 'slide-fc26.jpg'), d: '32 players, 5 hours, one champion. See how ArmanK lifted the weekly cup again.' },
       { title: 'New Lounge Wall Is Live', tag: 'CLUB LIFE', date: 'SEP 02, 2026', img: asset(p, 'club-interior.jpg'), d: 'The 85" wall got an upgrade — El Clasico nights are back every week.' },
       { title: 'GTA VI Launch Night Plans', tag: 'NEWS', date: 'AUG 28, 2026', img: asset(p, 'slide-city.jpg'), d: 'First-play seats, snacks and the neon city on every screen. Reserve early.' }
     ];
-    var src = arts.length ? arts.map(function (a) { return { title: pick(a.title, langOf(p)) || a.title, tag: 'NEWS', date: (a.createdAt || '').slice(0, 10), img: a.imageUrl || asset(p, 'club-interior.jpg'), d: pick(a.excerpt || a.desc, langOf(p)) || '' }; }) : fallback;
+    var src = arts.length ? arts.map(function (a) { return { title: pick(a.title, langOf(p)) || a.title, tag: a.category || 'NEWS', date: (a.date || a.createdAt || '').slice(0, 16), img: a.imageUrl || asset(p, 'club-interior.jpg'), d: pick(a.content || a.excerpt || a.desc, langOf(p)) || pick(a.contentEn || a.contentFa, langOf(p)) || '' }; }) : fallback;
     for (var i = 0; i < src.length; i++) {
-      (function (a) {
-        posts.push(h('article', { key: a.title, className: 'hb-post' },
+      (function (a, idx) {
+        posts.push(h('button', { type: 'button', key: a.title, className: 'hb-post' + (open === idx ? ' is-on' : ''), onClick: function () { setOpen(open === idx ? -1 : idx); } },
           h('div', { className: 'hb-post-art', style: { backgroundImage: 'url(' + a.img + ')' } }),
           h('div', { className: 'hb-post-body' },
             h('small', null, a.tag + ' • ' + a.date),
             h('b', null, a.title),
-            h('p', null, a.d)
+            h('p', null, open === idx ? (a.d || ts(p, 'blog.empty', 'Full article on this post.')) : ((a.d || '').slice(0, 140) + ((a.d || '').length > 140 ? '…' : '')))
           )));
-      })(src[i]);
+      })(src[i], i);
     }
     return h('div', null,
       h(PHero, { img: asset(p, 'club-interior.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'chat', 44)), title: 'BAZINO', em: ts(p,'blog.em','BLOG'), sub: ts(p,'blog.sub','CLUB NEWS • MATCH REPORTS • STORIES'), scriptR: 'More Than\na Game' }),
