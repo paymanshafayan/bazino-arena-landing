@@ -1,4 +1,4 @@
-/* BAZINO HUB ARENA THEME v2.1.10 — SDK v2, ES5 only.
+/* BAZINO HUB ARENA THEME v2.2.0 — SDK v2, ES5 only.
    Visuals per employer WhatsApp mockups (2026-09-04 set).
    Menus & page names per portal HUB_PAGES. */
 (function () {
@@ -109,7 +109,9 @@
   function langOf(p) { return (p && p.language) || 'en'; }
   function ts(p, k, f) { return p && typeof p.ts === 'function' ? p.ts(k, f) : (f || k); }
   function go(p, path) { if (p && p.onNavigate) p.onNavigate(path); }
-  function doLogin(p) { if (p && p.onLogin) p.onLogin(); else if (window.CustomEvent) window.dispatchEvent(new CustomEvent('bazino:open-auth')); }
+  function doLogin(p) {
+    try { window.dispatchEvent(new CustomEvent('bazino-hub:open-login')); } catch (e0) {}
+  }
   function doLogout(p) { if (p && p.onLogout) p.onLogout(); }
   function pick(v, lang) { if (!v) return ''; if (typeof v === 'string') return v; return v[lang] || v.en || v.fa || ''; }
   function wrap(Page) { return { apiVersion: 2, render: function (props) { return h('div', { dir: (props && props.dir) || 'ltr', className: (props && props.dir) === 'rtl' ? 'hb-rtl' : '' }, h(Page, props)); } }; }
@@ -222,7 +224,12 @@
 
   function HubHeader(p) {
     var st = useState(false); var mob = st[0], setMob = st[1];
-    var regSt = useState(false); var regOpen = regSt[0], setRegOpen = regSt[1];
+    var logSt = useState(false); var loginOpen = logSt[0], setLoginOpen = logSt[1];
+    useEffect(function () {
+      function openLogin() { setLoginOpen(true); }
+      window.addEventListener('bazino-hub:open-login', openLogin);
+      return function () { window.removeEventListener('bazino-hub:open-login', openLogin); };
+    }, []);
     var u = p.user;
     var items = [];
     for (var i = 0; i < NAV.length; i++) {
@@ -239,22 +246,21 @@
             h(LangChip, p),
             u ? h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 10 } },
               h('button', { type: 'button', className: 'hb-bell', 'aria-label': 'notifications', onClick: function () { go(p, '/club'); } }, ico(p, 'bell', 20), h('i', null)),
-              h('a', { href: '/club', className: 'hb-user', onClick: function (e) { e.preventDefault(); go(p, '/club'); } },
+              h('a', { href: '/profile', className: 'hb-user', onClick: function (e) { e.preventDefault(); go(p, '/profile'); } },
                 h('span', { className: 'hb-av' }, ((u.displayName || u.username || '?').charAt(0) || '?').toUpperCase()),
                 h('span', null, h('b', null, u.displayName || u.username), h('small', null, '#' + (u.username || 'BZN'))),
                 h('svg', { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none', stroke: '#33cfff', strokeWidth: 3 }, h('path', { d: 'M6 9l6 6 6-6' }))
               ),
               h('button', { type: 'button', className: 'hb-btn hb-btn--out', onClick: function () { doLogout(p); } }, ico(p, 'logout', 15), ts(p, 'hdr.logout'))
             ) : h('span', { style: { display: 'inline-flex', gap: 10 } },
-              h('button', { type: 'button', className: 'hb-btn hb-btn--reg', onClick: function () { setRegOpen(true); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.register'))),
-              h('button', { type: 'button', className: 'hb-btn hb-btn--login', onClick: function () { doLogin(p); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.login')))
+              h('button', { type: 'button', className: 'hb-btn hb-btn--login', onClick: function () { setLoginOpen(true); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.login')))
             ),
             h('button', { type: 'button', className: 'hb-burger', 'aria-label': 'menu', onClick: function () { setMob(!mob); } }, mob ? '✕' : '☰')
           )
         )
       ),
       h('nav', { className: 'hb-mnav' + (mob ? ' is-on' : '') }, items),
-      regOpen ? h(RegisterModal, { p: p, onClose: function () { setRegOpen(false); } }) : null
+      loginOpen ? h(LoginModal, { p: p, onClose: function () { setLoginOpen(false); } }) : null
     );
   }
 
@@ -323,48 +329,111 @@
     );
   }
 
-  function RegisterModal(x) {
+  function LoginModal(x) {
     var p = x.p;
-    var fields = [
-      [ts(p, 'reg.first', 'First Name'), ICO.user], [ts(p, 'reg.last', 'Last Name'), ICO.user], [ts(p, 'reg.user', 'Choose a Username'), ICO.user],
-      [ts(p, 'reg.dob', 'Date of Birth'), ICO.cal], [ts(p, 'reg.phone', 'Phone Number'), ICO.chat], [ts(p, 'reg.pass', 'Create a Password'), ICO.lock], [ts(p, 'reg.pass2', 'Confirm Your Password'), ICO.lock]
+    var modeSt = useState('otp'); var mode = modeSt[0], setMode = modeSt[1];
+    var stepSt = useState('phone'); var step = stepSt[0], setStep = stepSt[1];
+    var ccSt = useState('+90'); var cc = ccSt[0], setCc = ccSt[1];
+    var phSt = useState(''); var local = phSt[0], setLocal = phSt[1];
+    var codeSt = useState(''); var code = codeSt[0], setCode = codeSt[1];
+    var userSt = useState(''); var username = userSt[0], setUsername = userSt[1];
+    var passSt = useState(''); var password = passSt[0], setPassword = passSt[1];
+    var errSt = useState(''); var err = errSt[0], setErr = errSt[1];
+    var loadSt = useState(false); var loading = loadSt[0], setLoading = loadSt[1];
+    var countries = [
+      { d: '+90', t: 'Türkiye +90' },
+      { d: '+98', t: 'Iran +98' },
+      { d: '+357', t: 'Kıbrıs +357' },
+      { d: '+994', t: 'Azərbaycan +994' },
+      { d: '+7', t: 'Россия +7' },
+      { d: '+49', t: 'Deutschland +49' },
+      { d: '+44', t: 'United Kingdom +44' },
+      { d: '+1', t: 'USA / Canada +1' }
     ];
-    var nodes = [];
-    for (var i = 0; i < fields.length; i++) {
-      (function (f, idx) {
-        nodes.push(h('div', { key: f[0], className: 'hb-field' }, svg(f[1], 16), h('input', { type: idx >= 5 ? 'password' : 'text', placeholder: f[0] })));
-      })(fields[i], i);
+    var opts = [];
+    var i;
+    for (i = 0; i < countries.length; i++) opts.push(h('option', { key: countries[i].d, value: countries[i].d }, countries[i].t));
+    function fullPhone() {
+      var n = String(local || '').replace(/\D/g, '');
+      if (n.charAt(0) === '0') n = n.slice(1);
+      return cc + n;
+    }
+    function post(url, body) {
+      return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); });
+    }
+    function finish(data) {
+      try { if (data && data.token) window.localStorage.setItem('bazino.authToken', data.token); } catch (e1) {}
+      x.onClose();
+      window.location.reload();
+    }
+    function requestCode(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/otp/request', { phone: fullPhone() }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr(res.d.error || ts(p, 'login.badPhone', 'Invalid phone number')); return; }
+        setStep('code');
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    function verifyCode(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/otp/verify', { phone: fullPhone(), code: code }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr(res.d.error || ts(p, 'login.badCode', 'Wrong code')); return; }
+        finish(res.d);
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    function loginPass(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/login', { username: username, password: password }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr(res.d.error || ts(p, 'login.badPass', 'Login failed')); return; }
+        finish(res.d);
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    var body;
+    if (mode === 'password') {
+      body = h('form', { className: 'hb-form', onSubmit: loginPass },
+        h('h2', null, ts(p, 'login.passTitle', 'SIGN IN WITH PASSWORD')),
+        h('p', { className: 'hb-fsub' }, ts(p, 'login.passSub', 'For admin or members who set a permanent password in profile.')),
+        err ? h('p', { className: 'hb-login-err' }, err) : null,
+        h('div', { className: 'hb-field' }, ico(p, 'user', 16), h('input', { value: username, autoComplete: 'username', placeholder: ts(p, 'login.user', 'Username or mobile'), onChange: function (e) { setUsername(e.target.value); } })),
+        h('div', { className: 'hb-field' }, ico(p, 'lock', 16), h('input', { type: 'password', value: password, autoComplete: 'current-password', placeholder: ts(p, 'login.pass', 'Password'), onChange: function (e) { setPassword(e.target.value); } })),
+        h('button', { type: 'submit', className: 'hb-cta', disabled: loading }, loading ? '…' : ts(p, 'hdr.login', 'LOGIN'))
+      );
+    } else if (step === 'code') {
+      body = h('form', { className: 'hb-form', onSubmit: verifyCode },
+        h('h2', null, ts(p, 'login.codeTitle', 'ENTER SMS CODE')),
+        h('p', { className: 'hb-fsub' }, ts(p, 'login.codeSub', 'We texted a 6-digit code to ') + fullPhone()),
+        err ? h('p', { className: 'hb-login-err' }, err) : null,
+        h('div', { className: 'hb-field' }, ico(p, 'lock', 16), h('input', { value: code, inputMode: 'numeric', maxLength: 6, placeholder: '••••••', onChange: function (e) { setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6)); } })),
+        h('button', { type: 'submit', className: 'hb-cta', disabled: loading || String(code).length !== 6 }, loading ? '…' : ts(p, 'login.verify', 'VERIFY & SIGN IN')),
+        h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { marginTop: 10 }, onClick: function () { setStep('phone'); setErr(''); } }, ts(p, 'login.change', 'Change number'))
+      );
+    } else {
+      body = h('form', { className: 'hb-form', onSubmit: requestCode },
+        h('h2', null, ts(p, 'login.title', 'SIGN IN / JOIN')),
+        h('p', { className: 'hb-fsub' }, ts(p, 'login.sub', 'Enter your mobile number. First login creates your account — then fill your profile.')),
+        err ? h('p', { className: 'hb-login-err' }, err) : null,
+        h('label', { className: 'hb-login-lab' }, ts(p, 'login.country', 'Country / prefix')),
+        h('div', { className: 'hb-dial' },
+          h('select', { className: 'hb-country', value: cc, onChange: function (e) { setCc(e.target.value); } }, opts),
+          h('div', { className: 'hb-field hb-field--grow' }, ico(p, 'chat', 16), h('input', { type: 'tel', inputMode: 'tel', value: local, placeholder: ts(p, 'login.phone', '5xx xxx xx xx'), onChange: function (e) { setLocal(e.target.value); } }))
+        ),
+        h('button', { type: 'submit', className: 'hb-cta', disabled: loading }, loading ? '…' : ts(p, 'login.send', 'SEND CODE'))
+      );
     }
     return h('div', { className: 'hb-modalbg', onClick: x.onClose },
-      h('div', { className: 'hb-modal hb-modal--wide', onClick: function (e) { e.stopPropagation(); } },
+      h('div', { className: 'hb-modal hb-modal--login', onClick: function (e) { e.stopPropagation(); } },
         h('button', { type: 'button', className: 'hb-x', onClick: x.onClose }, '✕'),
-        h('div', { className: 'hb-reg-grid' },
-          h('div', { className: 'hb-reg-left' },
-            h('span', { style: { color: '#ff2ea6' } }, ico(p, 'pad', 64)),
-            h('div', { className: 'hb-logo', style: { marginTop: 4 } }, h('b', null, 'BAZINO'), h('small', null, 'GAMING CLUB')),
-            h('div', { style: { letterSpacing: 3, color: '#dfe6ff', fontWeight: 700, fontSize: 12 } }, ts(p, 'reg.play', 'PLAY • COMPETE • BELONG')),
-            h('div', { className: 'hb-script2' }, 'Good Games', h('br', null), 'Better', h('br', null), 'People'),
-            h('span', { style: { color: '#a05cf7' } }, ico(p, 'pad', 90)),
-            h('div', { className: 'hb-join' }, ts(p, 'reg.join', 'JOIN OUR COMMUNITY'))
-          ),
-          h('form', { className: 'hb-form', onSubmit: function (e) { e.preventDefault(); x.onClose(); doLogin(p); } },
-            h('h2', null, ts(p, 'reg.title', 'CREATE YOUR ACCOUNT')),
-            h('p', { className: 'hb-fsub' }, ts(p, 'reg.sub', 'Join Bazino Gaming Club and be part of our community!')),
-            h('div', { className: 'hb-frow' }, nodes[0], nodes[1]),
-            nodes[2],
-            h('div', { className: 'hb-frow' }, nodes[3],
-              h('div', { className: 'hb-field' }, ico(p, 'chat', 16), h('input', { type: 'tel', placeholder: '+90 · Phone Number' }))),
-            nodes[4], nodes[4] ? null : null,
-            nodes[5], nodes[6],
-            h('div', { className: 'hb-gender' }, h('span', null, ts(p, 'reg.gender', 'Gender')),
-              h('label', null, h('input', { type: 'radio', name: 'g', defaultChecked: true }), 'Male'),
-              h('label', null, h('input', { type: 'radio', name: 'g' }), 'Female'),
-              h('label', null, h('input', { type: 'radio', name: 'g' }), 'Other')),
-            h('label', { className: 'hb-accept' }, h('input', { type: 'checkbox' }), h('span', null, ts(p, 'reg.accept', 'I accept the '), ' ', h('a', { href: '/rules', onClick: function (e) { e.preventDefault(); x.onClose(); go(p, '/rules'); } }, ts(p, 'foot.rules', 'RULES')), ' ', ts(p, 'reg.and', 'and'), ' ', h('a', { href: '/privacy', onClick: function (e) { e.preventDefault(); x.onClose(); go(p, '/privacy'); } }, ts(p, 'foot.privacy', 'PRIVACY')))),
-            h('button', { type: 'submit', className: 'hb-cta' }, ts(p, 'reg.create', 'CREATE ACCOUNT')),
-            h('p', { style: { textAlign: 'center', color: '#97a1c2', fontWeight: 600, margin: '4px 0 0' } }, ts(p, 'reg.have', 'Already have an account? '), ' ', h('a', { href: '#', style: { color: '#ff2ea6' }, onClick: function (e) { e.preventDefault(); x.onClose(); doLogin(p); } }, ts(p, 'hdr.login', 'LOGIN')))
-          )
-        )
+        h('div', { className: 'hb-logtabs', role: 'tablist' },
+          h('button', { type: 'button', className: 'hb-logtab' + (mode === 'otp' ? ' is-on' : ''), onClick: function () { setMode('otp'); setErr(''); } }, ts(p, 'login.sms', 'SMS CODE')),
+          h('button', { type: 'button', className: 'hb-logtab' + (mode === 'password' ? ' is-on' : ''), onClick: function () { setMode('password'); setErr(''); } }, ts(p, 'login.password', 'PASSWORD'))
+        ),
+        body
       )
     );
   }
@@ -548,95 +617,90 @@
 
   function GamesPage(p) {
     var st = useState('cats'); var view = st[0], setView = st[1];
-    var selSt = useState(null); var selId = selSt[0], setSelId = selSt[1];
     var hrSt = useState(2); var hours = hrSt[0], setHours = hrSt[1];
     var exSt = useState(0); var extras = exSt[0], setExtras = exSt[1];
     var rqSt = useState(''); var reqGame = rqSt[0], setReqGame = rqSt[1];
     var msgSt = useState(''); var flash = msgSt[0], setFlash = msgSt[1];
+    var pickSt = useState(false); var pickOpen = pickSt[0], setPickOpen = pickSt[1];
+    var confSt = useState(null); var pending = confSt[0], setPending = confSt[1];
     var systems = liveSystems(p);
     var extraRate = Number((p.settings || {}).extra_controller_hourly) || 25;
-    var demo = [
-      { id: 'demo-85', name: ts(p, 'games.tv85', '85" TV'), type: 'PS5', hourlyRate: 250, audience: 'adults', isReserved: false, art: asset(p, 'hero-setup.jpg'), sub: ts(p, 'games.plus2', '+ 2 CONTROLLERS'), c: '#33cfff' },
-      { id: 'demo-65', name: ts(p, 'games.tv65', '65" TV'), type: 'PS5', hourlyRate: 200, audience: '', isReserved: false, art: asset(p, 'slide-match.jpg'), sub: ts(p, 'games.plus2', '+ 2 CONTROLLERS'), c: '#ff2ea6' }
-    ];
     var audience = view === 'kids' ? 'kids' : (view === 'adults' ? 'adults' : null);
-    var grid = systems.length ? filterAudience(systems, audience) : demo;
-    var selected = null;
-    var gi;
-    for (gi = 0; gi < grid.length; gi++) if (grid[gi].id === selId) selected = grid[gi];
+    var grid = filterAudience(systems, audience);
     var colors = ['#33cfff', '#ff2ea6', '#2ee87e', '#a05cf7', '#ff9a1f'];
-    var cards = [];
-    for (gi = 0; gi < grid.length; gi++) {
-      (function (sys, idx) {
-        var c = sys.c || colors[idx % colors.length];
-        var art = sys.art || (sys.type === 'PS5' ? asset(p, 'hero-setup.jpg') : asset(p, 'games-gear.jpg'));
-        cards.push(h('button', { key: sys.id, type: 'button', className: 'hb-price' + (selId === sys.id ? ' is-on' : ''), style: { '--c': c }, onClick: function () {
-          setSelId(sys.id); setFlash('');
-          if (sys.isReserved) return;
-          var r = holdBay(p, sys, hours, extras, reqGame);
-          if (r) setFlash(ts(p, 'games.held', 'Bay held — pay cash or card at the desk.'));
-        } },
-          h('div', { className: 'hb-price-art', style: { backgroundImage: 'url(' + art + ')' } }),
-          h('div', { className: 'hb-price-body' },
-            h('h3', null, sysLabel(p, sys)),
-            h('small', null, sys.sub || (sys.type || 'PS5')),
-            h('div', { className: 'hb-price-tag' }, h('b', null, String(sys.hourlyRate || 0) + ' TL'), h('span', null, ts(p, 'common.hour', '/ HOUR'))),
-            h('span', { className: 'hb-price-btn' }, sys.isReserved ? ts(p, 'games.busy', 'IN USE') : ts(p, 'games.hold', 'HOLD MY BAY'))
-          )));
-      })(grid[gi], gi);
-    }
-    cards.push(h('button', { key: 'extra', type: 'button', className: 'hb-price' + (extras > 0 ? ' is-on' : ''), style: { '--c': '#2ee87e' }, onClick: function () { setExtras(extras >= 4 ? 0 : extras + 1); } },
-      h('div', { className: 'hb-price-art', style: { backgroundImage: 'url(' + asset(p, 'games-gear.jpg') + ')' } }),
-      h('div', { className: 'hb-price-body' },
-        h('h3', null, ts(p, 'games.extra', 'EXTRA CONTROLLER')),
-        h('small', null, ts(p, 'games.extraSub', 'PER ADDITIONAL CONTROLLER')),
-        h('div', { className: 'hb-price-tag' }, h('b', null, String(extraRate) + ' TL'), h('span', null, ts(p, 'common.hour', '/ HOUR'))),
-        h('span', { className: 'hb-price-btn' }, extras ? ('+' + extras) : ts(p, 'games.bookNow', 'BOOK'))
-      )));
-
     var hourBtns = [];
     [1, 2, 3, 4].forEach(function (n) {
       hourBtns.push(h('button', { key: n, type: 'button', className: 'hb-hbtn' + (hours === n ? ' is-on' : ''), onClick: function () { setHours(n); } }, n + ' ' + ts(p, 'common.hours', 'H')));
     });
-    var bookAmt = selected ? (Number(selected.hourlyRate) || 0) * hours + extras * extraRate * hours : extras * extraRate * hours;
-    var bookBox = h('div', { className: 'hb-book hb-box', style: { '--c': '#33cfff' } },
-      h('div', { className: 'hb-card-head' }, h('span', { style: { color: '#33cfff' } }, ico(p, 'cal', 22)), h('b', null, ts(p, 'games.bookTitle', 'BOOK A STATION'))),
-      h('p', { className: 'hb-book-hint' }, ts(p, 'games.bookHint', 'Pick a station, hours and extra pads — pay cash or card at the desk.')),
-      selected ? h('div', { className: 'hb-book-sel' }, h('small', null, ts(p, 'games.selected', 'Selected')), h('b', null, sysLabel(p, selected)), h('span', null, String(selected.hourlyRate) + ' TL ' + ts(p, 'common.hour', '/ HOUR')))
-        : h('p', { className: 'hb-book-hint' }, ts(p, 'games.needSys', 'Select a station first')),
-      h('div', { className: 'hb-book-row' }, h('small', null, ts(p, 'games.duration', 'Duration')), h('div', { className: 'hb-hbtns' }, hourBtns)),
-      h('div', { className: 'hb-book-row' }, h('small', null, ts(p, 'games.extras', 'Extra controllers') + ' × ' + extras)),
-      h('input', { className: 'hb-book-input', value: reqGame, placeholder: ts(p, 'games.reqTitle', 'Game title'), onChange: function (e) { setReqGame(e.target.value); } }),
-      h('div', { className: 'hb-book-total' }, h('b', null, String(bookAmt) + ' TL'), h('span', null, ts(p, 'games.deskPay', 'Cash or card at the desk — no online payment.'))),
-      flash ? h('p', { className: 'hb-book-ok' }, flash) : null,
-      h('button', { type: 'button', className: 'hb-cta hb-hold-cta', onClick: function () {
-        if (!selected) { setFlash(ts(p, 'games.needSys', 'Select a station first')); return; }
-        if (selected.isReserved) { setFlash(ts(p, 'games.busy', 'IN USE')); return; }
-        if (!p.user) { doLogin(p); return; }
-        var r = holdBay(p, selected, hours, extras, reqGame);
-        setFlash(r ? ts(p, 'games.held', 'Bay held — pay cash or card at the desk.') : ts(p, 'games.hold', 'HOLD MY BAY'));
-      } }, ts(p, 'games.hold', 'HOLD MY BAY'))
+    function openPicker() {
+      if (!p.user) { doLogin(p); return; }
+      setPending(null);
+      setPickOpen(true);
+    }
+    function confirmReserve() {
+      if (!pending) return;
+      var r = holdBay(p, pending, hours, extras, reqGame);
+      setPickOpen(false); setPending(null);
+      if (r) setFlash(ts(p, 'games.held', 'Bay held — pay cash or card at the desk.'));
+    }
+    var stationCards = [];
+    var gi;
+    for (gi = 0; gi < grid.length; gi++) {
+      (function (sys, idx) {
+        var c = sys.c || colors[idx % colors.length];
+        var art = sys.art || (sys.type === 'PS5' ? asset(p, 'hero-setup.jpg') : asset(p, 'games-gear.jpg'));
+        stationCards.push(h('button', { key: sys.id, type: 'button', className: 'hb-price hb-price--pick' + (sys.isReserved ? ' is-busy' : ''), style: { '--c': c }, disabled: !!sys.isReserved, onClick: function () { if (!sys.isReserved) setPending(sys); } },
+          h('div', { className: 'hb-price-art', style: { backgroundImage: 'url(' + art + ')' } }),
+          h('div', { className: 'hb-price-body' },
+            h('h3', null, sysLabel(p, sys)),
+            h('small', null, sys.sub || (sys.type || 'PC')),
+            h('div', { className: 'hb-price-tag' }, h('b', null, String(sys.hourlyRate || 0) + ' TL'), h('span', null, ts(p, 'common.hour', '/ HOUR'))),
+            h('span', { className: 'hb-price-btn' }, sys.isReserved ? ts(p, 'games.busy', 'IN USE') : ts(p, 'games.pick', 'SELECT'))
+          )));
+      })(grid[gi], gi);
+    }
+    var pickModal = !pickOpen ? null : h('div', { className: 'hb-modalbg', onClick: function () { setPickOpen(false); setPending(null); } },
+      h('div', { className: 'hb-modal hb-modal--scroll', onClick: function (e) { e.stopPropagation(); } },
+        h('button', { type: 'button', className: 'hb-x', onClick: function () { setPickOpen(false); setPending(null); } }, '✕'),
+        h('h2', { className: 'hb-pick-title' }, ts(p, 'games.pickTitle', 'CHOOSE A STATION')),
+        h('p', { className: 'hb-book-hint' }, ts(p, 'games.pickHint', 'Select a free bay. Duration: ') + hours + 'h' + (reqGame ? ' · ' + reqGame : '')),
+        grid.length ? h('div', { className: 'hb-stations' }, stationCards) : h('p', { className: 'hb-book-hint' }, ts(p, 'games.noSys', 'No systems yet.')),
+        pending ? h('div', { className: 'hb-confirm' },
+          h('p', null, ts(p, 'games.confirm', 'Reserve this station?'), ' ', h('b', null, sysLabel(p, pending))),
+          h('div', { className: 'hb-confirm-row' },
+            h('button', { type: 'button', className: 'hb-cta hb-cta--line', onClick: function () { setPending(null); } }, ts(p, 'games.cancel', 'CANCEL')),
+            h('button', { type: 'button', className: 'hb-cta', onClick: confirmReserve }, ts(p, 'games.confirmGo', 'CONFIRM RESERVE'))
+          )
+        ) : null
+      )
     );
-
-    var systemsBlock = h('div', { className: 'hb-wrap' },
-      h('div', { style: { display: 'flex', alignItems: 'center', gap: 14, margin: '6px 0 14px' } },
-        h('span', { style: { color: '#ffc93c' } }, ico(p, 'monitor', 26)),
-        h('b', { style: { fontFamily: 'var(--hb-font-d)', letterSpacing: 2, fontSize: 17 } }, ts(p, 'games.systems', 'SYSTEMS & GEAR')),
-        h('small', { style: { color: '#97a1c2', fontWeight: 600 } }, ts(p, 'games.systemsHint', '— book a station'))
+    var bookBox = h('div', { className: 'hb-book hb-box hb-book--compact', style: { '--c': '#33cfff' } },
+      h('div', { className: 'hb-card-head' }, h('span', { style: { color: '#33cfff' } }, ico(p, 'cal', 20)), h('b', null, ts(p, 'games.bookTitle', 'BOOK A STATION'))),
+      h('div', { className: 'hb-book-compact' },
+        h('div', { className: 'hb-book-row' }, h('small', null, ts(p, 'games.duration', 'Duration')), h('div', { className: 'hb-hbtns' }, hourBtns)),
+        h('div', { className: 'hb-book-row' },
+          h('small', null, ts(p, 'games.extras', 'Extra controllers')),
+          h('div', { className: 'hb-step' },
+            h('button', { type: 'button', onClick: function () { if (extras > 0) setExtras(extras - 1); } }, '−'),
+            h('b', null, String(extras)),
+            h('button', { type: 'button', onClick: function () { if (extras < 4) setExtras(extras + 1); } }, '+')
+          )
+        ),
+        h('input', { className: 'hb-book-input', value: reqGame, placeholder: ts(p, 'games.reqTitle', 'Game title'), onChange: function (e) { setReqGame(e.target.value); } })
       ),
-      grid.length ? h('div', { className: 'hb-prices' }, cards) : h('p', { style: { color: '#97a1c2', fontWeight: 600 } }, ts(p, 'games.noSys', 'No systems yet.')),
-      bookBox
+      flash ? h('p', { className: 'hb-book-ok' }, flash) : null,
+      h('button', { type: 'button', className: 'hb-cta hb-hold-cta', onClick: openPicker }, ts(p, 'games.hold', 'HOLD MY BAY'))
     );
 
     var body;
     if (view === 'kids') {
       body = h('div', null,
-        h(PHero, { img: asset(p, 'games-kids.jpg'), icon: h('span', { style: { color: '#33cfff' } }, ico(p, 'users', 44)), title: ts(p, 'games.kids', 'KIDS'), em: ts(p, 'games.kidsEm', 'GAMES'), sub: ts(p, 'games.kidsSub', 'FUN & SAFE GAMES FOR YOUNGER PLAYERS'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\nGood People') }),
+        h(PHero, { img: asset(p, 'games-kids.jpg'), icon: h('span', { style: { color: '#33cfff' } }, ico(p, 'users', 44)), title: ts(p, 'games.kids', 'KIDS'), em: ts(p, 'games.kidsEm', 'GAMES'), sub: ts(p, 'games.kidsSub', 'FUN & SAFE GAMES FOR YOUNGER PLAYERS'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\\nGood People') }),
         h('div', { className: 'hb-wrap hb-rows' }, KIDS.map(function (g) { return GameRow(g, '#a05cf7', p, function (game) { setReqGame(game.t); setFlash(ts(p, 'games.picked', 'Selected: ') + game.t); }); }))
       );
     } else if (view === 'adults') {
       body = h('div', null,
-        h(PHero, { img: asset(p, 'games-adults.jpg'), icon: h('span', { style: { color: '#ff2e6f' } }, ico(p, 'pad', 44)), title: ts(p, 'games.adults', 'ADULTS'), em: ts(p, 'games.adultsEm', 'GAMES'), sub: ts(p, 'games.adultsSub', 'ACTION • SPORTS • RACING • AND MORE'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\nGood People') }),
+        h(PHero, { img: asset(p, 'games-adults.jpg'), icon: h('span', { style: { color: '#ff2e6f' } }, ico(p, 'pad', 44)), title: ts(p, 'games.adults', 'ADULTS'), em: ts(p, 'games.adultsEm', 'GAMES'), sub: ts(p, 'games.adultsSub', 'ACTION • SPORTS • RACING • AND MORE'), back: function () { setView('cats'); }, backLabel: ts(p, 'common.backGames', 'BACK TO GAMES'), scriptR: ts(p, 'common.script', 'Good Games\\nGood People') }),
         h('div', { className: 'hb-wrap hb-rows' }, ADULTS.concat(extraGames(p, KIDS.concat(ADULTS))).map(function (g) { return GameRow(g, '#ff2e6f', p, function (game) { setReqGame(game.t); setFlash(ts(p, 'games.picked', 'Selected: ') + game.t); }); }))
       );
     } else if (view === 'requests') {
@@ -670,7 +734,7 @@
         )
       );
     }
-    return h('div', null, body, systemsBlock);
+    return h('div', null, body, (view === 'kids' || view === 'adults') ? bookBox : null, pickModal);
   }
 
   /* ══ EVENTS ══ */
@@ -1299,7 +1363,7 @@
       );
     }
     var name = u.displayName || u.username || 'ArmanK';
-    var kv = [[ts(p,'club.fn','First Name'), name.split(' ')[0] || name], [ts(p,'club.ln','Last Name'), name.split(' ')[1] || '—'], [ts(p,'club.un','Username'), u.username || name], [ts(p,'club.id','BZN Member ID'), '#BZN1024'], [ts(p,'club.dob','Date of Birth'), '12 May 1998'], [ts(p,'club.ph','Phone Number'), '+90 539 112 37 47']];
+    var kv = [[ts(p,'club.fn','First Name'), name.split(' ')[0] || name], [ts(p,'club.ln','Last Name'), name.split(' ')[1] || '—'], [ts(p,'club.un','Username'), u.username || name], [ts(p,'club.id','BZN Member ID'), '#BZN1024'], [ts(p,'club.dob','Date of Birth'), '12 May 1998'], [ts(p,'club.ph','Phone Number'), u.phone || '—']];
     var kvs = [];
     for (var i = 0; i < kv.length; i++) kvs.push(h('div', { key: kv[i][0], className: 'hb-line' }, h('span', { style: { color: '#33cfff' } }, ico(p, 'user', 16)), h('small', null, kv[i][0]), h('b', null, kv[i][1])));
     return h('div', null,
@@ -1307,12 +1371,13 @@
       h('div', { className: 'hb-wrap hb-prof-grid' },
         h('div', { className: 'hb-prof-left' },
           h('div', { className: 'hb-box', style: { '--c': '#33cfff' } },
-            h('div', { className: 'hb-card-head' }, h('span', { style: { color: '#33cfff' } }, ico(p, 'user', 24)), h('b', null, ts(p,'club.info','PERSONAL INFORMATION'))),
+            h('div', { className: 'hb-card-head' }, h('span', { style: { color: '#33cfff' } }, ico(p, 'user', 24)), h('b', null, ts(p,'club.info','PERSONAL INFORMATION')),
+              h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#33cfff', marginInlineStart: 'auto', padding: '6px 12px' }, onClick: function () { go(p, '/profile'); } }, ts(p,'club.edit','EDIT PROFILE'))),
             h('div', { className: 'hb-prof-main' },
               h('div', { className: 'hb-avatar' }, h('div', { className: 'hb-avin' }, name.charAt(0).toUpperCase())),
               h('div', null,
                 h('div', { className: 'hb-kv' }, kvs),
-                h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#ff2ea6', marginTop: 10 }, onClick: function () { go(p, '/profile'); } }, ico(p, 'lock', 15), ts(p,'club.pass','CHANGE PASSWORD'), '→')
+                h('button', { type: 'button', className: 'hb-cta hb-cta--line', style: { '--c': '#ff2ea6', marginTop: 10 }, onClick: function () { go(p, '/profile/security'); } }, ico(p, 'lock', 15), ts(p,'club.pass','CHANGE PASSWORD'), '→')
               )
             )
           ),

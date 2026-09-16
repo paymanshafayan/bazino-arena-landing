@@ -688,3 +688,32 @@ button.hb-grow:hover { filter: brightness(1.06); }
 
 button.hb-post { display:block; width:100%; text-align:inherit; font:inherit; color:inherit; cursor:pointer; padding:0; appearance:none; -webkit-appearance:none; }
 button.hb-post:hover { filter: brightness(1.06); }
+
+/* v2.2.0 compact reservation + station picker + login */
+.hb-book--compact { padding: 10px 16px 12px !important; margin: 10px 0 22px; }
+.hb-book--compact .hb-card-head { margin-bottom: 4px; }
+.hb-book-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; align-items: center; }
+.hb-book--compact .hb-book-input { margin: 0; grid-column: 1 / -1; padding: 8px 12px; }
+.hb-book--compact .hb-hold-cta { margin-top: 8px; }
+.hb-step { display: inline-flex; align-items: center; gap: 8px; }
+.hb-step button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #243056; background: #0a0f1e; color: #fff; font-size: 18px; cursor: pointer; }
+.hb-stations { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 12px 0 8px; }
+.hb-price--pick { text-align: inherit; width: 100%; cursor: pointer; }
+.hb-price--pick.is-busy { opacity: .55; cursor: not-allowed; }
+.hb-modal--scroll { max-height: 82vh; overflow: auto; max-width: 980px; width: min(94vw, 980px); }
+.hb-pick-title { font-family: var(--hb-font-d); letter-spacing: 2px; margin: 0 8px 4px; }
+.hb-confirm { margin-top: 14px; padding: 14px; border: 1px solid #33cfff55; border-radius: 12px; background: #0a1224; }
+.hb-confirm-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.hb-modal--login { max-width: 440px; width: min(94vw, 440px); }
+.hb-logtabs { display: flex; gap: 8px; margin: 8px 8px 16px; background: #0a0f1e; padding: 4px; border-radius: 12px; }
+.hb-logtab { flex: 1; border: 0; background: transparent; color: #97a1c2; font-weight: 800; letter-spacing: 1px; padding: 10px; border-radius: 10px; cursor: pointer; }
+.hb-logtab.is-on { background: #33cfff; color: #041018; }
+.hb-dial { display: flex; gap: 8px; align-items: stretch; margin-bottom: 12px; }
+.hb-country { min-width: 148px; background: #080c18; color: #fff; border: 1px solid #243056; border-radius: 10px; padding: 10px 8px; font-weight: 700; }
+.hb-field--grow { flex: 1; }
+.hb-login-lab { display: block; color: #8b93b0; font-size: 11px; letter-spacing: 1px; margin: 0 0 6px; font-weight: 700; }
+.hb-login-err { color: #ff6b8a; font-weight: 700; margin: 0 0 10px; }
+@media (max-width: 800px) {
+  .hb-stations { grid-template-columns: 1fr; }
+  .hb-book-compact { grid-template-columns: 1fr; }
+}

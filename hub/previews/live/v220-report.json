@@ -1,0 +1,41 @@
+[
+  {
+    "k": "login-country-tr",
+    "ok": true,
+    "extra": "Türkiye +90"
+  },
+  {
+    "k": "theme-password-login",
+    "ok": true
+  },
+  {
+    "k": "no-station-cards-on-games",
+    "ok": true,
+    "extra": "{\"stationCards\":0,\"book\":true,\"compact\":true}"
+  },
+  {
+    "k": "pick-minecraft",
+    "ok": true
+  },
+  {
+    "k": "station-modal",
+    "ok": true,
+    "extra": "{\"open\":true,\"count\":3,\"cols\":\"297.328px 297.328px 297.344px\"}"
+  },
+  {
+    "k": "confirm-dialog",
+    "ok": true
+  },
+  {
+    "k": "reserve-checkout",
+    "ok": true
+  },
+  {
+    "k": "tournament-register",
+    "ok": true
+  },
+  {
+    "k": "profile-page",
+    "ok": true
+  }
+]
