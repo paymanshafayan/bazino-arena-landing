@@ -916,7 +916,7 @@
   }
   function SpecialPage(p) {
     return h('div', null,
-      h(PHero, { img: asset(p, 'slide-city.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'sp.title','SPECIAL'), em: ts(p,'sp.em','EVENTS'), sub: ts(p,'sp.sub','BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Epic\nTournaments', scriptR: 'More\nThan\na Game' }),
+      h(PHero, { img: asset(p, 'city-neon.jpg'), icon: h('span', { style: { color: '#ff2ea6' } }, ico(p, 'trophy', 46)), title: ts(p,'sp.title','SPECIAL'), em: ts(p,'sp.em','EVENTS'), sub: ts(p,'sp.sub','BIGGER GAMES • HIGHER PRIZES • RARE MOMENTS'), back: function () { go(p, '/events'); }, backLabel: ts(p, 'common.backEvents', 'BACK TO EVENTS'), scriptL: 'Epic\nTournaments', scriptR: 'More\nThan\na Game' }),
       h('div', { className: 'hb-wrap hb-rows' }, liveSpecial(p).map(function (s) { return SpecialRow(s, p); }))
     );
   }
@@ -1423,7 +1423,7 @@
     var fallback = [
       { title: 'FC26 Saturday Cup — Recap', tag: 'TOURNAMENTS', date: 'SEP 06, 2026', img: asset(p, 'slide-fc26.jpg'), d: '32 players, 5 hours, one champion. See how ArmanK lifted the weekly cup again.' },
       { title: 'New Lounge Wall Is Live', tag: 'CLUB LIFE', date: 'SEP 02, 2026', img: asset(p, 'club-interior.jpg'), d: 'The 85" wall got an upgrade — El Clasico nights are back every week.' },
-      { title: 'GTA VI Launch Night Plans', tag: 'NEWS', date: 'AUG 28, 2026', img: asset(p, 'slide-city.jpg'), d: 'First-play seats, snacks and the neon city on every screen. Reserve early.' }
+      { title: 'GTA VI Launch Night Plans', tag: 'NEWS', date: 'AUG 28, 2026', img: asset(p, 'city-neon.jpg'), d: 'First-play seats, snacks and the neon city on every screen. Reserve early.' }
     ];
     var src = arts.length ? arts.map(function (a) { return { title: pick(a.title, langOf(p)) || a.title, tag: a.category || 'NEWS', date: (a.date || a.createdAt || '').slice(0, 16), img: a.imageUrl || asset(p, 'club-interior.jpg'), d: pick(a.content || a.excerpt || a.desc, langOf(p)) || pick(a.contentEn || a.contentFa, langOf(p)) || '' }; }) : fallback;
     for (var i = 0; i < src.length; i++) {
