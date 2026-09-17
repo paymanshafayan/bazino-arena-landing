@@ -704,15 +704,6 @@ button.hb-post:hover { filter: brightness(1.06); }
 .hb-pick-title { font-family: var(--hb-font-d); letter-spacing: 2px; margin: 0 8px 4px; }
 .hb-confirm { margin-top: 14px; padding: 14px; border: 1px solid #33cfff55; border-radius: 12px; background: #0a1224; }
 .hb-confirm-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-.hb-modal--login { max-width: 440px; width: min(94vw, 440px); }
-.hb-logtabs { display: flex; gap: 8px; margin: 8px 8px 16px; background: #0a0f1e; padding: 4px; border-radius: 12px; }
-.hb-logtab { flex: 1; border: 0; background: transparent; color: #97a1c2; font-weight: 800; letter-spacing: 1px; padding: 10px; border-radius: 10px; cursor: pointer; }
-.hb-logtab.is-on { background: #33cfff; color: #041018; }
-.hb-dial { display: flex; gap: 8px; align-items: stretch; margin-bottom: 12px; }
-.hb-country { min-width: 148px; background: #080c18; color: #fff; border: 1px solid #243056; border-radius: 10px; padding: 10px 8px; font-weight: 700; }
-.hb-field--grow { flex: 1; }
-.hb-login-lab { display: block; color: #8b93b0; font-size: 11px; letter-spacing: 1px; margin: 0 0 6px; font-weight: 700; }
-.hb-login-err { color: #ff6b8a; font-weight: 700; margin: 0 0 10px; }
 @media (max-width: 800px) {
   .hb-stations { grid-template-columns: 1fr; }
   .hb-book-compact { grid-template-columns: 1fr; }
