@@ -337,6 +337,7 @@
     var stepSt = useState('phone'); var step = stepSt[0], setStep = stepSt[1];
     var isoSt = useState('TR'); var iso = isoSt[0], setIso = isoSt[1];
     var openSt = useState(false); var ccOpen = openSt[0], setCcOpen = openSt[1];
+    var qSt = useState(''); var q = qSt[0], setQ = qSt[1];
     var phSt = useState(''); var local = phSt[0], setLocal = phSt[1];
     var codeSt = useState(''); var code = codeSt[0], setCode = codeSt[1];
     var userSt = useState(''); var username = userSt[0], setUsername = userSt[1];
@@ -344,28 +345,190 @@
     var errSt = useState(''); var err = errSt[0], setErr = errSt[1];
     var loadSt = useState(false); var loading = loadSt[0], setLoading = loadSt[1];
     var countries = [
-      { iso: 'TR', d: '+90', t: 'Türkiye', f: '🇹🇷' },
-      { iso: 'CY', d: '+357', t: 'Kıbrıs', f: '🇨🇾' },
-      { iso: 'AZ', d: '+994', t: 'Azərbaycan', f: '🇦🇿' },
-      { iso: 'IR', d: '+98', t: 'Iran', f: '🇮🇷' },
-      { iso: 'RU', d: '+7', t: 'Россия', f: '🇷🇺' },
-      { iso: 'UA', d: '+380', t: 'Ukraine', f: '🇺🇦' },
-      { iso: 'DE', d: '+49', t: 'Deutschland', f: '🇩🇪' },
-      { iso: 'GB', d: '+44', t: 'United Kingdom', f: '🇬🇧' },
-      { iso: 'US', d: '+1', t: 'USA / Canada', f: '🇺🇸' },
-      { iso: 'NL', d: '+31', t: 'Nederland', f: '🇳🇱' },
-      { iso: 'FR', d: '+33', t: 'France', f: '🇫🇷' },
-      { iso: 'IT', d: '+39', t: 'Italia', f: '🇮🇹' },
-      { iso: 'ES', d: '+34', t: 'España', f: '🇪🇸' },
-      { iso: 'AE', d: '+971', t: 'UAE', f: '🇦🇪' },
-      { iso: 'SA', d: '+966', t: 'Saudi Arabia', f: '🇸🇦' },
-      { iso: 'IQ', d: '+964', t: 'Iraq', f: '🇮🇶' },
-      { iso: 'GE', d: '+995', t: 'Georgia', f: '🇬🇪' }
+      { iso: 'TR', d: '+90', t: 'Türkiye' },
+      { iso: 'AF', d: '+93', t: 'Afghanistan' },
+      { iso: 'AL', d: '+355', t: 'Albania' },
+      { iso: 'DZ', d: '+213', t: 'Algeria' },
+      { iso: 'AD', d: '+376', t: 'Andorra' },
+      { iso: 'AO', d: '+244', t: 'Angola' },
+      { iso: 'AR', d: '+54', t: 'Argentina' },
+      { iso: 'AM', d: '+374', t: 'Armenia' },
+      { iso: 'AU', d: '+61', t: 'Australia' },
+      { iso: 'AT', d: '+43', t: 'Austria' },
+      { iso: 'AZ', d: '+994', t: 'Azərbaycan' },
+      { iso: 'BH', d: '+973', t: 'Bahrain' },
+      { iso: 'BD', d: '+880', t: 'Bangladesh' },
+      { iso: 'BY', d: '+375', t: 'Belarus' },
+      { iso: 'BE', d: '+32', t: 'Belgium' },
+      { iso: 'BZ', d: '+501', t: 'Belize' },
+      { iso: 'BJ', d: '+229', t: 'Benin' },
+      { iso: 'BT', d: '+975', t: 'Bhutan' },
+      { iso: 'BO', d: '+591', t: 'Bolivia' },
+      { iso: 'BA', d: '+387', t: 'Bosnia' },
+      { iso: 'BW', d: '+267', t: 'Botswana' },
+      { iso: 'BR', d: '+55', t: 'Brazil' },
+      { iso: 'BN', d: '+673', t: 'Brunei' },
+      { iso: 'BG', d: '+359', t: 'Bulgaria' },
+      { iso: 'BF', d: '+226', t: 'Burkina Faso' },
+      { iso: 'BI', d: '+257', t: 'Burundi' },
+      { iso: 'KH', d: '+855', t: 'Cambodia' },
+      { iso: 'CM', d: '+237', t: 'Cameroon' },
+      { iso: 'CA', d: '+1', t: 'Canada' },
+      { iso: 'CV', d: '+238', t: 'Cape Verde' },
+      { iso: 'CF', d: '+236', t: 'Central African Republic' },
+      { iso: 'TD', d: '+235', t: 'Chad' },
+      { iso: 'CL', d: '+56', t: 'Chile' },
+      { iso: 'CN', d: '+86', t: 'China' },
+      { iso: 'CO', d: '+57', t: 'Colombia' },
+      { iso: 'KM', d: '+269', t: 'Comoros' },
+      { iso: 'CG', d: '+242', t: 'Congo' },
+      { iso: 'CD', d: '+243', t: 'Congo DR' },
+      { iso: 'CR', d: '+506', t: 'Costa Rica' },
+      { iso: 'HR', d: '+385', t: 'Croatia' },
+      { iso: 'CU', d: '+53', t: 'Cuba' },
+      { iso: 'CY', d: '+357', t: 'Cyprus' },
+      { iso: 'CZ', d: '+420', t: 'Czechia' },
+      { iso: 'DK', d: '+45', t: 'Denmark' },
+      { iso: 'DJ', d: '+253', t: 'Djibouti' },
+      { iso: 'DO', d: '+1', t: 'Dominican Republic' },
+      { iso: 'EC', d: '+593', t: 'Ecuador' },
+      { iso: 'EG', d: '+20', t: 'Egypt' },
+      { iso: 'SV', d: '+503', t: 'El Salvador' },
+      { iso: 'GQ', d: '+240', t: 'Equatorial Guinea' },
+      { iso: 'ER', d: '+291', t: 'Eritrea' },
+      { iso: 'EE', d: '+372', t: 'Estonia' },
+      { iso: 'SZ', d: '+268', t: 'Eswatini' },
+      { iso: 'ET', d: '+251', t: 'Ethiopia' },
+      { iso: 'FI', d: '+358', t: 'Finland' },
+      { iso: 'FR', d: '+33', t: 'France' },
+      { iso: 'GA', d: '+241', t: 'Gabon' },
+      { iso: 'GM', d: '+220', t: 'Gambia' },
+      { iso: 'GE', d: '+995', t: 'Georgia' },
+      { iso: 'DE', d: '+49', t: 'Germany' },
+      { iso: 'GH', d: '+233', t: 'Ghana' },
+      { iso: 'GR', d: '+30', t: 'Greece' },
+      { iso: 'GT', d: '+502', t: 'Guatemala' },
+      { iso: 'GN', d: '+224', t: 'Guinea' },
+      { iso: 'GW', d: '+245', t: 'Guinea-Bissau' },
+      { iso: 'GY', d: '+592', t: 'Guyana' },
+      { iso: 'HT', d: '+509', t: 'Haiti' },
+      { iso: 'HN', d: '+504', t: 'Honduras' },
+      { iso: 'HK', d: '+852', t: 'Hong Kong' },
+      { iso: 'HU', d: '+36', t: 'Hungary' },
+      { iso: 'IS', d: '+354', t: 'Iceland' },
+      { iso: 'IN', d: '+91', t: 'India' },
+      { iso: 'ID', d: '+62', t: 'Indonesia' },
+      { iso: 'IR', d: '+98', t: 'Iran' },
+      { iso: 'IQ', d: '+964', t: 'Iraq' },
+      { iso: 'IE', d: '+353', t: 'Ireland' },
+      { iso: 'IL', d: '+972', t: 'Israel' },
+      { iso: 'IT', d: '+39', t: 'Italy' },
+      { iso: 'CI', d: '+225', t: 'Ivory Coast' },
+      { iso: 'JM', d: '+1', t: 'Jamaica' },
+      { iso: 'JP', d: '+81', t: 'Japan' },
+      { iso: 'JO', d: '+962', t: 'Jordan' },
+      { iso: 'KZ', d: '+7', t: 'Kazakhstan' },
+      { iso: 'KE', d: '+254', t: 'Kenya' },
+      { iso: 'XK', d: '+383', t: 'Kosovo' },
+      { iso: 'KW', d: '+965', t: 'Kuwait' },
+      { iso: 'KG', d: '+996', t: 'Kyrgyzstan' },
+      { iso: 'LA', d: '+856', t: 'Laos' },
+      { iso: 'LV', d: '+371', t: 'Latvia' },
+      { iso: 'LB', d: '+961', t: 'Lebanon' },
+      { iso: 'LS', d: '+266', t: 'Lesotho' },
+      { iso: 'LR', d: '+231', t: 'Liberia' },
+      { iso: 'LY', d: '+218', t: 'Libya' },
+      { iso: 'LI', d: '+423', t: 'Liechtenstein' },
+      { iso: 'LT', d: '+370', t: 'Lithuania' },
+      { iso: 'LU', d: '+352', t: 'Luxembourg' },
+      { iso: 'MO', d: '+853', t: 'Macao' },
+      { iso: 'MG', d: '+261', t: 'Madagascar' },
+      { iso: 'MW', d: '+265', t: 'Malawi' },
+      { iso: 'MY', d: '+60', t: 'Malaysia' },
+      { iso: 'MV', d: '+960', t: 'Maldives' },
+      { iso: 'ML', d: '+223', t: 'Mali' },
+      { iso: 'MT', d: '+356', t: 'Malta' },
+      { iso: 'MR', d: '+222', t: 'Mauritania' },
+      { iso: 'MU', d: '+230', t: 'Mauritius' },
+      { iso: 'MX', d: '+52', t: 'Mexico' },
+      { iso: 'MD', d: '+373', t: 'Moldova' },
+      { iso: 'MC', d: '+377', t: 'Monaco' },
+      { iso: 'MN', d: '+976', t: 'Mongolia' },
+      { iso: 'ME', d: '+382', t: 'Montenegro' },
+      { iso: 'MA', d: '+212', t: 'Morocco' },
+      { iso: 'MZ', d: '+258', t: 'Mozambique' },
+      { iso: 'MM', d: '+95', t: 'Myanmar' },
+      { iso: 'NA', d: '+264', t: 'Namibia' },
+      { iso: 'NP', d: '+977', t: 'Nepal' },
+      { iso: 'NL', d: '+31', t: 'Netherlands' },
+      { iso: 'NZ', d: '+64', t: 'New Zealand' },
+      { iso: 'NI', d: '+505', t: 'Nicaragua' },
+      { iso: 'NE', d: '+227', t: 'Niger' },
+      { iso: 'NG', d: '+234', t: 'Nigeria' },
+      { iso: 'KP', d: '+850', t: 'North Korea' },
+      { iso: 'MK', d: '+389', t: 'North Macedonia' },
+      { iso: 'NO', d: '+47', t: 'Norway' },
+      { iso: 'OM', d: '+968', t: 'Oman' },
+      { iso: 'PK', d: '+92', t: 'Pakistan' },
+      { iso: 'PS', d: '+970', t: 'Palestine' },
+      { iso: 'PA', d: '+507', t: 'Panama' },
+      { iso: 'PG', d: '+675', t: 'Papua New Guinea' },
+      { iso: 'PY', d: '+595', t: 'Paraguay' },
+      { iso: 'PE', d: '+51', t: 'Peru' },
+      { iso: 'PH', d: '+63', t: 'Philippines' },
+      { iso: 'PL', d: '+48', t: 'Poland' },
+      { iso: 'PT', d: '+351', t: 'Portugal' },
+      { iso: 'QA', d: '+974', t: 'Qatar' },
+      { iso: 'RO', d: '+40', t: 'Romania' },
+      { iso: 'RU', d: '+7', t: 'Russia' },
+      { iso: 'RW', d: '+250', t: 'Rwanda' },
+      { iso: 'SA', d: '+966', t: 'Saudi Arabia' },
+      { iso: 'SN', d: '+221', t: 'Senegal' },
+      { iso: 'RS', d: '+381', t: 'Serbia' },
+      { iso: 'SC', d: '+248', t: 'Seychelles' },
+      { iso: 'SL', d: '+232', t: 'Sierra Leone' },
+      { iso: 'SG', d: '+65', t: 'Singapore' },
+      { iso: 'SK', d: '+421', t: 'Slovakia' },
+      { iso: 'SI', d: '+386', t: 'Slovenia' },
+      { iso: 'SO', d: '+252', t: 'Somalia' },
+      { iso: 'ZA', d: '+27', t: 'South Africa' },
+      { iso: 'KR', d: '+82', t: 'South Korea' },
+      { iso: 'SS', d: '+211', t: 'South Sudan' },
+      { iso: 'ES', d: '+34', t: 'Spain' },
+      { iso: 'LK', d: '+94', t: 'Sri Lanka' },
+      { iso: 'SD', d: '+249', t: 'Sudan' },
+      { iso: 'SR', d: '+597', t: 'Suriname' },
+      { iso: 'SE', d: '+46', t: 'Sweden' },
+      { iso: 'CH', d: '+41', t: 'Switzerland' },
+      { iso: 'SY', d: '+963', t: 'Syria' },
+      { iso: 'TW', d: '+886', t: 'Taiwan' },
+      { iso: 'TJ', d: '+992', t: 'Tajikistan' },
+      { iso: 'TZ', d: '+255', t: 'Tanzania' },
+      { iso: 'TH', d: '+66', t: 'Thailand' },
+      { iso: 'TG', d: '+228', t: 'Togo' },
+      { iso: 'TN', d: '+216', t: 'Tunisia' },
+      { iso: 'TM', d: '+993', t: 'Turkmenistan' },
+      { iso: 'UG', d: '+256', t: 'Uganda' },
+      { iso: 'UA', d: '+380', t: 'Ukraine' },
+      { iso: 'AE', d: '+971', t: 'United Arab Emirates' },
+      { iso: 'GB', d: '+44', t: 'United Kingdom' },
+      { iso: 'US', d: '+1', t: 'United States' },
+      { iso: 'UY', d: '+598', t: 'Uruguay' },
+      { iso: 'UZ', d: '+998', t: 'Uzbekistan' },
+      { iso: 'VE', d: '+58', t: 'Venezuela' },
+      { iso: 'VN', d: '+84', t: 'Vietnam' },
+      { iso: 'YE', d: '+967', t: 'Yemen' },
+      { iso: 'ZM', d: '+260', t: 'Zambia' },
+      { iso: 'ZW', d: '+263', t: 'Zimbabwe' }
     ];
     var cur = countries[0];
-    var i;
+    var i, needle, shown;
     for (i = 0; i < countries.length; i++) if (countries[i].iso === iso) cur = countries[i];
     var cc = cur.d;
+    function flagSrc(code) { return asset(p, 'flags/' + String(code || '').toLowerCase() + '.svg'); }
+    function FlagImg(code, cls) {
+      return h('img', { className: cls || 'hb-auth-flagimg', src: flagSrc(code), alt: '', width: 28, height: 21, draggable: 'false' });
+    }
     function fullPhone() {
       var n = String(local || '').replace(/\D/g, '');
       if (n.charAt(0) === '0') n = n.slice(1);
@@ -407,15 +570,20 @@
         finish(res.d);
       }).catch(function () { setLoading(false); setErr('Network error'); });
     }
-    var menuItems = [];
+    needle = String(q || '').toLowerCase().replace(/^\s+|\s+$/g, '');
+    shown = [];
     for (i = 0; i < countries.length; i++) {
+      if (!needle || countries[i].t.toLowerCase().indexOf(needle) === 0) shown.push(countries[i]);
+    }
+    var menuItems = [];
+    for (i = 0; i < shown.length; i++) {
       (function (c) {
         menuItems.push(h('button', {
           type: 'button', key: c.iso,
           className: 'hb-auth-opt' + (c.iso === iso ? ' is-on' : ''),
-          onClick: function () { setIso(c.iso); setCcOpen(false); }
-        }, h('span', { className: 'hb-auth-flagico' }, c.f), h('span', null, c.t)));
-      })(countries[i]);
+          onClick: function () { setIso(c.iso); setCcOpen(false); setQ(''); }
+        }, FlagImg(c.iso), h('span', { className: 'hb-auth-optname' }, c.t)));
+      })(shown[i]);
     }
     var body;
     if (mode === 'password') {
@@ -441,11 +609,14 @@
         h('label', { className: 'hb-auth-lab' }, 'MOBILE NUMBER'),
         h('div', { className: 'hb-auth-phone' },
           h('div', { className: 'hb-auth-flagwrap' + (ccOpen ? ' is-open' : '') },
-            h('button', { type: 'button', className: 'hb-auth-flag', 'aria-label': 'Country', onClick: function () { setCcOpen(!ccOpen); } },
-              h('span', { className: 'hb-auth-flagico' }, cur.f),
+            h('button', { type: 'button', className: 'hb-auth-flag', 'aria-label': 'Country', onClick: function () { setCcOpen(!ccOpen); setQ(''); } },
+              FlagImg(cur.iso),
               h('span', { className: 'hb-auth-caret' }, '▾')
             ),
-            ccOpen ? h('div', { className: 'hb-auth-menu' }, menuItems) : null
+            ccOpen ? h('div', { className: 'hb-auth-menu' },
+              h('input', { className: 'hb-auth-find', value: q, autoFocus: true, placeholder: 'Type first letter…', onChange: function (e) { setQ(e.target.value); }, onKeyDown: function (e) { if (e.key === 'Enter' || e.keyCode === 13) e.preventDefault(); } }),
+              h('div', { className: 'hb-auth-opts' }, menuItems.length ? menuItems : h('div', { className: 'hb-auth-empty' }, 'No match'))
+            ) : null
           ),
           h('div', { className: 'hb-auth-tel' },
             h('span', { className: 'hb-auth-prefix' }, cc),

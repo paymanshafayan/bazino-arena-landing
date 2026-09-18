@@ -735,23 +735,34 @@ button.hb-post:hover { filter: brightness(1.06); }
 .hb-auth-phone { display: flex; gap: 8px; align-items: stretch; direction: ltr; }
 .hb-auth-flagwrap { position: relative; flex: 0 0 56px; }
 .hb-auth-flag {
-  width: 56px; height: 46px; display: flex; align-items: center; justify-content: center; gap: 2px;
+  width: 56px; height: 46px; display: flex; align-items: center; justify-content: center; gap: 4px;
   background: #111827; border: 1px solid #243056; color: #c7cfeb;
-  border-radius: 12px; cursor: pointer; padding: 0;
+  border-radius: 12px; cursor: pointer; padding: 0 6px;
 }
-.hb-auth-flagico { font-size: 22px; line-height: 1; }
-.hb-auth-caret { font-size: 10px; color: #8b93b0; }
+.hb-auth-flagimg {
+  width: 28px; height: 21px; object-fit: cover; border-radius: 3px;
+  display: block; box-shadow: 0 0 0 1px rgba(255,255,255,.12);
+}
+.hb-auth-caret { font-size: 10px; color: #8b93b0; line-height: 1; }
 .hb-auth-menu {
   position: absolute; top: calc(100% + 6px); left: 0; z-index: 8;
-  min-width: 220px; max-height: 240px; overflow: auto;
+  min-width: 260px; max-height: 280px;
   background: #0d1526; border: 1px solid #243056; border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0,0,0,.45); padding: 6px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45); padding: 8px; display: flex; flex-direction: column;
 }
+.hb-auth-find {
+  width: 100%; background: #111827; border: 1px solid #243056; color: #fff;
+  border-radius: 8px; padding: 8px 10px; font-weight: 600; font-size: 13px; margin-bottom: 6px; outline: none;
+}
+.hb-auth-find:focus { border-color: #22d3ee; }
+.hb-auth-opts { overflow: auto; max-height: 220px; }
+.hb-auth-empty { color: #8b93b0; font-size: 12px; padding: 10px; }
 .hb-auth-opt {
   width: 100%; display: flex; align-items: center; gap: 10px;
   background: transparent; border: 0; color: #eef2ff; border-radius: 8px;
   padding: 8px 10px; cursor: pointer; font-weight: 700; font-size: 13px; text-align: left;
 }
+.hb-auth-optname { flex: 1; }
 .hb-auth-opt:hover, .hb-auth-opt.is-on { background: rgba(34,211,238,.12); }
 .hb-auth-tel {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;
