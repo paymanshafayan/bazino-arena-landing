@@ -109,7 +109,7 @@
   function langOf(p) { return (p && p.language) || 'en'; }
   function ts(p, k, f) { return p && typeof p.ts === 'function' ? p.ts(k, f) : (f || k); }
   function go(p, path) { if (p && p.onNavigate) p.onNavigate(path); }
-  function doLogin(p) { if (p && p.onLogin) p.onLogin(); else if (window.CustomEvent) window.dispatchEvent(new CustomEvent('bazino:open-auth')); }
+  function doLogin(p) { try { window.dispatchEvent(new CustomEvent('bazino-hub:open-login')); } catch (e0) {} }
   function doLogout(p) { if (p && p.onLogout) p.onLogout(); }
   function pick(v, lang) { if (!v) return ''; if (typeof v === 'string') return v; return v[lang] || v.en || v.fa || ''; }
   function wrap(Page) { return { apiVersion: 2, render: function (props) { return h('div', { dir: (props && props.dir) || 'ltr', className: (props && props.dir) === 'rtl' ? 'hb-rtl' : '' }, h(Page, props)); } }; }
@@ -223,6 +223,12 @@
   function HubHeader(p) {
     var st = useState(false); var mob = st[0], setMob = st[1];
     var regSt = useState(false); var regOpen = regSt[0], setRegOpen = regSt[1];
+    var logSt = useState(false); var loginOpen = logSt[0], setLoginOpen = logSt[1];
+    useEffect(function () {
+      function openLogin() { setLoginOpen(true); }
+      window.addEventListener('bazino-hub:open-login', openLogin);
+      return function () { window.removeEventListener('bazino-hub:open-login', openLogin); };
+    }, []);
     var u = p.user;
     var items = [];
     for (var i = 0; i < NAV.length; i++) {
@@ -247,14 +253,15 @@
               h('button', { type: 'button', className: 'hb-btn hb-btn--out', onClick: function () { doLogout(p); } }, ico(p, 'logout', 15), ts(p, 'hdr.logout'))
             ) : h('span', { style: { display: 'inline-flex', gap: 10 } },
               h('button', { type: 'button', className: 'hb-btn hb-btn--reg', onClick: function () { setRegOpen(true); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.register'))),
-              h('button', { type: 'button', className: 'hb-btn hb-btn--login', onClick: function () { doLogin(p); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.login')))
+              h('button', { type: 'button', className: 'hb-btn hb-btn--login', onClick: function () { setLoginOpen(true); } }, ico(p, 'user', 15), h('span', null, ts(p, 'hdr.login')))
             ),
             h('button', { type: 'button', className: 'hb-burger', 'aria-label': 'menu', onClick: function () { setMob(!mob); } }, mob ? '✕' : '☰')
           )
         )
       ),
       h('nav', { className: 'hb-mnav' + (mob ? ' is-on' : '') }, items),
-      regOpen ? h(RegisterModal, { p: p, onClose: function () { setRegOpen(false); } }) : null
+      regOpen ? h(RegisterModal, { p: p, onClose: function () { setRegOpen(false); } }) : null,
+      loginOpen ? h(LoginModal, { p: p, onClose: function () { setLoginOpen(false); } }) : null
     );
   }
 
@@ -319,6 +326,130 @@
         h('a', { href: '/privacy', onClick: function (e) { e.preventDefault(); go(p, '/privacy'); } }, ts(p, 'foot.privacy', 'PRIVACY')),
         h('span', null, '·'),
         h('small', null, '© ' + new Date().getFullYear() + ' BAZINO GAMING CLUB — ' + ts(p, 'foot.tagline'))
+      )
+    );
+  }
+
+
+  function LoginModal(x) {
+    var p = x.p;
+    var modeSt = useState('otp'); var mode = modeSt[0], setMode = modeSt[1];
+    var stepSt = useState('phone'); var step = stepSt[0], setStep = stepSt[1];
+    var ccSt = useState('+90'); var cc = ccSt[0], setCc = ccSt[1];
+    var phSt = useState(''); var local = phSt[0], setLocal = phSt[1];
+    var codeSt = useState(''); var code = codeSt[0], setCode = codeSt[1];
+    var userSt = useState(''); var username = userSt[0], setUsername = userSt[1];
+    var passSt = useState(''); var password = passSt[0], setPassword = passSt[1];
+    var errSt = useState(''); var err = errSt[0], setErr = errSt[1];
+    var loadSt = useState(false); var loading = loadSt[0], setLoading = loadSt[1];
+    var countries = [
+      { d: '+90', t: 'Türkiye +90' },
+      { d: '+357', t: 'Kıbrıs +357' },
+      { d: '+994', t: 'Azərbaycan +994' },
+      { d: '+98', t: 'Iran +98' },
+      { d: '+7', t: 'Россия +7' },
+      { d: '+380', t: 'Ukraine +380' },
+      { d: '+49', t: 'Deutschland +49' },
+      { d: '+44', t: 'United Kingdom +44' },
+      { d: '+1', t: 'USA / Canada +1' },
+      { d: '+31', t: 'Nederland +31' },
+      { d: '+33', t: 'France +33' },
+      { d: '+39', t: 'Italia +39' },
+      { d: '+34', t: 'España +34' },
+      { d: '+971', t: 'UAE +971' },
+      { d: '+966', t: 'Saudi Arabia +966' },
+      { d: '+964', t: 'Iraq +964' },
+      { d: '+995', t: 'Georgia +995' }
+    ];
+    var opts = [];
+    var i;
+    for (i = 0; i < countries.length; i++) opts.push(h('option', { key: countries[i].d, value: countries[i].d }, countries[i].t));
+    function fullPhone() {
+      var n = String(local || '').replace(/\D/g, '');
+      if (n.charAt(0) === '0') n = n.slice(1);
+      return cc + n;
+    }
+    function post(url, body) {
+      return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); });
+    }
+    function finish(data) {
+      try { if (data && data.token) window.localStorage.setItem('bazino.authToken', data.token); } catch (e1) {}
+      x.onClose();
+      window.location.reload();
+    }
+    function requestCode(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/otp/request', { phone: fullPhone() }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr((res.d && res.d.error) || 'Invalid phone number'); return; }
+        setStep('code');
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    function verifyCode(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/otp/verify', { phone: fullPhone(), code: code }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr((res.d && res.d.error) || 'Wrong code'); return; }
+        finish(res.d);
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    function loginPass(e) {
+      e.preventDefault();
+      setErr(''); setLoading(true);
+      post('/api/auth/login', { username: username, password: password }).then(function (res) {
+        setLoading(false);
+        if (!res.ok) { setErr((res.d && res.d.error) || 'Login failed'); return; }
+        finish(res.d);
+      }).catch(function () { setLoading(false); setErr('Network error'); });
+    }
+    var body;
+    if (mode === 'password') {
+      body = h('form', { onSubmit: loginPass },
+        h('label', { className: 'hb-auth-lab' }, 'USERNAME OR MOBILE NUMBER'),
+        h('input', { className: 'hb-auth-in', value: username, autoComplete: 'username', placeholder: 'admin / 905xxxxxxxx', onChange: function (e) { setUsername(e.target.value); } }),
+        h('label', { className: 'hb-auth-lab' }, 'PASSWORD'),
+        h('input', { className: 'hb-auth-in', type: 'password', value: password, autoComplete: 'current-password', placeholder: '••••••', onChange: function (e) { setPassword(e.target.value); } }),
+        err ? h('p', { className: 'hb-auth-err' }, err) : null,
+        h('button', { type: 'submit', className: 'hb-auth-go', disabled: loading }, loading ? '…' : 'Sign in'),
+        h('p', { className: 'hb-auth-hint' }, 'No password? Sign in with an SMS code and set one from the Security tab of your profile.')
+      );
+    } else if (step === 'code') {
+      body = h('form', { onSubmit: verifyCode },
+        h('label', { className: 'hb-auth-lab' }, 'SMS CODE'),
+        h('input', { className: 'hb-auth-in', value: code, inputMode: 'numeric', maxLength: 6, placeholder: '••••••', onChange: function (e) { setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6)); } }),
+        err ? h('p', { className: 'hb-auth-err' }, err) : null,
+        h('button', { type: 'submit', className: 'hb-auth-go', disabled: loading || String(code).length !== 6 }, loading ? '…' : 'Verify'),
+        h('button', { type: 'button', className: 'hb-auth-link', onClick: function () { setStep('phone'); setErr(''); } }, 'Change number')
+      );
+    } else {
+      body = h('form', { onSubmit: requestCode },
+        h('label', { className: 'hb-auth-lab' }, 'MOBILE NUMBER'),
+        h('div', { className: 'hb-auth-phone' },
+          h('select', { className: 'hb-auth-cc', value: cc, 'aria-label': 'Country / prefix', onChange: function (e) { setCc(e.target.value); } }, opts),
+          h('input', { className: 'hb-auth-in', type: 'tel', inputMode: 'tel', value: local, placeholder: cc === '+90' ? '5xx xxx xx xx' : 'phone number', onChange: function (e) { setLocal(e.target.value); } })
+        ),
+        h('p', { className: 'hb-auth-hint' }, 'Country code is selected on the left. Type only the national number — no + and no leading 0.'),
+        err ? h('p', { className: 'hb-auth-err' }, err) : null,
+        h('button', { type: 'submit', className: 'hb-auth-go', disabled: loading }, loading ? '…' : 'Send code'),
+        h('div', { className: 'hb-auth-note' }, 'First sign-in = loyalty membership with 100 bonus points. Earn points on every booking, cafe order and purchase.')
+      );
+    }
+    return h('div', { className: 'hb-modalbg', onClick: x.onClose },
+      h('div', { className: 'hb-auth', onClick: function (e) { e.stopPropagation(); } },
+        h('button', { type: 'button', className: 'hb-x', onClick: x.onClose }, '✕'),
+        h('div', { className: 'hb-auth-ico', 'aria-hidden': 'true' }, '→'),
+        h('h2', null, 'Sign in / Join BAZINO'),
+        h('p', { className: 'hb-auth-sub' }, mode === 'password'
+          ? 'Sign in with username and permanent password (admin or users who set one in their profile).'
+          : 'Enter your mobile number; we text you a code. New numbers are registered automatically.'),
+        h('div', { className: 'hb-auth-tabs', role: 'tablist' },
+          h('button', { type: 'button', className: mode === 'otp' ? 'is-on' : '', onClick: function () { setMode('otp'); setErr(''); } }, 'SMS code'),
+          h('button', { type: 'button', className: mode === 'password' ? 'is-on' : '', onClick: function () { setMode('password'); setErr(''); } }, 'Password')
+        ),
+        body
       )
     );
   }
