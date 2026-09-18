@@ -1,0 +1,149 @@
+{
+  "ok": [
+    "api-login eyJhbGciOiJI",
+    "session-after-reload",
+    "nav-HOME → http://127.0.0.1:3000/",
+    "nav-GAMES → http://127.0.0.1:3000/games",
+    "nav-TOURNAMENTS → http://127.0.0.1:3000/events",
+    "nav-SHOP → http://127.0.0.1:3000/shop",
+    "nav-FOOD & DRINKS → http://127.0.0.1:3000/food",
+    "nav-CLUB → http://127.0.0.1:3000/",
+    "nav-BLOG → http://127.0.0.1:3000/blog",
+    "nav-CONTACT → http://127.0.0.1:3000/contact",
+    "hours-modal",
+    "click-kids",
+    "pick-minecraft",
+    "minecraft-in-book",
+    "hold-card {\"held\":true,\"checkout\":true,\"login\":false}",
+    "view-rankings",
+    "view-tournaments",
+    "weekly-live-server-titles",
+    "view-details http://127.0.0.1:3000/events/brackets",
+    "hold-seat-bar",
+    "register-submit {\"ok\":true,\"checkout\":true,\"login\":false}",
+    "shop-stay-tuned",
+    "food-stay-tuned",
+    "home-more-info",
+    "games-controls 23"
+  ],
+  "problems": [
+    "language-fa"
+  ],
+  "scan": [
+    {
+      "text": "ENTER ADMIN PANEL",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "EN",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "Türkçe",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "English",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "فارسی",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "Русский",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "LOG OUT",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "☰",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "KIDS Fun & safe games for younger players →",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "ADULTS Action, sports, racing and more →",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "GAME REQUESTS Suggest new games and join the community →",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "System #1 (VIP PC) PC 150 TL / HOUR HOLD MY BAY",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "System #2 (VIP PC) PC 150 TL / HOUR IN USE",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "System #3 (Standard) PC 100 TL / HOUR HOLD MY BAY",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "System #4 (Standard) PC 100 TL / HOUR HOLD MY BAY",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "PlayStation 5 Console (VIP Booth) PS5 200 TL / HOUR IN USE",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "EXTRA CONTROLLER PER ADDITIONAL CONTROLLER 25 TL / HOUR BOOK",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "1 Hours",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "2 Hours",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "3 Hours",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "4 Hours",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "HOLD MY BAY",
+      "disabled": false,
+      "type": "BUTTON"
+    },
+    {
+      "text": "OPEN EVERYDAY ۲۴ ساعته شبانه‌روز (۷ روز هفته)",
+      "disabled": false,
+      "type": "BUTTON"
+    }
+  ]
+}

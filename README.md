@@ -14,15 +14,14 @@
    - **ویژگی‌ها:** تجربه سه‌بعدی و سینمایی با حضور کاراکتر مونا (Mona)، پس‌زمینه سالن بازی بازینو، پالت تاریک و طلایی لوکس (`#ffc400`)، هدر یکپارچه و بهینه، فونت محلی وزیرمتن (۳ وزن WOFF2)، صفر وابستگی به CDN خارجی.
    - **مسیر سورس:** `theme-package/`
 
-2. **`bazino-hub-theme.zip` (نسخه 1.0.0):**
+2. **`hub-theme/bazino-hub-theme.zip` (نسخه 2.2.3):**
    - **شناسه:** `bazino-hub`
-   - **ناحیه‌های پشتیبانی‌شده (Regions):** ۱۵ ناحیه استاندارد شامل:
-     `home`, `header`, `hero`, `hub.home`, `hub.games`, `hub.events`, `hub.weekly`, `hub.special`, `hub.season`, `hub.brackets`, `hub.register`, `hub.shop`, `hub.food`, `hub.club`, `hub.blog`, `hub.chat`, `hub.contact`, `hub.rules`, `hub.privacy`
-   - **ویژگی‌ها:** طراحی نئونی سایبرپانک برگرفته از راهنمای Hasti، اسلایدر GTA VI و FC 26، کارت‌های چهارگانه بازی‌ها (شامل کارت SYSTEMS & GEAR)، براکت ۳۲ نفره تورنمنت، پشتیبانی کامل ۴ زبان (EN, TR, FA, RU).
-   - **مسیر سورس:** `hub-package/` و `hub/`
+   - **ناحیه‌های پشتیبانی‌شده (Regions):** header, footer, mobileNav, home + همهٔ `hub.*`
+   - **ویژگی‌ها:** طراحی نئونی مطابق ماکاپ‌های کارفرما، منو طبق کد پورتال، براکت ۳۲ نفره، ۴ زبان (EN, TR, FA, RU).
+   - **مسیر واحد همهٔ فایل‌ها:** `hub-theme/`
 
 ### نحوه نصب روی پورتال گیم‌نت بازینو:
-1. فایل زیپ مورد نظر (`bazino-arena-theme.zip` یا `bazino-hub-theme.zip`) را از ریشه مخزن یا بخش دکمه‌های دانلود دریافت کنید.
+1. فایل زیپ مورد نظر را بردارید: Arena از ریشه (`bazino-arena-theme.zip`) و Hub از `hub-theme/bazino-hub-theme.zip`.
 2. در پنل ادمین پورتال بازینو: **مدیریت قالب‌ها (Themes)** → **آپلود قالب جدید (Upload / Replace)**.
 3. قالب را فعال (Activate) کرده و با کلیدهای `Ctrl + F5` کش مرورگر را تازه‌سازی فرمایید.
 
@@ -64,7 +63,7 @@ pnpm run build
   ```
 - **ساخت قالب Hub:**
   ```bash
-  ./build-hub-theme-zip.sh
+  ./hub-theme/build-hub-theme-zip.sh
   ```
 
 ---
@@ -78,7 +77,7 @@ pnpm run build
 ├── build-hub-theme-zip.sh      # اسکریپت بیلد و مینیفای قالب Hub
 ├── cdp_bridge.mjs              # کلاینت مستقل Node 22 جهت تعامل با Chrome DevTools Protocol
 ├── theme-package/              # سورس، استایل‌ها و است‌های قالب Arena
-├── hub-package/                # سورس، استایل‌ها و است‌های قالب Hub
+├── hub-package/                # قالب هاب قدیمی (منسوخ — از hub-theme/ استفاده کنید)
 ├── hub/                        # سیستم طراحی، کامپوننت‌های React و دموی کامل Hub
 ├── client/                     # سورس اپلیکیشن فرانت‌اند و صفحات لندینگ
 │   ├── public/                 # است‌های استاتیک و فایل‌های زیپ دانلودی

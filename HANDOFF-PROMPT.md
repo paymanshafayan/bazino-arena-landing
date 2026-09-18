@@ -1,4 +1,40 @@
+> **به‌روزرسانی 2026-09-17 (هاب v2.2.3 — ساختار OTP استاندارد روی ظاهر پورتال):** کارت Sign in / Join BAZINO همان ظاهر سیان پورتال است. ساختار OTP: منوی کشور (پیش‌فرض Türkiye +90) + شماره ملی جدا + Send code + کد SMS. تب Password بدون تغییر ظاهری. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+> **به‌روزرسانی 2026-09-17 (هاب v2.2.2 — بازگردانی ظاهر لاگین پورتال):** مودال لاگین سفارشی قالب حذف شد. دکمه LOGIN دوباره `p.onLogin()` پورتال را باز می‌کند (همان شکل قبلی). REGISTER مودال دوپنلی ماکاپ برگشت. بقیهٔ v2.2.1 (حجم asset، رزرو Games) ماند. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+> **به‌روزرسانی 2026-09-17 (هاب v2.2.1 — سقف ۸۱۹۲KB دارایی):** نصب پورتال با خطای «مجموع assetهای قالب پس از بهینه‌سازی از سقف 8192KB بزرگ‌تر است» رد می‌شد. PNGهای ۸K استفاده‌نشده (`fc26/mk1/tekken8/ufc5.png`)، فایل‌های تکراری و جفت jpg+webp حذف شدند؛ تصاویر باقی‌مانده فشرده شدند. پوشه `assets/` ≈ ۲٫۴MB (زیر ۸MB حتی اگر پورتال webp اضافه کند). زیپ: `hub-theme/bazino-hub-theme.zip`. **پورتال پوش نشد.**
+
+> **به‌روزرسانی 2026-09-16 (هاب v2.2.0 — رزرو مودال + لاگین OTP با کشور + پروفایل پورتال):** کارت ایستگاه از صفحه Games حذف شد. باکس BOOK فشرده. HOLD MY BAY مودال اسکرول ایستگاه‌ها را باز می‌کند (۳ستون دسکتاپ / ۱ستون موبایل) + دیالوگ تأیید → `onCheckout('reservation')`. فرم ثبت‌نام قالب حذف شد؛ لاگین OTP با select کشور پیش‌فرض **Türkiye +90** و تب رمز. آواتار هدر → `/profile` (صفحهٔ مستقل پورتال: overview + security رمز دائمی). تست Chromium `hub/analysis/qa-v220.mjs` نه مورد همه OK. زیپ: `hub-theme/bazino-hub-theme.zip`. **پورتال پوش نشد.**
+
+> **به‌روزرسانی 2026-09-16 (هاب v2.1.10 — کلیک انسانی + داده زنده + بدون دکمه مرده):** قالب `hub-theme/` نصب‌شده روی پورتال لوکال `:3000`. Chromium `@sparticuz/chromium@149` + `LD_LIBRARY_PATH=/tmp/al2023/lib` + `/tmp/chromium`. اسکریپت کلیک: `hub/analysis/qa-human.mjs`. **رزرو HOLD MY BAY** با کاربر لاگین‌شده مودال پرداخت پورتال را باز می‌کند (Pay at the venue). **ثبت‌نام مسابقه** `onCheckout('tournament', {tournamentId})` همان مودال را باز می‌کند. **انتخاب بازی** (ردیف Minecraft و بقیه) فیلد BOOK را پر می‌کند. **WEEKLY** از `p.tournaments` / `eventsFeed.weekly` سرور خوانده می‌شود (Valorant / FIFA / Dota / CS2) نه فقط آرایهٔ سمپل FC26. منوی FA: خانه/بازی‌ها/**مسابقات**/… . CLUB → `/club`. زبان از `.hb-chip`. زیپ: `hub-theme/bazino-hub-theme.zip`. لینک raw: `https://github.com/paymanshafayan/bazino-arena-landing/raw/arena/01a09b67-bazino-arena-landing/hub-theme/bazino-hub-theme.zip`. **ریپوی پورتال پوش نشد.**
+
+> **به‌روزرسانی 2026-09-16 (هاب v2.1.8 — سرور زنده + Chromium + کلیک انسانی):** پورتال `npx tsx server.ts` روی `0.0.0.0:3000`. Chromium `@sparticuz/chromium@149` + `LD_LIBRARY_PATH=/tmp/al2023/lib`. QA: `hub/analysis/qa-live.mjs`. KIDS/ADULTS، VIEW TOURNAMENTS، VIEW DETAILS→براکت، HOLD MY SEAT→ثبت‌نام، تب فصل، کاشی GAMES کار می‌کنند. HOLD MY BAY برای مهمان مودال ورود پورتال را باز می‌کند. ثبت‌نام مسابقه پس از لاگین پیام Seat held می‌دهد. اسکرین‌ها: `hub/previews/live/`. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.7 — اسکرین زنده + زیپ نصبی):** Chromium `@sparticuz/chromium@149` + `LD_LIBRARY_PATH=/tmp/al2023/lib`. اسکرین همهٔ صفحات در `hub/previews/live/`. کلیک‌ها: پورتال EVENTS→weekly/season، VIEW DETAILS→brackets، تب فصل، BACK، کاشی هوم، HOLD MY BAY، LOGIN، ساعات، SHOP→CONTACT. دکمه‌های هاب Events توپر مطابق ماکاپ؛ آرت تاج/براکت نو. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.6 — تست ویژوال زنده با Chromium):** Chromium از `@sparticuz/chromium@149` (npm، نه CDN پلی‌رایت) طبق HANDOFF آی‌جی‌بی‌زد استخراج شد (`/tmp/chromium` + `LD_LIBRARY_PATH=/tmp/al2023/lib`). اسکرین زندهٔ `/events` `/weekly` `/special` `/season` `/brackets` در `hub/previews/live/`. اصلاحات پس از اسکرین: گرید لیدربورد/TOP3، عنوان EVENTS، براکت ۹ستونه بدون برش راست، آواتار قهرمان. زیپ نساز.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.5 — شباهت صفحات مسابقات به ماکاپ WhatsApp):** مرجع: `hub/reference/whatsapp/10_events_hub.jpeg` … `14_tournament_brackets.jpeg` و PDF §§10–14. WEEKLY: کاور + تگ + سه ستون EVERY/MAX/PRIZE + دکمه VIEW DETAILS. SPECIAL: گرید جایزه ۲×۳ (ورود/+۱۰BC / ۱و۲و۳). SEASON: تب‌ها داخل هیرو، تایمر ۴۵ روز، لیدربورد طلا/نقره/برنز با آواتار و واترمارک FC26، TOP 3. EVENTS: کارت SPECIAL سه‌کاور، آیکون بولت‌ها. قالب روی پورتال نصب است. زیپ نساز.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.4 — مسابقات هفتگی + رتبه‌بندی فصل):** کارت‌های WEEKLY با `VIEW BRACKET` کلیک‌پذیر به `/events/brackets`. نوار زیرهیرو EVENTS / WEEKLY / SPECIAL / SEASON / BRACKETS برای پیدا کردن §13. لیدربورد فصل نزدیک‌تر به ماکاپ طلا/نقره/برنز. زیپ نساز.
+
 # HANDOFF-PROMPT — قالب Bazino Arena of Legends
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.3 — خطوط نئون براکت):** کلاس ثابت `.hb-wire` + `.hb-wire-svg` با گرادینت cyan/magenta/gold. `HbWireLayer` + `data-wire` + `elbowPath`/`smoothPath` قابل استفاده در هر صفحه. براکت ۳۲ نفره کارت‌ها را با SVG منحنی وصل می‌کند. زیپ نساز.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.2 — برچسب منو):** `nav.events` در همهٔ زبان‌ها تورنمنت است — EN TOURNAMENTS / FA مسابقات / TR TURNUVALAR / RU ТУРНИРЫ. زیپ نساز مگر خواسته شود.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.1.1 — مسابقات / EVENTS PDF §10–14):** منوی فارسی `nav.events` = **مسابقات**. Weekly بدون VIEW DETAILS و با جایزه/ورود روی کارت (PDF §11). Special فقط اطلاع‌رسانی. Season Ranking (§13) لیدربورد لیستی جدا از Brackets (§14). براکت: تب Weekly/Special، فیلتر ALL/CURRENT/UPCOMING/COMPLETED، آیتم‌های لیست کلیک‌پذیر، BACK TO EVENTS. کارت‌های پورتال Events تماماً کلیک‌پذیر. زیپ نساز مگر کارفرما بخواهد. مسیر: `hub-theme/`.
+
+> **به‌روزرسانی 2026-09-14 (هاب v2.0.5 — کاور بازی‌ها):** کاورهای widescreen خودساخته در `hub-theme/assets/covers/*.jpg` (FC26, NBA 2K24, COD MW3, GTA V, Tekken 8, UFC 5, Assetto, Astro, Minecraft, Fall Guys, LEGO Fortnite, Sackboy, LEGO HP, Rocket League, MK1). `theme.js` اول تصویر سرور را می‌خواند (`imageUrl|image|coverUrl|cover|bannerUrl` روی `systems` / `featuredGames` / `tournaments` / `eventsFeed`) و اگر نبود کاور قالب را نشان می‌دهد؛ `onError` webp←jpg چون پورتال jpg را به webp تبدیل می‌کند. بازی‌های اضافه از `featuredGames` به لیست ADULTS چسبانده می‌شود. زیپ: `hub-theme/bazino-hub-theme.zip`.
+
+
+> **به‌روزرسانی 2026-09-14 (مسیر واحد قالب هاب):** همهٔ فایل‌های قالب نصبی هاب (`bazino-hub` v2.0.1) فقط در پوشهٔ **`hub-theme/`** هستند — سورس (`theme.json` / `theme.js` / `theme.css` / `assets/`) + زیپ نصب `hub-theme/bazino-hub-theme.zip` + اسکریپت `hub-theme/build-hub-theme-zip.sh`. راهنمای پوشه: `hub-theme/README.md`. جزئیات: **بخش ۱۲**.
+>
+> **به‌روزرسانی 2026-09-14 (سشن `arena/01a09b67` — سورس قالب هاب v2 نوشته شد):**
+> کارفرما خواست قالب **هاب** (نه کلاسیک) مطابق ۱۷ ماکاپ واتساپ + PDF، با **نام منو/صفحات طبق کد پورتال** ساخته شود؛ سپس سرور زنده پورتال در سندباکس بالا بیاید، قالب نصب شود و اسکرین‌شات صفحه‌به‌صفحه با مرجع مقایسه گردد.
+> **انجام‌شده روی دیسک همین برنچ:** سورس نصبی `hub-theme/` (`theme.json` v2.0.1، `layout:"hub"`، ۲۰ ریجن، `theme.js` ES5 با `wrap()`، `theme.css`) + اَسِت‌ها + زیپ `hub-theme/bazino-hub-theme.zip`. منو طبق پورتال: HOME / GAMES / EVENTS / SHOP / FOOD & DRINKS / CLUB / BLOG / CONTACT — چت در ناو نیست و صفحه‌اش DISABLED است.
+> **انجام‌نشده (اولویت ایجنت بعدی):** بیلد `better-sqlite3`، اجرای `npx tsx server.ts` روی `0.0.0.0:3000`، نصب/فعال‌سازی قالب از API ادمین، نصب Chromium (`@sparticuz`)، اسکرین‌شات همهٔ صفحات و فیکس عدم‌تطابق بصری با `/home/user/refs/01.jpg…17.jpg`. تا آن حلقه تمام نشده گزارش «قالب تأیید شد» ندهید. جزئیات: **بخش ۱۲**.
 
 > **به‌روزرسانی 2026-09-08 (تکمیل نهایی قالب Hub — کاورهای بازی با کیفیت فوق‌العاده 8K + افزودن کارت چهارم SYSTEMS & GEAR):**
 > طبق درخواست کارفرما: (۱) تمام کاورهای بازی (`fc26.png`, `ufc5.png`, `mk1.png`, `tekken8.png`) با آرت‌ورک‌های فوق‌العاده باکیفیت و سینمایی با پالت نئونی بازتولید شدند؛
@@ -233,6 +269,7 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 | `theme-package/` | سورس خوانا (theme.js غیرمینیفای؛ مینیفای فقط داخل زیپ) + `assets/` (ویدئو، پوسترها، وزیرمتن) + `CHANGELOG.md` |
 | `build-theme-zip.sh` | بیلد تکرارپذیر زیپ |
 | `client/` | سورس لندینگ مرجع (Arena of Legends): `src/pages/Home.tsx`, `src/index.css` |
+| `hub-theme/` | **قالب نصبی هاب v2.0.1** (`bazino-hub`) — سورس + `bazino-hub-theme.zip` + اسکریپت بیلد |
 | `hub/` | **فاز طراحی Hasti/Hub**: دموی براکت + مرجع PDF + ابزار مقایسه + پیش‌نمایش‌ها (راهنما: `hub/README.md`) |
 | `HANDOFF-PROMPT.md` | همین سند |
 | `pagespeed-findings-fa.md` | ۶ بخش تحلیل PSI |
@@ -427,4 +464,111 @@ cd /home/user/bazino-arena-landing && ./build-theme-zip.sh
 * **پکیج‌های زیپ نهایی آماده نصب:**
   - `bazino-hub-theme.zip` (تم کامل هاب نئونی با ۱۶ منطقه مجاز پورتال)
   - `bazino-3d-theme.zip` (تم ۳ بعدی با تور مجازی تعاملی و موتور اسکراب ماوس)
+
+---
+
+## ۱۲) سشن 2026-09-14 — قالب هاب نصبی v2.0.1 روی برنچ `arena/01a09b67`
+
+### ۱۲-۰) مسیر واحد روی ریپو (ثبت به دستور کارفرما)
+
+**همهٔ فایل‌های این قالب داخل یک پوشه است:**
+
+```
+hub-theme/
+```
+
+| مسیر | چیست |
+|---|---|
+| `hub-theme/theme.json` | شناسه `bazino-hub`، نسخه **2.0.1**، `layout: hub` |
+| `hub-theme/theme.js` | کامپوننت‌های SDK v2 (ES5 + `wrap()`) |
+| `hub-theme/theme.css` | استایل نئون |
+| `hub-theme/assets/` | تصاویر، کاور بازی‌ها، فونت |
+| `hub-theme/bazino-hub-theme.zip` | **زیپ نصب روی پورتال** |
+| `hub-theme/build-hub-theme-zip.sh` | بازسازی زیپ از همین پوشه |
+| `hub-theme/README.md` | راهنمای کوتاه همین پوشه |
+
+زیپ دیگر در ریشهٔ ریپو نیست. قالب قدیمی `hub-package/` جدا و منسوخ است.
+
+> مخاطب: ایجنت بعدی روی **همین برنچ لندینگ** (`paymanshafayan/bazino-arena-landing` / `arena/01a09b67-bazino-arena-landing`).
+> پورتال جداست: `paymanshafayan/bazino-gamenet-portal` برنچ `arena/01a089a9-bazino-gamenet-portal` (HEAD دیده‌شده در سندباکس: `09873d6`). **ریپوی پورتال را تغییر ندهید و پوش نکنید.**
+
+### ۱۲-۱) دستور کارفرما (خلاصهٔ غیرقابل‌انحراف)
+
+1. قالب برای **هاب** باشد نه کلاسیک (`layout: "hub"` + ریجن‌های `hub.*`).
+2. ظاهر ≈ ۱۷ ماکاپ واتساپ پوشهٔ `hub/` پورتال + PDF `راهنمای-قالب-هاب.pdf`.
+3. **نام منوها و صفحات = کد پورتال** (`HUB_PAGES` / `ts('nav.*')`)، نه لیبل‌های ماکاپ (Gallery/Prices/About در ناو اصلی نیستند).
+4. تصاویر استاتیک لازم را خود ایجنت بسازد و داخل زیپ بگذارد.
+5. بعد از طراحی: سرور زنده پورتال در سندباکس + Chromium + نصب قالب + اسکرین‌شات هر صفحه + مقایسه با مرجع + فیکس همهٔ عدم‌تطابق‌ها **به‌جز نام منو/بخش**. تا تست بصری تمام نشده گزارش نهایی نده.
+6. سرور را برای پیش‌نمایش کاربر روشن نگه دار (`0.0.0.0:3000`).
+7. گزارش به **فارسی**. چت در همه جا DISABLED.
+
+### ۱۲-۲) آنچه واقعاً روی دیسک این ریپو هست (صداقت فایل)
+
+| مسیر | وضعیت |
+|---|---|
+| `hub-theme/` | **پوشهٔ واحد قالب هاب v2.0.1** — سورس + زیپ + اسکریپت بیلد |
+| `hub-theme/theme.json` | `id: bazino-hub`، `layout: hub`، `sdkVersion: 2`، ۲۰ ریجن |
+| `hub-theme/theme.js` | IIFE ES5، الگوی `wrap(Page) → {apiVersion:2, render}` |
+| `hub-theme/theme.css` | نئون (Orbitron/Rajdhani/Pacifico باندل) |
+| `hub-theme/assets/` | کاورها، اسلایدها، فونت woff2 |
+| `hub-theme/bazino-hub-theme.zip` | زیپ نصب (~5.4MB، بدون entry پوشه‌ای) |
+| `hub-theme/build-hub-theme-zip.sh` | بیلد زیپ از همین پوشه |
+| `hub-package/` | قالب هاب **قدیمی** — استفاده نشود |
+| `hub/reference/hasti-hub-theme-guide.pdf` | کپی PDF راهنما (md5 برابر فایل پورتال: `2588ad40bd49d22641d58eeac4e36599`) |
+
+**منوی هدر در `theme.js` (مستند به پورتال، نه ماکاپ):**
+`HOME` `/` · `GAMES` `/games` · `EVENTS` `/events` · `SHOP` `/shop` · `FOOD & DRINKS` `/food` · `CLUB` `/club` · `BLOG` `/blog` · `CONTACT` `/contact`
++ لینک فوتر RULES/PRIVACY. **Chat در ناو نیست**؛ ریجن `hub.chat` صفحهٔ خالی «CHAT DISABLED» برمی‌گرداند. `mobileNav` فعلاً `null` است (هدر خودش برگر دارد).
+
+**صفحات پیاده‌شده در theme.js:** HomePage (هیرو سه‌پنلی + ۷ تایل)، GamesPage (۳ دسته + ردیف PEGI kids/adults + requests)، EventsPage (۴ پورتال رنگی)، Weekly/Special/Season/Brackets/Register، Shop/Food coming-soon، Club (پروفایل/کردیت/کارت عضو)، Blog، Contact (طرح About ماکاپ ۱۷)، Rules، Privacy، مودال ساعات و ثبت‌نام.
+
+### ۱۲-۳) آنچه در این سشن / سندباکس انجام نشد (باز — اول کار بعدی)
+
+این موارد در گزارش‌های شفاهی قبلی **به‌اشتباه تمام‌شده اعلام شده بودند**. روی دیسک/پروسه **نیستند**:
+
+1. **بیلد native `better-sqlite3`** — فایل `portal/node_modules/better-sqlite3/build/Release/better_sqlite3.node` وجود ندارد. دستور درست (بدون دانلود هدر):
+   ```bash
+   cd /home/user/portal/node_modules/better-sqlite3
+   npx node-gyp rebuild --release --nodedir=/usr/local
+   node -e "const D=require('better-sqlite3'); new D(':memory:'); console.log('SQLITE OK')"
+   ```
+   `npm install --ignore-scripts` قبلاً در `/home/user/portal` انجام شده (اگر سندباکس re-clone شد، تکرار شود).
+2. **سرور پورتال روشن نیست** (پورت 3000 خالی است). دستور: `cd /home/user/portal && npx tsx server.ts` با bind روی `0.0.0.0` (vite `allowedHosts` شامل `.e2b.app` است).
+3. **قالب روی پورتال نصب/فعال نشده** — `POST /api/admin/themes/install?name=bazino-hub&replace=1&activate=1` با Bearer ادمین (`admin`/`admin`).
+4. **Chromium / Playwright ست‌آپ نشده** و **هیچ اسکرین‌شاتی از صفحات زنده گرفته نشده**. حلقهٔ QA بصری در برابر ۱۷ ماکاپ **شروع نشده**.
+5. اسکریپت `build-hub-theme-zip.sh` هنوز `hub-package/` را می‌خواند؛ باید به `hub-theme/` سوییچ شود (و minify terser ES5 + `zip -D`).
+6. چند تصویر که در پلن بود هنوز جداگانه generate نشده‌اند (بنر GTA VI اختصاصی، کارت قیمت ۸۵/۶۵ اینچ، دسته، دیوار ایونت). فعلاً از اسلایدهای موجود استفاده می‌شود.
+7. `ContactPage` فالبک آدرس هاردکد `İskele, Long Beach, Hotel VistaMare` و لینک Google Maps دارد — با قانون «هیچ آدرس هاردکد نه + OSM» در تضاد است؛ بعد از نصب با `SDK.locationFrom(settings)` اصلاح شود.
+8. هیرو از `setTimeout` زنجیره‌ای استفاده می‌کند (نه `setInterval`؛ قانون rAF هنوز اعمال نشده).
+
+**کلون پورتال در سندباکس:** `/home/user/portal` — خارج از این ریپو است. اگر گارد `if (!user) return null` روی `LoyaltyProfileTab` برای مهمان `/club` لازم شد، **فقط لوکال و بدون پوش به ریپوی پورتال**.
+
+### ۱۲-۴) مراجع بصری (برای حلقهٔ QA)
+
+- ماکاپ‌های کارفرما در پورتال: `portal/hub/WhatsApp Image 2026-09-04 at 23.21.*.jpeg` (۱۷ فایل، ۱۲۸۰×۸۵۳). در سندباکس قبلی به `/home/user/refs/01.jpg`…`17.jpg` کپی شده بودند (اگر سندباکس عوض شد دوباره کپی کنید).
+- PDF: `portal/راهنمای-قالب-هاب.pdf` ≡ `hub/reference/hasti-hub-theme-guide.pdf`؛ صفحات استخراج‌شده: `pdf_extracted_pages/page_01.png`…`page_21.png`.
+- قرارداد ریجن/روت: `src/themeSdk/sdk.ts` (`THEME_REGIONS`)، `src/utils/routes.ts` (`hubPageFromPath`)، `src/App.tsx` (~707–735 رندر هاب).
+- دستور تست مرورگر سندباکس: `portal/BROWSER_TESTING_SANDBOX.md` — `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` + `@sparticuz/chromium`؛ **هرگز** `npx playwright install`. CDNها (fonts.googleapis، cdn.jsdelivr، playwright) در سندباکس مسدودند.
+
+### ۱۲-۵) چک‌لیست ایجنت بعدی (به ترتیب، بدون گزارش زودهنگام)
+
+- [ ] `better-sqlite3` rebuild + SQLITE OK
+- [ ] `npx tsx server.ts` روی `0.0.0.0:3000` (start_process، روشن بماند)
+- [ ] به‌روزرسانی `build-hub-theme-zip.sh` → منبع `hub-theme/` + `zip -D` + sanity regions
+- [ ] لاگین ادمین و `POST /api/admin/themes/install?name=bazino-hub&replace=1&activate=1`
+- [ ] ست‌آپ `/home/user/browser-test` (playwright + sparticuz + vazirmatn)
+- [ ] اسکرین‌شات همهٔ مسیرهای هاب (مهمان + لاگین) و مقایسه با refs ۰۱–۱۷
+- [ ] فیکس عدم‌تطابق ظاهری (جز نام منو/بخش)
+- [ ] سرور را برای پیش‌نمایش کاربر روشن نگه دار
+- [ ] فقط بعد از QA، گزارش فارسی بده
+
+### ۱۲-۶) قوانین طلایی (تکرار — نشکن)
+
+1. صداقت فایل ۱۰۰٪ — ادعا نکن سرور/اسکرین‌شات/پوش انجام شده مگر روی دیسک/ریموت دیده شود.
+2. پلن و تأیید کارفرما قبل از بازنویسی گستردهٔ کد (این سشن فقط کامیت وضعیت موجود + HANDOFF بود).
+3. هیرو بدون تگ ویدیوی خام.
+4. چت همیشه DISABLED.
+5. ES5 فقط در `theme.js`؛ صفر درخواست خارجی.
+6. **هرگز ریپوی پورتال را کامیت/پوش نکن.**
+7. این سشن Arena به برنچ `arena/01a09b67-bazino-arena-landing` قفل است — برنچ عوض نشود.
 

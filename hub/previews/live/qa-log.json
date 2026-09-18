@@ -1,0 +1,257 @@
+[
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/ 200"
+  },
+  {
+    "k": "shot",
+    "v": "home 1031765"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/games 200"
+  },
+  {
+    "k": "shot",
+    "v": "games 1131490"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events 200"
+  },
+  {
+    "k": "shot",
+    "v": "events 741765"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/weekly 200"
+  },
+  {
+    "k": "shot",
+    "v": "weekly 754298"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/special 200"
+  },
+  {
+    "k": "shot",
+    "v": "special 763180"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/season 200"
+  },
+  {
+    "k": "shot",
+    "v": "season 775244"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/brackets 200"
+  },
+  {
+    "k": "shot",
+    "v": "brackets 623782"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/register 200"
+  },
+  {
+    "k": "shot",
+    "v": "register 263772"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/shop 200"
+  },
+  {
+    "k": "shot",
+    "v": "shop 717275"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/food 200"
+  },
+  {
+    "k": "shot",
+    "v": "food 663459"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/club 200"
+  },
+  {
+    "k": "shot",
+    "v": "club 120870"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/blog 200"
+  },
+  {
+    "k": "shot",
+    "v": "blog 706182"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/contact 200"
+  },
+  {
+    "k": "shot",
+    "v": "contact 247393"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/games 304"
+  },
+  {
+    "k": "clickKids",
+    "v": true
+  },
+  {
+    "k": "kidsView",
+    "v": true
+  },
+  {
+    "k": "shot",
+    "v": "games-kids 2186932"
+  },
+  {
+    "k": "backGames",
+    "v": true
+  },
+  {
+    "k": "clickAdults",
+    "v": true
+  },
+  {
+    "k": "shot",
+    "v": "games-adults 2152952"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/games 304"
+  },
+  {
+    "k": "holdCard",
+    "v": "clicked"
+  },
+  {
+    "k": "afterHoldGuest",
+    "v": {
+      "login": true,
+      "modal": false
+    }
+  },
+  {
+    "k": "shot",
+    "v": "games-hold-guest 640885"
+  },
+  {
+    "k": "apiLogin",
+    "v": "token"
+  },
+  {
+    "k": "clickLoginBtn",
+    "v": true
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/games 304"
+  },
+  {
+    "k": "selectStation",
+    "v": true
+  },
+  {
+    "k": "bookCta",
+    "v": "clicked"
+  },
+  {
+    "k": "afterBookHasHeld",
+    "v": true
+  },
+  {
+    "k": "shot",
+    "v": "games-hold-after 640883"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events 304"
+  },
+  {
+    "k": "viewTournaments",
+    "v": true
+  },
+  {
+    "k": "urlWeekly",
+    "v": "http://127.0.0.1:3000/events/weekly"
+  },
+  {
+    "k": "shot",
+    "v": "click-weekly 754332"
+  },
+  {
+    "k": "viewDetails",
+    "v": true
+  },
+  {
+    "k": "urlDetails",
+    "v": "http://127.0.0.1:3000/events/brackets"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/weekly 304"
+  },
+  {
+    "k": "regBar",
+    "v": true
+  },
+  {
+    "k": "urlRegister",
+    "v": "http://127.0.0.1:3000/events/register"
+  },
+  {
+    "k": "shot",
+    "v": "click-register 263772"
+  },
+  {
+    "k": "regSubmit",
+    "v": "clicked"
+  },
+  {
+    "k": "regOk",
+    "v": true
+  },
+  {
+    "k": "shot",
+    "v": "register-after 121575"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/events/season 304"
+  },
+  {
+    "k": "seasonSummer",
+    "v": true
+  },
+  {
+    "k": "shot",
+    "v": "season-summer 775562"
+  },
+  {
+    "k": "goto",
+    "v": "http://127.0.0.1:3000/ 304"
+  },
+  {
+    "k": "homeGamesTile",
+    "v": true
+  },
+  {
+    "k": "urlAfterTile",
+    "v": "http://127.0.0.1:3000/games"
+  }
+]
