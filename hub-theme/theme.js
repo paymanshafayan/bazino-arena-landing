@@ -335,7 +335,8 @@
     var p = x.p;
     var modeSt = useState('otp'); var mode = modeSt[0], setMode = modeSt[1];
     var stepSt = useState('phone'); var step = stepSt[0], setStep = stepSt[1];
-    var ccSt = useState('+90'); var cc = ccSt[0], setCc = ccSt[1];
+    var isoSt = useState('TR'); var iso = isoSt[0], setIso = isoSt[1];
+    var openSt = useState(false); var ccOpen = openSt[0], setCcOpen = openSt[1];
     var phSt = useState(''); var local = phSt[0], setLocal = phSt[1];
     var codeSt = useState(''); var code = codeSt[0], setCode = codeSt[1];
     var userSt = useState(''); var username = userSt[0], setUsername = userSt[1];
@@ -343,27 +344,28 @@
     var errSt = useState(''); var err = errSt[0], setErr = errSt[1];
     var loadSt = useState(false); var loading = loadSt[0], setLoading = loadSt[1];
     var countries = [
-      { d: '+90', t: 'Türkiye +90' },
-      { d: '+357', t: 'Kıbrıs +357' },
-      { d: '+994', t: 'Azərbaycan +994' },
-      { d: '+98', t: 'Iran +98' },
-      { d: '+7', t: 'Россия +7' },
-      { d: '+380', t: 'Ukraine +380' },
-      { d: '+49', t: 'Deutschland +49' },
-      { d: '+44', t: 'United Kingdom +44' },
-      { d: '+1', t: 'USA / Canada +1' },
-      { d: '+31', t: 'Nederland +31' },
-      { d: '+33', t: 'France +33' },
-      { d: '+39', t: 'Italia +39' },
-      { d: '+34', t: 'España +34' },
-      { d: '+971', t: 'UAE +971' },
-      { d: '+966', t: 'Saudi Arabia +966' },
-      { d: '+964', t: 'Iraq +964' },
-      { d: '+995', t: 'Georgia +995' }
+      { iso: 'TR', d: '+90', t: 'Türkiye', f: '🇹🇷' },
+      { iso: 'CY', d: '+357', t: 'Kıbrıs', f: '🇨🇾' },
+      { iso: 'AZ', d: '+994', t: 'Azərbaycan', f: '🇦🇿' },
+      { iso: 'IR', d: '+98', t: 'Iran', f: '🇮🇷' },
+      { iso: 'RU', d: '+7', t: 'Россия', f: '🇷🇺' },
+      { iso: 'UA', d: '+380', t: 'Ukraine', f: '🇺🇦' },
+      { iso: 'DE', d: '+49', t: 'Deutschland', f: '🇩🇪' },
+      { iso: 'GB', d: '+44', t: 'United Kingdom', f: '🇬🇧' },
+      { iso: 'US', d: '+1', t: 'USA / Canada', f: '🇺🇸' },
+      { iso: 'NL', d: '+31', t: 'Nederland', f: '🇳🇱' },
+      { iso: 'FR', d: '+33', t: 'France', f: '🇫🇷' },
+      { iso: 'IT', d: '+39', t: 'Italia', f: '🇮🇹' },
+      { iso: 'ES', d: '+34', t: 'España', f: '🇪🇸' },
+      { iso: 'AE', d: '+971', t: 'UAE', f: '🇦🇪' },
+      { iso: 'SA', d: '+966', t: 'Saudi Arabia', f: '🇸🇦' },
+      { iso: 'IQ', d: '+964', t: 'Iraq', f: '🇮🇶' },
+      { iso: 'GE', d: '+995', t: 'Georgia', f: '🇬🇪' }
     ];
-    var opts = [];
+    var cur = countries[0];
     var i;
-    for (i = 0; i < countries.length; i++) opts.push(h('option', { key: countries[i].d, value: countries[i].d }, countries[i].t));
+    for (i = 0; i < countries.length; i++) if (countries[i].iso === iso) cur = countries[i];
+    var cc = cur.d;
     function fullPhone() {
       var n = String(local || '').replace(/\D/g, '');
       if (n.charAt(0) === '0') n = n.slice(1);
@@ -405,6 +407,16 @@
         finish(res.d);
       }).catch(function () { setLoading(false); setErr('Network error'); });
     }
+    var menuItems = [];
+    for (i = 0; i < countries.length; i++) {
+      (function (c) {
+        menuItems.push(h('button', {
+          type: 'button', key: c.iso,
+          className: 'hb-auth-opt' + (c.iso === iso ? ' is-on' : ''),
+          onClick: function () { setIso(c.iso); setCcOpen(false); }
+        }, h('span', { className: 'hb-auth-flagico' }, c.f), h('span', null, c.t)));
+      })(countries[i]);
+    }
     var body;
     if (mode === 'password') {
       body = h('form', { onSubmit: loginPass },
@@ -428,10 +440,19 @@
       body = h('form', { onSubmit: requestCode },
         h('label', { className: 'hb-auth-lab' }, 'MOBILE NUMBER'),
         h('div', { className: 'hb-auth-phone' },
-          h('select', { className: 'hb-auth-cc', value: cc, 'aria-label': 'Country / prefix', onChange: function (e) { setCc(e.target.value); } }, opts),
-          h('input', { className: 'hb-auth-in', type: 'tel', inputMode: 'tel', value: local, placeholder: cc === '+90' ? '5xx xxx xx xx' : 'phone number', onChange: function (e) { setLocal(e.target.value); } })
+          h('div', { className: 'hb-auth-flagwrap' + (ccOpen ? ' is-open' : '') },
+            h('button', { type: 'button', className: 'hb-auth-flag', 'aria-label': 'Country', onClick: function () { setCcOpen(!ccOpen); } },
+              h('span', { className: 'hb-auth-flagico' }, cur.f),
+              h('span', { className: 'hb-auth-caret' }, '▾')
+            ),
+            ccOpen ? h('div', { className: 'hb-auth-menu' }, menuItems) : null
+          ),
+          h('div', { className: 'hb-auth-tel' },
+            h('span', { className: 'hb-auth-prefix' }, cc),
+            h('input', { className: 'hb-auth-in', type: 'tel', inputMode: 'tel', value: local, placeholder: iso === 'TR' ? '5xx xxx xx xx' : 'mobile number', onChange: function (e) { setLocal(e.target.value); } })
+          )
         ),
-        h('p', { className: 'hb-auth-hint' }, 'Country code is selected on the left. Type only your mobile number — no + and no leading 0.'),
+        h('p', { className: 'hb-auth-hint' }, 'Flag picks the country. Prefix stays fixed. Type only the mobile number.'),
         err ? h('p', { className: 'hb-auth-err' }, err) : null,
         h('button', { type: 'submit', className: 'hb-auth-go', disabled: loading }, loading ? '…' : 'Send code'),
         h('div', { className: 'hb-auth-note' }, 'First sign-in = loyalty membership with 100 bonus points. Earn points on every booking, cafe order and purchase.')
