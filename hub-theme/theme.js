@@ -431,7 +431,7 @@
           h('select', { className: 'hb-auth-cc', value: cc, 'aria-label': 'Country / prefix', onChange: function (e) { setCc(e.target.value); } }, opts),
           h('input', { className: 'hb-auth-in', type: 'tel', inputMode: 'tel', value: local, placeholder: cc === '+90' ? '5xx xxx xx xx' : 'phone number', onChange: function (e) { setLocal(e.target.value); } })
         ),
-        h('p', { className: 'hb-auth-hint' }, 'Country code is selected on the left. Type only the national number — no + and no leading 0.'),
+        h('p', { className: 'hb-auth-hint' }, 'Country code is selected on the left. Type only your mobile number — no + and no leading 0.'),
         err ? h('p', { className: 'hb-auth-err' }, err) : null,
         h('button', { type: 'submit', className: 'hb-auth-go', disabled: loading }, loading ? '…' : 'Send code'),
         h('div', { className: 'hb-auth-note' }, 'First sign-in = loyalty membership with 100 bonus points. Earn points on every booking, cafe order and purchase.')
